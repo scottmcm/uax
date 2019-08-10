@@ -1,0 +1,11 @@
+[package]
+name = "uax"
+version = "0.1.0"
+authors = ["Scott McMurray <scottmcm@users.noreply.github.com>"]
+edition = "2018"
+description = "because I want the v12 rules for the bit I'm using"
+license = "OSL-3.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
