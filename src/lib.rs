@@ -12,12 +12,12 @@ pub(crate) fn table_lookup<T: Ord, V: Copy>(starts: &[T], needle: &T, values: &[
     let mut width = starts.len();
     let mut low = 0;
     while width > 1 {
-        width /= 2;
-        let mid = low + width;
+        let mid = low + width/2;
         let mid_element = unsafe { starts.get_unchecked(mid) };
         if mid_element <= needle {
             low = mid;
         }
+        width -= width/2;
     }
     unsafe { *values.get_unchecked(low) }
 }

@@ -1,6 +1,5 @@
 #![allow(dead_code)]
 
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 
@@ -39,7 +38,7 @@ fn main() {
         properties.push((start, end, value, comment));
     }
     properties.sort_by_key(|x| x.0);
-    let mut properties = properties.as_slice();
+    let properties = properties.as_slice();
 
     let mut f = File::create("src/word_break_table.rs").unwrap();
     macro_rules! w {
@@ -54,27 +53,8 @@ fn main() {
     w!("impl From<char> for Word_Break {{");
     w!("    fn from(c: char) -> Self {{");
     w!("        use Word_Break::*;");
-    w!("        if c.is_ascii() {{");
-    w!("            return ASCII_TABLE[c as u32 as usize];");
-    w!("        }}");
     w!("        return crate::table_lookup(&START_TABLE, &(c as u32), &VALUE_TABLE);");
     w!();
-
-    w!("        const ASCII_TABLE: [Word_Break; 128] = [");
-    for i in 0_u32..128 {
-        let p = &properties[0];
-        let c = std::char::from_u32(i).unwrap();
-        if c < p.0 {
-            w!("            Other,");
-        } else {
-            w!("            {}, // {}",
-                p.2, p.3);
-            if c == p.1 {
-                properties = &properties[1..];
-            }
-        }
-    }
-    w!("        ];");
 
     let (starts, values, comments) = to_gap_tables("Other".to_owned(), properties);
 

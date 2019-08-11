@@ -3,143 +3,34 @@ use crate::property_enums::Word_Break;
 impl From<char> for Word_Break {
     fn from(c: char) -> Self {
         use Word_Break::*;
-        if c.is_ascii() {
-            return ASCII_TABLE[c as u32 as usize];
-        }
         return crate::table_lookup(&START_TABLE, &(c as u32), &VALUE_TABLE);
 
-        const ASCII_TABLE: [Word_Break; 128] = [
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            LF, // Cc       <control-000A>
-            Newline, // Cc   [2] <control-000B>..<control-000C>
-            Newline, // Cc   [2] <control-000B>..<control-000C>
-            CR, // Cc       <control-000D>
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            WSegSpace, // Zs       SPACE
-            Other,
-            Double_Quote, // Po       QUOTATION MARK
-            Other,
-            Other,
-            Other,
-            Other,
-            Single_Quote, // Po       APOSTROPHE
-            Other,
-            Other,
-            Other,
-            Other,
-            MidNum, // Po       COMMA
-            Other,
-            MidNumLet, // Po       FULL STOP
-            Other,
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
-            MidLetter, // Po       COLON
-            MidNum, // Po       SEMICOLON
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-            Other,
-            Other,
-            Other,
-            Other,
-            ExtendNumLet, // Pc       LOW LINE
-            Other,
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-            Other,
-            Other,
-            Other,
-            Other,
-            Other,
-        ];
-        const START_TABLE: [u32; 1962] = [
+        const START_TABLE: [u32; 1986] = [
             0x0000,
+            0x000A, // Cc       <control-000A>
+            0x000B, // Cc   [2] <control-000B>..<control-000C>
+            0x000D, // Cc       <control-000D>
+            0x000E,
+            0x0020, // Zs       SPACE
+            0x0021,
+            0x0022, // Po       QUOTATION MARK
+            0x0023,
+            0x0027, // Po       APOSTROPHE
+            0x0028,
+            0x002C, // Po       COMMA
+            0x002D,
+            0x002E, // Po       FULL STOP
+            0x002F,
+            0x0030, // Nd  [10] DIGIT ZERO..DIGIT NINE
+            0x003A, // Po       COLON
+            0x003B, // Po       SEMICOLON
+            0x003C,
+            0x0041, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
+            0x005B,
+            0x005F, // Pc       LOW LINE
+            0x0060,
+            0x0061, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
+            0x007B,
             0x0085, // Cc       <control-0085>
             0x0086,
             0x00AA, // Lo       FEMININE ORDINAL INDICATOR
@@ -2102,7 +1993,31 @@ impl From<char> for Word_Break {
             0xE0100, // Mn [240] VARIATION SELECTOR-17..VARIATION SELECTOR-256
             0xE01F0,
         ];
-        const VALUE_TABLE: [Word_Break; 1962] = [
+        const VALUE_TABLE: [Word_Break; 1986] = [
+            Other,
+            LF, // Cc       <control-000A>
+            Newline, // Cc   [2] <control-000B>..<control-000C>
+            CR, // Cc       <control-000D>
+            Other,
+            WSegSpace, // Zs       SPACE
+            Other,
+            Double_Quote, // Po       QUOTATION MARK
+            Other,
+            Single_Quote, // Po       APOSTROPHE
+            Other,
+            MidNum, // Po       COMMA
+            Other,
+            MidNumLet, // Po       FULL STOP
+            Other,
+            Numeric, // Nd  [10] DIGIT ZERO..DIGIT NINE
+            MidLetter, // Po       COLON
+            MidNum, // Po       SEMICOLON
+            Other,
+            ALetter, // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
+            Other,
+            ExtendNumLet, // Pc       LOW LINE
+            Other,
+            ALetter, // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
             Other,
             Newline, // Cc       <control-0085>
             Other,
