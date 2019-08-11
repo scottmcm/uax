@@ -8,18 +8,9 @@ use regex::Regex;
 
 // Eytzinger
 
-#[path = "../src/property_enums.rs"]
-mod property_enums;
-use property_enums::*;
-
 fn main() {
     let mut properties = Vec::new();
 
-    let value_lookup: HashMap<String, _> = Word_Break::ALL
-        .iter()
-        .cloned()
-        .map(|x| (format!("{:?}", x), x))
-        .collect();
     let data = include_str!("../data/WordBreakProperty.txt");
     let re = Regex::new(r#"(?x)
         (?P<start>[[:xdigit:]]{4,6})
@@ -43,7 +34,7 @@ fn main() {
         let end = captures.name("end")
             .map(|x| parse_char(x.as_str()))
             .unwrap_or(start);
-        let value = value_lookup[&captures["value"]];
+        let value = captures["value"].to_owned();
         let comment = captures["comment"].to_owned();
         properties.push((start, end, value, comment));
     }
@@ -76,7 +67,7 @@ fn main() {
         if c < p.0 {
             w!("            Other,");
         } else {
-            w!("            {:?}, // {}",
+            w!("            {}, // {}",
                 p.2, p.3);
             if c == p.1 {
                 properties = &properties[1..];
@@ -85,7 +76,7 @@ fn main() {
     }
     w!("        ];");
 
-    let (starts, values, comments) = to_gap_tables(Word_Break::Other, properties);
+    let (starts, values, comments) = to_gap_tables("Other".to_owned(), properties);
 
     w!("        const START_TABLE: [u32; {}] = [", comments.len());
     for (start, comment) in starts.iter().zip(&comments) {
@@ -94,7 +85,7 @@ fn main() {
     w!("        ];");
     w!("        const VALUE_TABLE: [Word_Break; {}] = [", comments.len());
     for (value, comment) in values.iter().zip(&comments) {
-        w!("            {:?},{}", value, comment);
+        w!("            {},{}", value, comment);
     }
     w!("        ];");
 
@@ -112,7 +103,7 @@ fn parse_char(hex: &str) -> char {
     std::char::from_u32(x).unwrap()
 }
 
-fn to_gap_tables<T: Copy>(filler: T, properties: &[(char, char, T, String)])
+fn to_gap_tables<T: Clone>(filler: T, properties: &[(char, char, T, String)])
     -> (Vec<u32>, Vec<T>, Vec<String>)
 {
     let mut starts = Vec::new();
@@ -123,12 +114,12 @@ fn to_gap_tables<T: Copy>(filler: T, properties: &[(char, char, T, String)])
     for p in properties {
         if p.0 as u32 != next {
             starts.push(next);
-            values.push(filler);
+            values.push(filler.clone());
             comments.push(String::new());
         }
 
         starts.push(p.0 as u32);
-        values.push(p.2);
+        values.push(p.2.clone());
         comments.push(format!(" // {}", p.3));
 
         next = p.1 as u32 + 1;
