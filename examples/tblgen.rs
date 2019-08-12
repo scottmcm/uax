@@ -5,6 +5,7 @@ use std::fs::File;
 use std::io::Write;
 
 use regex::Regex;
+use unicase::UniCase;
 
 // Eytzinger
 
@@ -69,7 +70,7 @@ fn generate_property(
     let mut properties = properties.into_iter().peekable();
 
     let mut values = values.into_iter().collect::<Vec<_>>();
-    values.sort();
+    values.sort_by_cached_key(|x| UniCase::new(x.clone()));
 
     let mut f = File::create(file_path).unwrap();
     macro_rules! w {

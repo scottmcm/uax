@@ -4,8 +4,8 @@ use crate::lookup_table::LookupTable;
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum Grapheme_Cluster_Break {
     Other,
-    CR,
     Control,
+    CR,
     Extend,
     L,
     LF,

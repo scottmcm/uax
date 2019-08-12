@@ -5,8 +5,8 @@ use crate::lookup_table::LookupTable;
 pub enum Sentence_Break {
     Other,
     ATerm,
-    CR,
     Close,
+    CR,
     Extend,
     Format,
     LF,
@@ -14,9 +14,9 @@ pub enum Sentence_Break {
     Numeric,
     OLetter,
     SContinue,
-    STerm,
     Sep,
     Sp,
+    STerm,
     Upper,
 }
 use Sentence_Break::*;
