@@ -2,11 +2,9 @@
 
 #[macro_use]
 mod lookup_table;
+mod properties;
 
-mod property_enums;
-use property_enums::*;
-
-mod word_break_table;
+use properties::Word_Break;
 
 pub fn demo(c: char) -> usize {
     Word_Break::from(c) as usize

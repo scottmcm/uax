@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::Write;
 
@@ -9,6 +10,7 @@ use regex::Regex;
 
 fn main() {
     let mut properties = Vec::new();
+    let mut values = HashSet::new();
 
     let data = include_str!("../data/WordBreakProperty.txt");
     let re = Regex::new(r#"(?x)
@@ -34,14 +36,17 @@ fn main() {
             .map(|x| parse_char(x.as_str()))
             .unwrap_or(start);
         let value = captures["value"].to_owned();
+        values.insert(value.clone());
         let comment = captures["comment"].to_owned();
         properties.push((start, end, value, comment));
     }
     properties.sort_by_key(|x| x.0);
-
     let mut properties = properties.into_iter().peekable();
 
-    let mut f = File::create("src/word_break_table.rs").unwrap();
+    let mut values = values.into_iter().collect::<Vec<_>>();
+    values.sort();
+
+    let mut f = File::create("src/properties/word_break.rs").unwrap();
     macro_rules! w {
         () => { w!("") };
         ($($x:tt)+) => {
@@ -50,7 +55,15 @@ fn main() {
     }
 
     w!("use crate::lookup_table::LookupTable;");
-    w!("use crate::property_enums::Word_Break;");
+    w!();
+    w!("#[allow(non_camel_case_types)] // Whatever unicode says, we use");
+    w!("#[derive(Debug, Copy, Clone, Eq, PartialEq)]");
+    w!("pub enum Word_Break {{");
+    w!("    Other,");
+    for v in values {
+        w!("    {},", v);
+    }
+    w!("}}");
     w!("use Word_Break::*;");
     w!();
     w!("impl From<char> for Word_Break {{");
