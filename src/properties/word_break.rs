@@ -34,7 +34,7 @@ impl From<char> for Word_Break {
         if c < PLANE0_LIMIT {
             return PLANE0_TABLE.get_or(&(c as u16), Other);
         }
-        return SUPPLEMENTARY_TABLE.get_or(&c, Other);
+        return SUPPLEMENTARY_TABLE.get_or(&(c as u32), Other);
     }
 }
 
@@ -1696,861 +1696,861 @@ const PLANE0_TABLE: LookupTable<u16, Word_Break> = lookup_table![
     (0xFFF9, 0xFFFB, Format),
 ];
 const PLANE0_LIMIT: char = '\u{10000}';
-const SUPPLEMENTARY_TABLE: LookupTable<char, Word_Break> = lookup_table![
+const SUPPLEMENTARY_TABLE: LookupTable<u32, Word_Break> = lookup_table![
     // Lo  [12] LINEAR B SYLLABLE B008 A..LINEAR B SYLLABLE B046 JE
-    ('\u{10000}', '\u{1000b}', ALetter),
+    (0x010000, 0x01000B, ALetter),
     // Lo  [26] LINEAR B SYLLABLE B036 JO..LINEAR B SYLLABLE B032 QO
-    ('\u{1000d}', '\u{10026}', ALetter),
+    (0x01000D, 0x010026, ALetter),
     // Lo  [19] LINEAR B SYLLABLE B060 RA..LINEAR B SYLLABLE B042 WO
-    ('\u{10028}', '\u{1003a}', ALetter),
+    (0x010028, 0x01003A, ALetter),
     // Lo   [2] LINEAR B SYLLABLE B017 ZA..LINEAR B SYLLABLE B074 ZE
-    ('\u{1003c}', '\u{1003d}', ALetter),
+    (0x01003C, 0x01003D, ALetter),
     // Lo  [15] LINEAR B SYLLABLE B020 ZO..LINEAR B SYLLABLE B091 TWO
-    ('\u{1003f}', '\u{1004d}', ALetter),
+    (0x01003F, 0x01004D, ALetter),
     // Lo  [14] LINEAR B SYMBOL B018..LINEAR B SYMBOL B089
-    ('\u{10050}', '\u{1005d}', ALetter),
+    (0x010050, 0x01005D, ALetter),
     // Lo [123] LINEAR B IDEOGRAM B100 MAN..LINEAR B IDEOGRAM VESSEL B305
-    ('\u{10080}', '\u{100fa}', ALetter),
+    (0x010080, 0x0100FA, ALetter),
     // Nl  [53] GREEK ACROPHONIC ATTIC ONE QUARTER..GREEK ACROPHONIC STRATIAN FIFTY MNAS
-    ('\u{10140}', '\u{10174}', ALetter),
+    (0x010140, 0x010174, ALetter),
     // Mn       PHAISTOS DISC SIGN COMBINING OBLIQUE STROKE
-    ('\u{101fd}', '\u{101fd}', Extend),
+    (0x0101FD, 0x0101FD, Extend),
     // Lo  [29] LYCIAN LETTER A..LYCIAN LETTER X
-    ('\u{10280}', '\u{1029c}', ALetter),
+    (0x010280, 0x01029C, ALetter),
     // Lo  [49] CARIAN LETTER A..CARIAN LETTER UUU3
-    ('\u{102a0}', '\u{102d0}', ALetter),
+    (0x0102A0, 0x0102D0, ALetter),
     // Mn       COPTIC EPACT THOUSANDS MARK
-    ('\u{102e0}', '\u{102e0}', Extend),
+    (0x0102E0, 0x0102E0, Extend),
     // Lo  [32] OLD ITALIC LETTER A..OLD ITALIC LETTER ESS
-    ('\u{10300}', '\u{1031f}', ALetter),
+    (0x010300, 0x01031F, ALetter),
     // Lo  [20] OLD ITALIC LETTER YE..GOTHIC LETTER PAIRTHRA
-    ('\u{1032d}', '\u{10340}', ALetter),
+    (0x01032D, 0x010340, ALetter),
     // Nl       GOTHIC LETTER NINETY
-    ('\u{10341}', '\u{10341}', ALetter),
+    (0x010341, 0x010341, ALetter),
     // Lo   [8] GOTHIC LETTER RAIDA..GOTHIC LETTER OTHAL
-    ('\u{10342}', '\u{10349}', ALetter),
+    (0x010342, 0x010349, ALetter),
     // Nl       GOTHIC LETTER NINE HUNDRED
-    ('\u{1034a}', '\u{1034a}', ALetter),
+    (0x01034A, 0x01034A, ALetter),
     // Lo  [38] OLD PERMIC LETTER AN..OLD PERMIC LETTER IA
-    ('\u{10350}', '\u{10375}', ALetter),
+    (0x010350, 0x010375, ALetter),
     // Mn   [5] COMBINING OLD PERMIC LETTER AN..COMBINING OLD PERMIC LETTER SII
-    ('\u{10376}', '\u{1037a}', Extend),
+    (0x010376, 0x01037A, Extend),
     // Lo  [30] UGARITIC LETTER ALPA..UGARITIC LETTER SSU
-    ('\u{10380}', '\u{1039d}', ALetter),
+    (0x010380, 0x01039D, ALetter),
     // Lo  [36] OLD PERSIAN SIGN A..OLD PERSIAN SIGN HA
-    ('\u{103a0}', '\u{103c3}', ALetter),
+    (0x0103A0, 0x0103C3, ALetter),
     // Lo   [8] OLD PERSIAN SIGN AURAMAZDAA..OLD PERSIAN SIGN BUUMISH
-    ('\u{103c8}', '\u{103cf}', ALetter),
+    (0x0103C8, 0x0103CF, ALetter),
     // Nl   [5] OLD PERSIAN NUMBER ONE..OLD PERSIAN NUMBER HUNDRED
-    ('\u{103d1}', '\u{103d5}', ALetter),
+    (0x0103D1, 0x0103D5, ALetter),
     // L&  [80] DESERET CAPITAL LETTER LONG I..DESERET SMALL LETTER EW
-    ('\u{10400}', '\u{1044f}', ALetter),
+    (0x010400, 0x01044F, ALetter),
     // Lo  [78] SHAVIAN LETTER PEEP..OSMANYA LETTER OO
-    ('\u{10450}', '\u{1049d}', ALetter),
+    (0x010450, 0x01049D, ALetter),
     // Nd  [10] OSMANYA DIGIT ZERO..OSMANYA DIGIT NINE
-    ('\u{104a0}', '\u{104a9}', Numeric),
+    (0x0104A0, 0x0104A9, Numeric),
     // L&  [36] OSAGE CAPITAL LETTER A..OSAGE CAPITAL LETTER ZHA
-    ('\u{104b0}', '\u{104d3}', ALetter),
+    (0x0104B0, 0x0104D3, ALetter),
     // L&  [36] OSAGE SMALL LETTER A..OSAGE SMALL LETTER ZHA
-    ('\u{104d8}', '\u{104fb}', ALetter),
+    (0x0104D8, 0x0104FB, ALetter),
     // Lo  [40] ELBASAN LETTER A..ELBASAN LETTER KHE
-    ('\u{10500}', '\u{10527}', ALetter),
+    (0x010500, 0x010527, ALetter),
     // Lo  [52] CAUCASIAN ALBANIAN LETTER ALT..CAUCASIAN ALBANIAN LETTER KIW
-    ('\u{10530}', '\u{10563}', ALetter),
+    (0x010530, 0x010563, ALetter),
     // Lo [311] LINEAR A SIGN AB001..LINEAR A SIGN A664
-    ('\u{10600}', '\u{10736}', ALetter),
+    (0x010600, 0x010736, ALetter),
     // Lo  [22] LINEAR A SIGN A701 A..LINEAR A SIGN A732 JE
-    ('\u{10740}', '\u{10755}', ALetter),
+    (0x010740, 0x010755, ALetter),
     // Lo   [8] LINEAR A SIGN A800..LINEAR A SIGN A807
-    ('\u{10760}', '\u{10767}', ALetter),
+    (0x010760, 0x010767, ALetter),
     // Lo   [6] CYPRIOT SYLLABLE A..CYPRIOT SYLLABLE JA
-    ('\u{10800}', '\u{10805}', ALetter),
+    (0x010800, 0x010805, ALetter),
     // Lo       CYPRIOT SYLLABLE JO
-    ('\u{10808}', '\u{10808}', ALetter),
+    (0x010808, 0x010808, ALetter),
     // Lo  [44] CYPRIOT SYLLABLE KA..CYPRIOT SYLLABLE WO
-    ('\u{1080a}', '\u{10835}', ALetter),
+    (0x01080A, 0x010835, ALetter),
     // Lo   [2] CYPRIOT SYLLABLE XA..CYPRIOT SYLLABLE XE
-    ('\u{10837}', '\u{10838}', ALetter),
+    (0x010837, 0x010838, ALetter),
     // Lo       CYPRIOT SYLLABLE ZA
-    ('\u{1083c}', '\u{1083c}', ALetter),
+    (0x01083C, 0x01083C, ALetter),
     // Lo  [23] CYPRIOT SYLLABLE ZO..IMPERIAL ARAMAIC LETTER TAW
-    ('\u{1083f}', '\u{10855}', ALetter),
+    (0x01083F, 0x010855, ALetter),
     // Lo  [23] PALMYRENE LETTER ALEPH..PALMYRENE LETTER TAW
-    ('\u{10860}', '\u{10876}', ALetter),
+    (0x010860, 0x010876, ALetter),
     // Lo  [31] NABATAEAN LETTER FINAL ALEPH..NABATAEAN LETTER TAW
-    ('\u{10880}', '\u{1089e}', ALetter),
+    (0x010880, 0x01089E, ALetter),
     // Lo  [19] HATRAN LETTER ALEPH..HATRAN LETTER QOPH
-    ('\u{108e0}', '\u{108f2}', ALetter),
+    (0x0108E0, 0x0108F2, ALetter),
     // Lo   [2] HATRAN LETTER SHIN..HATRAN LETTER TAW
-    ('\u{108f4}', '\u{108f5}', ALetter),
+    (0x0108F4, 0x0108F5, ALetter),
     // Lo  [22] PHOENICIAN LETTER ALF..PHOENICIAN LETTER TAU
-    ('\u{10900}', '\u{10915}', ALetter),
+    (0x010900, 0x010915, ALetter),
     // Lo  [26] LYDIAN LETTER A..LYDIAN LETTER C
-    ('\u{10920}', '\u{10939}', ALetter),
+    (0x010920, 0x010939, ALetter),
     // Lo  [56] MEROITIC HIEROGLYPHIC LETTER A..MEROITIC CURSIVE LETTER DA
-    ('\u{10980}', '\u{109b7}', ALetter),
+    (0x010980, 0x0109B7, ALetter),
     // Lo   [2] MEROITIC CURSIVE LOGOGRAM RMT..MEROITIC CURSIVE LOGOGRAM IMN
-    ('\u{109be}', '\u{109bf}', ALetter),
+    (0x0109BE, 0x0109BF, ALetter),
     // Lo       KHAROSHTHI LETTER A
-    ('\u{10a00}', '\u{10a00}', ALetter),
+    (0x010A00, 0x010A00, ALetter),
     // Mn   [3] KHAROSHTHI VOWEL SIGN I..KHAROSHTHI VOWEL SIGN VOCALIC R
-    ('\u{10a01}', '\u{10a03}', Extend),
+    (0x010A01, 0x010A03, Extend),
     // Mn   [2] KHAROSHTHI VOWEL SIGN E..KHAROSHTHI VOWEL SIGN O
-    ('\u{10a05}', '\u{10a06}', Extend),
+    (0x010A05, 0x010A06, Extend),
     // Mn   [4] KHAROSHTHI VOWEL LENGTH MARK..KHAROSHTHI SIGN VISARGA
-    ('\u{10a0c}', '\u{10a0f}', Extend),
+    (0x010A0C, 0x010A0F, Extend),
     // Lo   [4] KHAROSHTHI LETTER KA..KHAROSHTHI LETTER GHA
-    ('\u{10a10}', '\u{10a13}', ALetter),
+    (0x010A10, 0x010A13, ALetter),
     // Lo   [3] KHAROSHTHI LETTER CA..KHAROSHTHI LETTER JA
-    ('\u{10a15}', '\u{10a17}', ALetter),
+    (0x010A15, 0x010A17, ALetter),
     // Lo  [29] KHAROSHTHI LETTER NYA..KHAROSHTHI LETTER VHA
-    ('\u{10a19}', '\u{10a35}', ALetter),
+    (0x010A19, 0x010A35, ALetter),
     // Mn   [3] KHAROSHTHI SIGN BAR ABOVE..KHAROSHTHI SIGN DOT BELOW
-    ('\u{10a38}', '\u{10a3a}', Extend),
+    (0x010A38, 0x010A3A, Extend),
     // Mn       KHAROSHTHI VIRAMA
-    ('\u{10a3f}', '\u{10a3f}', Extend),
+    (0x010A3F, 0x010A3F, Extend),
     // Lo  [29] OLD SOUTH ARABIAN LETTER HE..OLD SOUTH ARABIAN LETTER THETH
-    ('\u{10a60}', '\u{10a7c}', ALetter),
+    (0x010A60, 0x010A7C, ALetter),
     // Lo  [29] OLD NORTH ARABIAN LETTER HEH..OLD NORTH ARABIAN LETTER ZAH
-    ('\u{10a80}', '\u{10a9c}', ALetter),
+    (0x010A80, 0x010A9C, ALetter),
     // Lo   [8] MANICHAEAN LETTER ALEPH..MANICHAEAN LETTER WAW
-    ('\u{10ac0}', '\u{10ac7}', ALetter),
+    (0x010AC0, 0x010AC7, ALetter),
     // Lo  [28] MANICHAEAN LETTER ZAYIN..MANICHAEAN LETTER TAW
-    ('\u{10ac9}', '\u{10ae4}', ALetter),
+    (0x010AC9, 0x010AE4, ALetter),
     // Mn   [2] MANICHAEAN ABBREVIATION MARK ABOVE..MANICHAEAN ABBREVIATION MARK BELOW
-    ('\u{10ae5}', '\u{10ae6}', Extend),
+    (0x010AE5, 0x010AE6, Extend),
     // Lo  [54] AVESTAN LETTER A..AVESTAN LETTER HE
-    ('\u{10b00}', '\u{10b35}', ALetter),
+    (0x010B00, 0x010B35, ALetter),
     // Lo  [22] INSCRIPTIONAL PARTHIAN LETTER ALEPH..INSCRIPTIONAL PARTHIAN LETTER TAW
-    ('\u{10b40}', '\u{10b55}', ALetter),
+    (0x010B40, 0x010B55, ALetter),
     // Lo  [19] INSCRIPTIONAL PAHLAVI LETTER ALEPH..INSCRIPTIONAL PAHLAVI LETTER TAW
-    ('\u{10b60}', '\u{10b72}', ALetter),
+    (0x010B60, 0x010B72, ALetter),
     // Lo  [18] PSALTER PAHLAVI LETTER ALEPH..PSALTER PAHLAVI LETTER TAW
-    ('\u{10b80}', '\u{10b91}', ALetter),
+    (0x010B80, 0x010B91, ALetter),
     // Lo  [73] OLD TURKIC LETTER ORKHON A..OLD TURKIC LETTER ORKHON BASH
-    ('\u{10c00}', '\u{10c48}', ALetter),
+    (0x010C00, 0x010C48, ALetter),
     // L&  [51] OLD HUNGARIAN CAPITAL LETTER A..OLD HUNGARIAN CAPITAL LETTER US
-    ('\u{10c80}', '\u{10cb2}', ALetter),
+    (0x010C80, 0x010CB2, ALetter),
     // L&  [51] OLD HUNGARIAN SMALL LETTER A..OLD HUNGARIAN SMALL LETTER US
-    ('\u{10cc0}', '\u{10cf2}', ALetter),
+    (0x010CC0, 0x010CF2, ALetter),
     // Lo  [36] HANIFI ROHINGYA LETTER A..HANIFI ROHINGYA MARK NA KHONNA
-    ('\u{10d00}', '\u{10d23}', ALetter),
+    (0x010D00, 0x010D23, ALetter),
     // Mn   [4] HANIFI ROHINGYA SIGN HARBAHAY..HANIFI ROHINGYA SIGN TASSI
-    ('\u{10d24}', '\u{10d27}', Extend),
+    (0x010D24, 0x010D27, Extend),
     // Nd  [10] HANIFI ROHINGYA DIGIT ZERO..HANIFI ROHINGYA DIGIT NINE
-    ('\u{10d30}', '\u{10d39}', Numeric),
+    (0x010D30, 0x010D39, Numeric),
     // Lo  [29] OLD SOGDIAN LETTER ALEPH..OLD SOGDIAN LETTER FINAL TAW WITH VERTICAL TAIL
-    ('\u{10f00}', '\u{10f1c}', ALetter),
+    (0x010F00, 0x010F1C, ALetter),
     // Lo       OLD SOGDIAN LIGATURE AYIN-DALETH
-    ('\u{10f27}', '\u{10f27}', ALetter),
+    (0x010F27, 0x010F27, ALetter),
     // Lo  [22] SOGDIAN LETTER ALEPH..SOGDIAN INDEPENDENT SHIN
-    ('\u{10f30}', '\u{10f45}', ALetter),
+    (0x010F30, 0x010F45, ALetter),
     // Mn  [11] SOGDIAN COMBINING DOT BELOW..SOGDIAN COMBINING STROKE BELOW
-    ('\u{10f46}', '\u{10f50}', Extend),
+    (0x010F46, 0x010F50, Extend),
     // Lo  [23] ELYMAIC LETTER ALEPH..ELYMAIC LIGATURE ZAYIN-YODH
-    ('\u{10fe0}', '\u{10ff6}', ALetter),
+    (0x010FE0, 0x010FF6, ALetter),
     // Mc       BRAHMI SIGN CANDRABINDU
-    ('\u{11000}', '\u{11000}', Extend),
+    (0x011000, 0x011000, Extend),
     // Mn       BRAHMI SIGN ANUSVARA
-    ('\u{11001}', '\u{11001}', Extend),
+    (0x011001, 0x011001, Extend),
     // Mc       BRAHMI SIGN VISARGA
-    ('\u{11002}', '\u{11002}', Extend),
+    (0x011002, 0x011002, Extend),
     // Lo  [53] BRAHMI SIGN JIHVAMULIYA..BRAHMI LETTER OLD TAMIL NNNA
-    ('\u{11003}', '\u{11037}', ALetter),
+    (0x011003, 0x011037, ALetter),
     // Mn  [15] BRAHMI VOWEL SIGN AA..BRAHMI VIRAMA
-    ('\u{11038}', '\u{11046}', Extend),
+    (0x011038, 0x011046, Extend),
     // Nd  [10] BRAHMI DIGIT ZERO..BRAHMI DIGIT NINE
-    ('\u{11066}', '\u{1106f}', Numeric),
+    (0x011066, 0x01106F, Numeric),
     // Mn   [3] BRAHMI NUMBER JOINER..KAITHI SIGN ANUSVARA
-    ('\u{1107f}', '\u{11081}', Extend),
+    (0x01107F, 0x011081, Extend),
     // Mc       KAITHI SIGN VISARGA
-    ('\u{11082}', '\u{11082}', Extend),
+    (0x011082, 0x011082, Extend),
     // Lo  [45] KAITHI LETTER A..KAITHI LETTER HA
-    ('\u{11083}', '\u{110af}', ALetter),
+    (0x011083, 0x0110AF, ALetter),
     // Mc   [3] KAITHI VOWEL SIGN AA..KAITHI VOWEL SIGN II
-    ('\u{110b0}', '\u{110b2}', Extend),
+    (0x0110B0, 0x0110B2, Extend),
     // Mn   [4] KAITHI VOWEL SIGN U..KAITHI VOWEL SIGN AI
-    ('\u{110b3}', '\u{110b6}', Extend),
+    (0x0110B3, 0x0110B6, Extend),
     // Mc   [2] KAITHI VOWEL SIGN O..KAITHI VOWEL SIGN AU
-    ('\u{110b7}', '\u{110b8}', Extend),
+    (0x0110B7, 0x0110B8, Extend),
     // Mn   [2] KAITHI SIGN VIRAMA..KAITHI SIGN NUKTA
-    ('\u{110b9}', '\u{110ba}', Extend),
+    (0x0110B9, 0x0110BA, Extend),
     // Cf       KAITHI NUMBER SIGN
-    ('\u{110bd}', '\u{110bd}', Format),
+    (0x0110BD, 0x0110BD, Format),
     // Cf       KAITHI NUMBER SIGN ABOVE
-    ('\u{110cd}', '\u{110cd}', Format),
+    (0x0110CD, 0x0110CD, Format),
     // Lo  [25] SORA SOMPENG LETTER SAH..SORA SOMPENG LETTER MAE
-    ('\u{110d0}', '\u{110e8}', ALetter),
+    (0x0110D0, 0x0110E8, ALetter),
     // Nd  [10] SORA SOMPENG DIGIT ZERO..SORA SOMPENG DIGIT NINE
-    ('\u{110f0}', '\u{110f9}', Numeric),
+    (0x0110F0, 0x0110F9, Numeric),
     // Mn   [3] CHAKMA SIGN CANDRABINDU..CHAKMA SIGN VISARGA
-    ('\u{11100}', '\u{11102}', Extend),
+    (0x011100, 0x011102, Extend),
     // Lo  [36] CHAKMA LETTER AA..CHAKMA LETTER HAA
-    ('\u{11103}', '\u{11126}', ALetter),
+    (0x011103, 0x011126, ALetter),
     // Mn   [5] CHAKMA VOWEL SIGN A..CHAKMA VOWEL SIGN UU
-    ('\u{11127}', '\u{1112b}', Extend),
+    (0x011127, 0x01112B, Extend),
     // Mc       CHAKMA VOWEL SIGN E
-    ('\u{1112c}', '\u{1112c}', Extend),
+    (0x01112C, 0x01112C, Extend),
     // Mn   [8] CHAKMA VOWEL SIGN AI..CHAKMA MAAYYAA
-    ('\u{1112d}', '\u{11134}', Extend),
+    (0x01112D, 0x011134, Extend),
     // Nd  [10] CHAKMA DIGIT ZERO..CHAKMA DIGIT NINE
-    ('\u{11136}', '\u{1113f}', Numeric),
+    (0x011136, 0x01113F, Numeric),
     // Lo       CHAKMA LETTER LHAA
-    ('\u{11144}', '\u{11144}', ALetter),
+    (0x011144, 0x011144, ALetter),
     // Mc   [2] CHAKMA VOWEL SIGN AA..CHAKMA VOWEL SIGN EI
-    ('\u{11145}', '\u{11146}', Extend),
+    (0x011145, 0x011146, Extend),
     // Lo  [35] MAHAJANI LETTER A..MAHAJANI LETTER RRA
-    ('\u{11150}', '\u{11172}', ALetter),
+    (0x011150, 0x011172, ALetter),
     // Mn       MAHAJANI SIGN NUKTA
-    ('\u{11173}', '\u{11173}', Extend),
+    (0x011173, 0x011173, Extend),
     // Lo       MAHAJANI LIGATURE SHRI
-    ('\u{11176}', '\u{11176}', ALetter),
+    (0x011176, 0x011176, ALetter),
     // Mn   [2] SHARADA SIGN CANDRABINDU..SHARADA SIGN ANUSVARA
-    ('\u{11180}', '\u{11181}', Extend),
+    (0x011180, 0x011181, Extend),
     // Mc       SHARADA SIGN VISARGA
-    ('\u{11182}', '\u{11182}', Extend),
+    (0x011182, 0x011182, Extend),
     // Lo  [48] SHARADA LETTER A..SHARADA LETTER HA
-    ('\u{11183}', '\u{111b2}', ALetter),
+    (0x011183, 0x0111B2, ALetter),
     // Mc   [3] SHARADA VOWEL SIGN AA..SHARADA VOWEL SIGN II
-    ('\u{111b3}', '\u{111b5}', Extend),
+    (0x0111B3, 0x0111B5, Extend),
     // Mn   [9] SHARADA VOWEL SIGN U..SHARADA VOWEL SIGN O
-    ('\u{111b6}', '\u{111be}', Extend),
+    (0x0111B6, 0x0111BE, Extend),
     // Mc   [2] SHARADA VOWEL SIGN AU..SHARADA SIGN VIRAMA
-    ('\u{111bf}', '\u{111c0}', Extend),
+    (0x0111BF, 0x0111C0, Extend),
     // Lo   [4] SHARADA SIGN AVAGRAHA..SHARADA OM
-    ('\u{111c1}', '\u{111c4}', ALetter),
+    (0x0111C1, 0x0111C4, ALetter),
     // Mn   [4] SHARADA SANDHI MARK..SHARADA EXTRA SHORT VOWEL MARK
-    ('\u{111c9}', '\u{111cc}', Extend),
+    (0x0111C9, 0x0111CC, Extend),
     // Nd  [10] SHARADA DIGIT ZERO..SHARADA DIGIT NINE
-    ('\u{111d0}', '\u{111d9}', Numeric),
+    (0x0111D0, 0x0111D9, Numeric),
     // Lo       SHARADA EKAM
-    ('\u{111da}', '\u{111da}', ALetter),
+    (0x0111DA, 0x0111DA, ALetter),
     // Lo       SHARADA HEADSTROKE
-    ('\u{111dc}', '\u{111dc}', ALetter),
+    (0x0111DC, 0x0111DC, ALetter),
     // Lo  [18] KHOJKI LETTER A..KHOJKI LETTER JJA
-    ('\u{11200}', '\u{11211}', ALetter),
+    (0x011200, 0x011211, ALetter),
     // Lo  [25] KHOJKI LETTER NYA..KHOJKI LETTER LLA
-    ('\u{11213}', '\u{1122b}', ALetter),
+    (0x011213, 0x01122B, ALetter),
     // Mc   [3] KHOJKI VOWEL SIGN AA..KHOJKI VOWEL SIGN II
-    ('\u{1122c}', '\u{1122e}', Extend),
+    (0x01122C, 0x01122E, Extend),
     // Mn   [3] KHOJKI VOWEL SIGN U..KHOJKI VOWEL SIGN AI
-    ('\u{1122f}', '\u{11231}', Extend),
+    (0x01122F, 0x011231, Extend),
     // Mc   [2] KHOJKI VOWEL SIGN O..KHOJKI VOWEL SIGN AU
-    ('\u{11232}', '\u{11233}', Extend),
+    (0x011232, 0x011233, Extend),
     // Mn       KHOJKI SIGN ANUSVARA
-    ('\u{11234}', '\u{11234}', Extend),
+    (0x011234, 0x011234, Extend),
     // Mc       KHOJKI SIGN VIRAMA
-    ('\u{11235}', '\u{11235}', Extend),
+    (0x011235, 0x011235, Extend),
     // Mn   [2] KHOJKI SIGN NUKTA..KHOJKI SIGN SHADDA
-    ('\u{11236}', '\u{11237}', Extend),
+    (0x011236, 0x011237, Extend),
     // Mn       KHOJKI SIGN SUKUN
-    ('\u{1123e}', '\u{1123e}', Extend),
+    (0x01123E, 0x01123E, Extend),
     // Lo   [7] MULTANI LETTER A..MULTANI LETTER GA
-    ('\u{11280}', '\u{11286}', ALetter),
+    (0x011280, 0x011286, ALetter),
     // Lo       MULTANI LETTER GHA
-    ('\u{11288}', '\u{11288}', ALetter),
+    (0x011288, 0x011288, ALetter),
     // Lo   [4] MULTANI LETTER CA..MULTANI LETTER JJA
-    ('\u{1128a}', '\u{1128d}', ALetter),
+    (0x01128A, 0x01128D, ALetter),
     // Lo  [15] MULTANI LETTER NYA..MULTANI LETTER BA
-    ('\u{1128f}', '\u{1129d}', ALetter),
+    (0x01128F, 0x01129D, ALetter),
     // Lo  [10] MULTANI LETTER BHA..MULTANI LETTER RHA
-    ('\u{1129f}', '\u{112a8}', ALetter),
+    (0x01129F, 0x0112A8, ALetter),
     // Lo  [47] KHUDAWADI LETTER A..KHUDAWADI LETTER HA
-    ('\u{112b0}', '\u{112de}', ALetter),
+    (0x0112B0, 0x0112DE, ALetter),
     // Mn       KHUDAWADI SIGN ANUSVARA
-    ('\u{112df}', '\u{112df}', Extend),
+    (0x0112DF, 0x0112DF, Extend),
     // Mc   [3] KHUDAWADI VOWEL SIGN AA..KHUDAWADI VOWEL SIGN II
-    ('\u{112e0}', '\u{112e2}', Extend),
+    (0x0112E0, 0x0112E2, Extend),
     // Mn   [8] KHUDAWADI VOWEL SIGN U..KHUDAWADI SIGN VIRAMA
-    ('\u{112e3}', '\u{112ea}', Extend),
+    (0x0112E3, 0x0112EA, Extend),
     // Nd  [10] KHUDAWADI DIGIT ZERO..KHUDAWADI DIGIT NINE
-    ('\u{112f0}', '\u{112f9}', Numeric),
+    (0x0112F0, 0x0112F9, Numeric),
     // Mn   [2] GRANTHA SIGN COMBINING ANUSVARA ABOVE..GRANTHA SIGN CANDRABINDU
-    ('\u{11300}', '\u{11301}', Extend),
+    (0x011300, 0x011301, Extend),
     // Mc   [2] GRANTHA SIGN ANUSVARA..GRANTHA SIGN VISARGA
-    ('\u{11302}', '\u{11303}', Extend),
+    (0x011302, 0x011303, Extend),
     // Lo   [8] GRANTHA LETTER A..GRANTHA LETTER VOCALIC L
-    ('\u{11305}', '\u{1130c}', ALetter),
+    (0x011305, 0x01130C, ALetter),
     // Lo   [2] GRANTHA LETTER EE..GRANTHA LETTER AI
-    ('\u{1130f}', '\u{11310}', ALetter),
+    (0x01130F, 0x011310, ALetter),
     // Lo  [22] GRANTHA LETTER OO..GRANTHA LETTER NA
-    ('\u{11313}', '\u{11328}', ALetter),
+    (0x011313, 0x011328, ALetter),
     // Lo   [7] GRANTHA LETTER PA..GRANTHA LETTER RA
-    ('\u{1132a}', '\u{11330}', ALetter),
+    (0x01132A, 0x011330, ALetter),
     // Lo   [2] GRANTHA LETTER LA..GRANTHA LETTER LLA
-    ('\u{11332}', '\u{11333}', ALetter),
+    (0x011332, 0x011333, ALetter),
     // Lo   [5] GRANTHA LETTER VA..GRANTHA LETTER HA
-    ('\u{11335}', '\u{11339}', ALetter),
+    (0x011335, 0x011339, ALetter),
     // Mn   [2] COMBINING BINDU BELOW..GRANTHA SIGN NUKTA
-    ('\u{1133b}', '\u{1133c}', Extend),
+    (0x01133B, 0x01133C, Extend),
     // Lo       GRANTHA SIGN AVAGRAHA
-    ('\u{1133d}', '\u{1133d}', ALetter),
+    (0x01133D, 0x01133D, ALetter),
     // Mc   [2] GRANTHA VOWEL SIGN AA..GRANTHA VOWEL SIGN I
-    ('\u{1133e}', '\u{1133f}', Extend),
+    (0x01133E, 0x01133F, Extend),
     // Mn       GRANTHA VOWEL SIGN II
-    ('\u{11340}', '\u{11340}', Extend),
+    (0x011340, 0x011340, Extend),
     // Mc   [4] GRANTHA VOWEL SIGN U..GRANTHA VOWEL SIGN VOCALIC RR
-    ('\u{11341}', '\u{11344}', Extend),
+    (0x011341, 0x011344, Extend),
     // Mc   [2] GRANTHA VOWEL SIGN EE..GRANTHA VOWEL SIGN AI
-    ('\u{11347}', '\u{11348}', Extend),
+    (0x011347, 0x011348, Extend),
     // Mc   [3] GRANTHA VOWEL SIGN OO..GRANTHA SIGN VIRAMA
-    ('\u{1134b}', '\u{1134d}', Extend),
+    (0x01134B, 0x01134D, Extend),
     // Lo       GRANTHA OM
-    ('\u{11350}', '\u{11350}', ALetter),
+    (0x011350, 0x011350, ALetter),
     // Mc       GRANTHA AU LENGTH MARK
-    ('\u{11357}', '\u{11357}', Extend),
+    (0x011357, 0x011357, Extend),
     // Lo   [5] GRANTHA SIGN PLUTA..GRANTHA LETTER VOCALIC LL
-    ('\u{1135d}', '\u{11361}', ALetter),
+    (0x01135D, 0x011361, ALetter),
     // Mc   [2] GRANTHA VOWEL SIGN VOCALIC L..GRANTHA VOWEL SIGN VOCALIC LL
-    ('\u{11362}', '\u{11363}', Extend),
+    (0x011362, 0x011363, Extend),
     // Mn   [7] COMBINING GRANTHA DIGIT ZERO..COMBINING GRANTHA DIGIT SIX
-    ('\u{11366}', '\u{1136c}', Extend),
+    (0x011366, 0x01136C, Extend),
     // Mn   [5] COMBINING GRANTHA LETTER A..COMBINING GRANTHA LETTER PA
-    ('\u{11370}', '\u{11374}', Extend),
+    (0x011370, 0x011374, Extend),
     // Lo  [53] NEWA LETTER A..NEWA LETTER HA
-    ('\u{11400}', '\u{11434}', ALetter),
+    (0x011400, 0x011434, ALetter),
     // Mc   [3] NEWA VOWEL SIGN AA..NEWA VOWEL SIGN II
-    ('\u{11435}', '\u{11437}', Extend),
+    (0x011435, 0x011437, Extend),
     // Mn   [8] NEWA VOWEL SIGN U..NEWA VOWEL SIGN AI
-    ('\u{11438}', '\u{1143f}', Extend),
+    (0x011438, 0x01143F, Extend),
     // Mc   [2] NEWA VOWEL SIGN O..NEWA VOWEL SIGN AU
-    ('\u{11440}', '\u{11441}', Extend),
+    (0x011440, 0x011441, Extend),
     // Mn   [3] NEWA SIGN VIRAMA..NEWA SIGN ANUSVARA
-    ('\u{11442}', '\u{11444}', Extend),
+    (0x011442, 0x011444, Extend),
     // Mc       NEWA SIGN VISARGA
-    ('\u{11445}', '\u{11445}', Extend),
+    (0x011445, 0x011445, Extend),
     // Mn       NEWA SIGN NUKTA
-    ('\u{11446}', '\u{11446}', Extend),
+    (0x011446, 0x011446, Extend),
     // Lo   [4] NEWA SIGN AVAGRAHA..NEWA SIDDHI
-    ('\u{11447}', '\u{1144a}', ALetter),
+    (0x011447, 0x01144A, ALetter),
     // Nd  [10] NEWA DIGIT ZERO..NEWA DIGIT NINE
-    ('\u{11450}', '\u{11459}', Numeric),
+    (0x011450, 0x011459, Numeric),
     // Mn       NEWA SANDHI MARK
-    ('\u{1145e}', '\u{1145e}', Extend),
+    (0x01145E, 0x01145E, Extend),
     // Lo       NEWA LETTER VEDIC ANUSVARA
-    ('\u{1145f}', '\u{1145f}', ALetter),
+    (0x01145F, 0x01145F, ALetter),
     // Lo  [48] TIRHUTA ANJI..TIRHUTA LETTER HA
-    ('\u{11480}', '\u{114af}', ALetter),
+    (0x011480, 0x0114AF, ALetter),
     // Mc   [3] TIRHUTA VOWEL SIGN AA..TIRHUTA VOWEL SIGN II
-    ('\u{114b0}', '\u{114b2}', Extend),
+    (0x0114B0, 0x0114B2, Extend),
     // Mn   [6] TIRHUTA VOWEL SIGN U..TIRHUTA VOWEL SIGN VOCALIC LL
-    ('\u{114b3}', '\u{114b8}', Extend),
+    (0x0114B3, 0x0114B8, Extend),
     // Mc       TIRHUTA VOWEL SIGN E
-    ('\u{114b9}', '\u{114b9}', Extend),
+    (0x0114B9, 0x0114B9, Extend),
     // Mn       TIRHUTA VOWEL SIGN SHORT E
-    ('\u{114ba}', '\u{114ba}', Extend),
+    (0x0114BA, 0x0114BA, Extend),
     // Mc   [4] TIRHUTA VOWEL SIGN AI..TIRHUTA VOWEL SIGN AU
-    ('\u{114bb}', '\u{114be}', Extend),
+    (0x0114BB, 0x0114BE, Extend),
     // Mn   [2] TIRHUTA SIGN CANDRABINDU..TIRHUTA SIGN ANUSVARA
-    ('\u{114bf}', '\u{114c0}', Extend),
+    (0x0114BF, 0x0114C0, Extend),
     // Mc       TIRHUTA SIGN VISARGA
-    ('\u{114c1}', '\u{114c1}', Extend),
+    (0x0114C1, 0x0114C1, Extend),
     // Mn   [2] TIRHUTA SIGN VIRAMA..TIRHUTA SIGN NUKTA
-    ('\u{114c2}', '\u{114c3}', Extend),
+    (0x0114C2, 0x0114C3, Extend),
     // Lo   [2] TIRHUTA SIGN AVAGRAHA..TIRHUTA GVANG
-    ('\u{114c4}', '\u{114c5}', ALetter),
+    (0x0114C4, 0x0114C5, ALetter),
     // Lo       TIRHUTA OM
-    ('\u{114c7}', '\u{114c7}', ALetter),
+    (0x0114C7, 0x0114C7, ALetter),
     // Nd  [10] TIRHUTA DIGIT ZERO..TIRHUTA DIGIT NINE
-    ('\u{114d0}', '\u{114d9}', Numeric),
+    (0x0114D0, 0x0114D9, Numeric),
     // Lo  [47] SIDDHAM LETTER A..SIDDHAM LETTER HA
-    ('\u{11580}', '\u{115ae}', ALetter),
+    (0x011580, 0x0115AE, ALetter),
     // Mc   [3] SIDDHAM VOWEL SIGN AA..SIDDHAM VOWEL SIGN II
-    ('\u{115af}', '\u{115b1}', Extend),
+    (0x0115AF, 0x0115B1, Extend),
     // Mn   [4] SIDDHAM VOWEL SIGN U..SIDDHAM VOWEL SIGN VOCALIC RR
-    ('\u{115b2}', '\u{115b5}', Extend),
+    (0x0115B2, 0x0115B5, Extend),
     // Mc   [4] SIDDHAM VOWEL SIGN E..SIDDHAM VOWEL SIGN AU
-    ('\u{115b8}', '\u{115bb}', Extend),
+    (0x0115B8, 0x0115BB, Extend),
     // Mn   [2] SIDDHAM SIGN CANDRABINDU..SIDDHAM SIGN ANUSVARA
-    ('\u{115bc}', '\u{115bd}', Extend),
+    (0x0115BC, 0x0115BD, Extend),
     // Mc       SIDDHAM SIGN VISARGA
-    ('\u{115be}', '\u{115be}', Extend),
+    (0x0115BE, 0x0115BE, Extend),
     // Mn   [2] SIDDHAM SIGN VIRAMA..SIDDHAM SIGN NUKTA
-    ('\u{115bf}', '\u{115c0}', Extend),
+    (0x0115BF, 0x0115C0, Extend),
     // Lo   [4] SIDDHAM LETTER THREE-CIRCLE ALTERNATE I..SIDDHAM LETTER ALTERNATE U
-    ('\u{115d8}', '\u{115db}', ALetter),
+    (0x0115D8, 0x0115DB, ALetter),
     // Mn   [2] SIDDHAM VOWEL SIGN ALTERNATE U..SIDDHAM VOWEL SIGN ALTERNATE UU
-    ('\u{115dc}', '\u{115dd}', Extend),
+    (0x0115DC, 0x0115DD, Extend),
     // Lo  [48] MODI LETTER A..MODI LETTER LLA
-    ('\u{11600}', '\u{1162f}', ALetter),
+    (0x011600, 0x01162F, ALetter),
     // Mc   [3] MODI VOWEL SIGN AA..MODI VOWEL SIGN II
-    ('\u{11630}', '\u{11632}', Extend),
+    (0x011630, 0x011632, Extend),
     // Mn   [8] MODI VOWEL SIGN U..MODI VOWEL SIGN AI
-    ('\u{11633}', '\u{1163a}', Extend),
+    (0x011633, 0x01163A, Extend),
     // Mc   [2] MODI VOWEL SIGN O..MODI VOWEL SIGN AU
-    ('\u{1163b}', '\u{1163c}', Extend),
+    (0x01163B, 0x01163C, Extend),
     // Mn       MODI SIGN ANUSVARA
-    ('\u{1163d}', '\u{1163d}', Extend),
+    (0x01163D, 0x01163D, Extend),
     // Mc       MODI SIGN VISARGA
-    ('\u{1163e}', '\u{1163e}', Extend),
+    (0x01163E, 0x01163E, Extend),
     // Mn   [2] MODI SIGN VIRAMA..MODI SIGN ARDHACANDRA
-    ('\u{1163f}', '\u{11640}', Extend),
+    (0x01163F, 0x011640, Extend),
     // Lo       MODI SIGN HUVA
-    ('\u{11644}', '\u{11644}', ALetter),
+    (0x011644, 0x011644, ALetter),
     // Nd  [10] MODI DIGIT ZERO..MODI DIGIT NINE
-    ('\u{11650}', '\u{11659}', Numeric),
+    (0x011650, 0x011659, Numeric),
     // Lo  [43] TAKRI LETTER A..TAKRI LETTER RRA
-    ('\u{11680}', '\u{116aa}', ALetter),
+    (0x011680, 0x0116AA, ALetter),
     // Mn       TAKRI SIGN ANUSVARA
-    ('\u{116ab}', '\u{116ab}', Extend),
+    (0x0116AB, 0x0116AB, Extend),
     // Mc       TAKRI SIGN VISARGA
-    ('\u{116ac}', '\u{116ac}', Extend),
+    (0x0116AC, 0x0116AC, Extend),
     // Mn       TAKRI VOWEL SIGN AA
-    ('\u{116ad}', '\u{116ad}', Extend),
+    (0x0116AD, 0x0116AD, Extend),
     // Mc   [2] TAKRI VOWEL SIGN I..TAKRI VOWEL SIGN II
-    ('\u{116ae}', '\u{116af}', Extend),
+    (0x0116AE, 0x0116AF, Extend),
     // Mn   [6] TAKRI VOWEL SIGN U..TAKRI VOWEL SIGN AU
-    ('\u{116b0}', '\u{116b5}', Extend),
+    (0x0116B0, 0x0116B5, Extend),
     // Mc       TAKRI SIGN VIRAMA
-    ('\u{116b6}', '\u{116b6}', Extend),
+    (0x0116B6, 0x0116B6, Extend),
     // Mn       TAKRI SIGN NUKTA
-    ('\u{116b7}', '\u{116b7}', Extend),
+    (0x0116B7, 0x0116B7, Extend),
     // Lo       TAKRI LETTER ARCHAIC KHA
-    ('\u{116b8}', '\u{116b8}', ALetter),
+    (0x0116B8, 0x0116B8, ALetter),
     // Nd  [10] TAKRI DIGIT ZERO..TAKRI DIGIT NINE
-    ('\u{116c0}', '\u{116c9}', Numeric),
+    (0x0116C0, 0x0116C9, Numeric),
     // Mn   [3] AHOM CONSONANT SIGN MEDIAL LA..AHOM CONSONANT SIGN MEDIAL LIGATING RA
-    ('\u{1171d}', '\u{1171f}', Extend),
+    (0x01171D, 0x01171F, Extend),
     // Mc   [2] AHOM VOWEL SIGN A..AHOM VOWEL SIGN AA
-    ('\u{11720}', '\u{11721}', Extend),
+    (0x011720, 0x011721, Extend),
     // Mn   [4] AHOM VOWEL SIGN I..AHOM VOWEL SIGN UU
-    ('\u{11722}', '\u{11725}', Extend),
+    (0x011722, 0x011725, Extend),
     // Mc       AHOM VOWEL SIGN E
-    ('\u{11726}', '\u{11726}', Extend),
+    (0x011726, 0x011726, Extend),
     // Mn   [5] AHOM VOWEL SIGN AW..AHOM SIGN KILLER
-    ('\u{11727}', '\u{1172b}', Extend),
+    (0x011727, 0x01172B, Extend),
     // Nd  [10] AHOM DIGIT ZERO..AHOM DIGIT NINE
-    ('\u{11730}', '\u{11739}', Numeric),
+    (0x011730, 0x011739, Numeric),
     // Lo  [44] DOGRA LETTER A..DOGRA LETTER RRA
-    ('\u{11800}', '\u{1182b}', ALetter),
+    (0x011800, 0x01182B, ALetter),
     // Mc   [3] DOGRA VOWEL SIGN AA..DOGRA VOWEL SIGN II
-    ('\u{1182c}', '\u{1182e}', Extend),
+    (0x01182C, 0x01182E, Extend),
     // Mn   [9] DOGRA VOWEL SIGN U..DOGRA SIGN ANUSVARA
-    ('\u{1182f}', '\u{11837}', Extend),
+    (0x01182F, 0x011837, Extend),
     // Mc       DOGRA SIGN VISARGA
-    ('\u{11838}', '\u{11838}', Extend),
+    (0x011838, 0x011838, Extend),
     // Mn   [2] DOGRA SIGN VIRAMA..DOGRA SIGN NUKTA
-    ('\u{11839}', '\u{1183a}', Extend),
+    (0x011839, 0x01183A, Extend),
     // L&  [64] WARANG CITI CAPITAL LETTER NGAA..WARANG CITI SMALL LETTER VIYO
-    ('\u{118a0}', '\u{118df}', ALetter),
+    (0x0118A0, 0x0118DF, ALetter),
     // Nd  [10] WARANG CITI DIGIT ZERO..WARANG CITI DIGIT NINE
-    ('\u{118e0}', '\u{118e9}', Numeric),
+    (0x0118E0, 0x0118E9, Numeric),
     // Lo       WARANG CITI OM
-    ('\u{118ff}', '\u{118ff}', ALetter),
+    (0x0118FF, 0x0118FF, ALetter),
     // Lo   [8] NANDINAGARI LETTER A..NANDINAGARI LETTER VOCALIC RR
-    ('\u{119a0}', '\u{119a7}', ALetter),
+    (0x0119A0, 0x0119A7, ALetter),
     // Lo  [39] NANDINAGARI LETTER E..NANDINAGARI LETTER RRA
-    ('\u{119aa}', '\u{119d0}', ALetter),
+    (0x0119AA, 0x0119D0, ALetter),
     // Mc   [3] NANDINAGARI VOWEL SIGN AA..NANDINAGARI VOWEL SIGN II
-    ('\u{119d1}', '\u{119d3}', Extend),
+    (0x0119D1, 0x0119D3, Extend),
     // Mn   [4] NANDINAGARI VOWEL SIGN U..NANDINAGARI VOWEL SIGN VOCALIC RR
-    ('\u{119d4}', '\u{119d7}', Extend),
+    (0x0119D4, 0x0119D7, Extend),
     // Mn   [2] NANDINAGARI VOWEL SIGN E..NANDINAGARI VOWEL SIGN AI
-    ('\u{119da}', '\u{119db}', Extend),
+    (0x0119DA, 0x0119DB, Extend),
     // Mc   [4] NANDINAGARI VOWEL SIGN O..NANDINAGARI SIGN VISARGA
-    ('\u{119dc}', '\u{119df}', Extend),
+    (0x0119DC, 0x0119DF, Extend),
     // Mn       NANDINAGARI SIGN VIRAMA
-    ('\u{119e0}', '\u{119e0}', Extend),
+    (0x0119E0, 0x0119E0, Extend),
     // Lo       NANDINAGARI SIGN AVAGRAHA
-    ('\u{119e1}', '\u{119e1}', ALetter),
+    (0x0119E1, 0x0119E1, ALetter),
     // Lo       NANDINAGARI HEADSTROKE
-    ('\u{119e3}', '\u{119e3}', ALetter),
+    (0x0119E3, 0x0119E3, ALetter),
     // Mc       NANDINAGARI VOWEL SIGN PRISHTHAMATRA E
-    ('\u{119e4}', '\u{119e4}', Extend),
+    (0x0119E4, 0x0119E4, Extend),
     // Lo       ZANABAZAR SQUARE LETTER A
-    ('\u{11a00}', '\u{11a00}', ALetter),
+    (0x011A00, 0x011A00, ALetter),
     // Mn  [10] ZANABAZAR SQUARE VOWEL SIGN I..ZANABAZAR SQUARE VOWEL LENGTH MARK
-    ('\u{11a01}', '\u{11a0a}', Extend),
+    (0x011A01, 0x011A0A, Extend),
     // Lo  [40] ZANABAZAR SQUARE LETTER KA..ZANABAZAR SQUARE LETTER KSSA
-    ('\u{11a0b}', '\u{11a32}', ALetter),
+    (0x011A0B, 0x011A32, ALetter),
     // Mn   [6] ZANABAZAR SQUARE FINAL CONSONANT MARK..ZANABAZAR SQUARE SIGN ANUSVARA
-    ('\u{11a33}', '\u{11a38}', Extend),
+    (0x011A33, 0x011A38, Extend),
     // Mc       ZANABAZAR SQUARE SIGN VISARGA
-    ('\u{11a39}', '\u{11a39}', Extend),
+    (0x011A39, 0x011A39, Extend),
     // Lo       ZANABAZAR SQUARE CLUSTER-INITIAL LETTER RA
-    ('\u{11a3a}', '\u{11a3a}', ALetter),
+    (0x011A3A, 0x011A3A, ALetter),
     // Mn   [4] ZANABAZAR SQUARE CLUSTER-FINAL LETTER YA..ZANABAZAR SQUARE CLUSTER-FINAL LETTER VA
-    ('\u{11a3b}', '\u{11a3e}', Extend),
+    (0x011A3B, 0x011A3E, Extend),
     // Mn       ZANABAZAR SQUARE SUBJOINER
-    ('\u{11a47}', '\u{11a47}', Extend),
+    (0x011A47, 0x011A47, Extend),
     // Lo       SOYOMBO LETTER A
-    ('\u{11a50}', '\u{11a50}', ALetter),
+    (0x011A50, 0x011A50, ALetter),
     // Mn   [6] SOYOMBO VOWEL SIGN I..SOYOMBO VOWEL SIGN OE
-    ('\u{11a51}', '\u{11a56}', Extend),
+    (0x011A51, 0x011A56, Extend),
     // Mc   [2] SOYOMBO VOWEL SIGN AI..SOYOMBO VOWEL SIGN AU
-    ('\u{11a57}', '\u{11a58}', Extend),
+    (0x011A57, 0x011A58, Extend),
     // Mn   [3] SOYOMBO VOWEL SIGN VOCALIC R..SOYOMBO VOWEL LENGTH MARK
-    ('\u{11a59}', '\u{11a5b}', Extend),
+    (0x011A59, 0x011A5B, Extend),
     // Lo  [46] SOYOMBO LETTER KA..SOYOMBO CLUSTER-INITIAL LETTER SA
-    ('\u{11a5c}', '\u{11a89}', ALetter),
+    (0x011A5C, 0x011A89, ALetter),
     // Mn  [13] SOYOMBO FINAL CONSONANT SIGN G..SOYOMBO SIGN ANUSVARA
-    ('\u{11a8a}', '\u{11a96}', Extend),
+    (0x011A8A, 0x011A96, Extend),
     // Mc       SOYOMBO SIGN VISARGA
-    ('\u{11a97}', '\u{11a97}', Extend),
+    (0x011A97, 0x011A97, Extend),
     // Mn   [2] SOYOMBO GEMINATION MARK..SOYOMBO SUBJOINER
-    ('\u{11a98}', '\u{11a99}', Extend),
+    (0x011A98, 0x011A99, Extend),
     // Lo       SOYOMBO MARK PLUTA
-    ('\u{11a9d}', '\u{11a9d}', ALetter),
+    (0x011A9D, 0x011A9D, ALetter),
     // Lo  [57] PAU CIN HAU LETTER PA..PAU CIN HAU GLOTTAL STOP FINAL
-    ('\u{11ac0}', '\u{11af8}', ALetter),
+    (0x011AC0, 0x011AF8, ALetter),
     // Lo   [9] BHAIKSUKI LETTER A..BHAIKSUKI LETTER VOCALIC L
-    ('\u{11c00}', '\u{11c08}', ALetter),
+    (0x011C00, 0x011C08, ALetter),
     // Lo  [37] BHAIKSUKI LETTER E..BHAIKSUKI LETTER HA
-    ('\u{11c0a}', '\u{11c2e}', ALetter),
+    (0x011C0A, 0x011C2E, ALetter),
     // Mc       BHAIKSUKI VOWEL SIGN AA
-    ('\u{11c2f}', '\u{11c2f}', Extend),
+    (0x011C2F, 0x011C2F, Extend),
     // Mn   [7] BHAIKSUKI VOWEL SIGN I..BHAIKSUKI VOWEL SIGN VOCALIC L
-    ('\u{11c30}', '\u{11c36}', Extend),
+    (0x011C30, 0x011C36, Extend),
     // Mn   [6] BHAIKSUKI VOWEL SIGN E..BHAIKSUKI SIGN ANUSVARA
-    ('\u{11c38}', '\u{11c3d}', Extend),
+    (0x011C38, 0x011C3D, Extend),
     // Mc       BHAIKSUKI SIGN VISARGA
-    ('\u{11c3e}', '\u{11c3e}', Extend),
+    (0x011C3E, 0x011C3E, Extend),
     // Mn       BHAIKSUKI SIGN VIRAMA
-    ('\u{11c3f}', '\u{11c3f}', Extend),
+    (0x011C3F, 0x011C3F, Extend),
     // Lo       BHAIKSUKI SIGN AVAGRAHA
-    ('\u{11c40}', '\u{11c40}', ALetter),
+    (0x011C40, 0x011C40, ALetter),
     // Nd  [10] BHAIKSUKI DIGIT ZERO..BHAIKSUKI DIGIT NINE
-    ('\u{11c50}', '\u{11c59}', Numeric),
+    (0x011C50, 0x011C59, Numeric),
     // Lo  [30] MARCHEN LETTER KA..MARCHEN LETTER A
-    ('\u{11c72}', '\u{11c8f}', ALetter),
+    (0x011C72, 0x011C8F, ALetter),
     // Mn  [22] MARCHEN SUBJOINED LETTER KA..MARCHEN SUBJOINED LETTER ZA
-    ('\u{11c92}', '\u{11ca7}', Extend),
+    (0x011C92, 0x011CA7, Extend),
     // Mc       MARCHEN SUBJOINED LETTER YA
-    ('\u{11ca9}', '\u{11ca9}', Extend),
+    (0x011CA9, 0x011CA9, Extend),
     // Mn   [7] MARCHEN SUBJOINED LETTER RA..MARCHEN VOWEL SIGN AA
-    ('\u{11caa}', '\u{11cb0}', Extend),
+    (0x011CAA, 0x011CB0, Extend),
     // Mc       MARCHEN VOWEL SIGN I
-    ('\u{11cb1}', '\u{11cb1}', Extend),
+    (0x011CB1, 0x011CB1, Extend),
     // Mn   [2] MARCHEN VOWEL SIGN U..MARCHEN VOWEL SIGN E
-    ('\u{11cb2}', '\u{11cb3}', Extend),
+    (0x011CB2, 0x011CB3, Extend),
     // Mc       MARCHEN VOWEL SIGN O
-    ('\u{11cb4}', '\u{11cb4}', Extend),
+    (0x011CB4, 0x011CB4, Extend),
     // Mn   [2] MARCHEN SIGN ANUSVARA..MARCHEN SIGN CANDRABINDU
-    ('\u{11cb5}', '\u{11cb6}', Extend),
+    (0x011CB5, 0x011CB6, Extend),
     // Lo   [7] MASARAM GONDI LETTER A..MASARAM GONDI LETTER E
-    ('\u{11d00}', '\u{11d06}', ALetter),
+    (0x011D00, 0x011D06, ALetter),
     // Lo   [2] MASARAM GONDI LETTER AI..MASARAM GONDI LETTER O
-    ('\u{11d08}', '\u{11d09}', ALetter),
+    (0x011D08, 0x011D09, ALetter),
     // Lo  [38] MASARAM GONDI LETTER AU..MASARAM GONDI LETTER TRA
-    ('\u{11d0b}', '\u{11d30}', ALetter),
+    (0x011D0B, 0x011D30, ALetter),
     // Mn   [6] MASARAM GONDI VOWEL SIGN AA..MASARAM GONDI VOWEL SIGN VOCALIC R
-    ('\u{11d31}', '\u{11d36}', Extend),
+    (0x011D31, 0x011D36, Extend),
     // Mn       MASARAM GONDI VOWEL SIGN E
-    ('\u{11d3a}', '\u{11d3a}', Extend),
+    (0x011D3A, 0x011D3A, Extend),
     // Mn   [2] MASARAM GONDI VOWEL SIGN AI..MASARAM GONDI VOWEL SIGN O
-    ('\u{11d3c}', '\u{11d3d}', Extend),
+    (0x011D3C, 0x011D3D, Extend),
     // Mn   [7] MASARAM GONDI VOWEL SIGN AU..MASARAM GONDI VIRAMA
-    ('\u{11d3f}', '\u{11d45}', Extend),
+    (0x011D3F, 0x011D45, Extend),
     // Lo       MASARAM GONDI REPHA
-    ('\u{11d46}', '\u{11d46}', ALetter),
+    (0x011D46, 0x011D46, ALetter),
     // Mn       MASARAM GONDI RA-KARA
-    ('\u{11d47}', '\u{11d47}', Extend),
+    (0x011D47, 0x011D47, Extend),
     // Nd  [10] MASARAM GONDI DIGIT ZERO..MASARAM GONDI DIGIT NINE
-    ('\u{11d50}', '\u{11d59}', Numeric),
+    (0x011D50, 0x011D59, Numeric),
     // Lo   [6] GUNJALA GONDI LETTER A..GUNJALA GONDI LETTER UU
-    ('\u{11d60}', '\u{11d65}', ALetter),
+    (0x011D60, 0x011D65, ALetter),
     // Lo   [2] GUNJALA GONDI LETTER EE..GUNJALA GONDI LETTER AI
-    ('\u{11d67}', '\u{11d68}', ALetter),
+    (0x011D67, 0x011D68, ALetter),
     // Lo  [32] GUNJALA GONDI LETTER OO..GUNJALA GONDI LETTER SA
-    ('\u{11d6a}', '\u{11d89}', ALetter),
+    (0x011D6A, 0x011D89, ALetter),
     // Mc   [5] GUNJALA GONDI VOWEL SIGN AA..GUNJALA GONDI VOWEL SIGN UU
-    ('\u{11d8a}', '\u{11d8e}', Extend),
+    (0x011D8A, 0x011D8E, Extend),
     // Mn   [2] GUNJALA GONDI VOWEL SIGN EE..GUNJALA GONDI VOWEL SIGN AI
-    ('\u{11d90}', '\u{11d91}', Extend),
+    (0x011D90, 0x011D91, Extend),
     // Mc   [2] GUNJALA GONDI VOWEL SIGN OO..GUNJALA GONDI VOWEL SIGN AU
-    ('\u{11d93}', '\u{11d94}', Extend),
+    (0x011D93, 0x011D94, Extend),
     // Mn       GUNJALA GONDI SIGN ANUSVARA
-    ('\u{11d95}', '\u{11d95}', Extend),
+    (0x011D95, 0x011D95, Extend),
     // Mc       GUNJALA GONDI SIGN VISARGA
-    ('\u{11d96}', '\u{11d96}', Extend),
+    (0x011D96, 0x011D96, Extend),
     // Mn       GUNJALA GONDI VIRAMA
-    ('\u{11d97}', '\u{11d97}', Extend),
+    (0x011D97, 0x011D97, Extend),
     // Lo       GUNJALA GONDI OM
-    ('\u{11d98}', '\u{11d98}', ALetter),
+    (0x011D98, 0x011D98, ALetter),
     // Nd  [10] GUNJALA GONDI DIGIT ZERO..GUNJALA GONDI DIGIT NINE
-    ('\u{11da0}', '\u{11da9}', Numeric),
+    (0x011DA0, 0x011DA9, Numeric),
     // Lo  [19] MAKASAR LETTER KA..MAKASAR ANGKA
-    ('\u{11ee0}', '\u{11ef2}', ALetter),
+    (0x011EE0, 0x011EF2, ALetter),
     // Mn   [2] MAKASAR VOWEL SIGN I..MAKASAR VOWEL SIGN U
-    ('\u{11ef3}', '\u{11ef4}', Extend),
+    (0x011EF3, 0x011EF4, Extend),
     // Mc   [2] MAKASAR VOWEL SIGN E..MAKASAR VOWEL SIGN O
-    ('\u{11ef5}', '\u{11ef6}', Extend),
+    (0x011EF5, 0x011EF6, Extend),
     // Lo [922] CUNEIFORM SIGN A..CUNEIFORM SIGN U U
-    ('\u{12000}', '\u{12399}', ALetter),
+    (0x012000, 0x012399, ALetter),
     // Nl [111] CUNEIFORM NUMERIC SIGN TWO ASH..CUNEIFORM NUMERIC SIGN NINE U VARIANT FORM
-    ('\u{12400}', '\u{1246e}', ALetter),
+    (0x012400, 0x01246E, ALetter),
     // Lo [196] CUNEIFORM SIGN AB TIMES NUN TENU..CUNEIFORM SIGN ZU5 TIMES THREE DISH TENU
-    ('\u{12480}', '\u{12543}', ALetter),
+    (0x012480, 0x012543, ALetter),
     // Lo [1071] EGYPTIAN HIEROGLYPH A001..EGYPTIAN HIEROGLYPH AA032
-    ('\u{13000}', '\u{1342e}', ALetter),
+    (0x013000, 0x01342E, ALetter),
     // Cf   [9] EGYPTIAN HIEROGLYPH VERTICAL JOINER..EGYPTIAN HIEROGLYPH END SEGMENT
-    ('\u{13430}', '\u{13438}', Format),
+    (0x013430, 0x013438, Format),
     // Lo [583] ANATOLIAN HIEROGLYPH A001..ANATOLIAN HIEROGLYPH A530
-    ('\u{14400}', '\u{14646}', ALetter),
+    (0x014400, 0x014646, ALetter),
     // Lo [569] BAMUM LETTER PHASE-A NGKUE MFON..BAMUM LETTER PHASE-F VUEQ
-    ('\u{16800}', '\u{16a38}', ALetter),
+    (0x016800, 0x016A38, ALetter),
     // Lo  [31] MRO LETTER TA..MRO LETTER TEK
-    ('\u{16a40}', '\u{16a5e}', ALetter),
+    (0x016A40, 0x016A5E, ALetter),
     // Nd  [10] MRO DIGIT ZERO..MRO DIGIT NINE
-    ('\u{16a60}', '\u{16a69}', Numeric),
+    (0x016A60, 0x016A69, Numeric),
     // Lo  [30] BASSA VAH LETTER ENNI..BASSA VAH LETTER I
-    ('\u{16ad0}', '\u{16aed}', ALetter),
+    (0x016AD0, 0x016AED, ALetter),
     // Mn   [5] BASSA VAH COMBINING HIGH TONE..BASSA VAH COMBINING HIGH-LOW TONE
-    ('\u{16af0}', '\u{16af4}', Extend),
+    (0x016AF0, 0x016AF4, Extend),
     // Lo  [48] PAHAWH HMONG VOWEL KEEB..PAHAWH HMONG CONSONANT CAU
-    ('\u{16b00}', '\u{16b2f}', ALetter),
+    (0x016B00, 0x016B2F, ALetter),
     // Mn   [7] PAHAWH HMONG MARK CIM TUB..PAHAWH HMONG MARK CIM TAUM
-    ('\u{16b30}', '\u{16b36}', Extend),
+    (0x016B30, 0x016B36, Extend),
     // Lm   [4] PAHAWH HMONG SIGN VOS SEEV..PAHAWH HMONG SIGN IB YAM
-    ('\u{16b40}', '\u{16b43}', ALetter),
+    (0x016B40, 0x016B43, ALetter),
     // Nd  [10] PAHAWH HMONG DIGIT ZERO..PAHAWH HMONG DIGIT NINE
-    ('\u{16b50}', '\u{16b59}', Numeric),
+    (0x016B50, 0x016B59, Numeric),
     // Lo  [21] PAHAWH HMONG SIGN VOS LUB..PAHAWH HMONG SIGN CIM NRES TOS
-    ('\u{16b63}', '\u{16b77}', ALetter),
+    (0x016B63, 0x016B77, ALetter),
     // Lo  [19] PAHAWH HMONG CLAN SIGN TSHEEJ..PAHAWH HMONG CLAN SIGN VWJ
-    ('\u{16b7d}', '\u{16b8f}', ALetter),
+    (0x016B7D, 0x016B8F, ALetter),
     // L&  [64] MEDEFAIDRIN CAPITAL LETTER M..MEDEFAIDRIN SMALL LETTER Y
-    ('\u{16e40}', '\u{16e7f}', ALetter),
+    (0x016E40, 0x016E7F, ALetter),
     // Lo  [75] MIAO LETTER PA..MIAO LETTER RTE
-    ('\u{16f00}', '\u{16f4a}', ALetter),
+    (0x016F00, 0x016F4A, ALetter),
     // Mn       MIAO SIGN CONSONANT MODIFIER BAR
-    ('\u{16f4f}', '\u{16f4f}', Extend),
+    (0x016F4F, 0x016F4F, Extend),
     // Lo       MIAO LETTER NASALIZATION
-    ('\u{16f50}', '\u{16f50}', ALetter),
+    (0x016F50, 0x016F50, ALetter),
     // Mc  [55] MIAO SIGN ASPIRATION..MIAO VOWEL SIGN UI
-    ('\u{16f51}', '\u{16f87}', Extend),
+    (0x016F51, 0x016F87, Extend),
     // Mn   [4] MIAO TONE RIGHT..MIAO TONE BELOW
-    ('\u{16f8f}', '\u{16f92}', Extend),
+    (0x016F8F, 0x016F92, Extend),
     // Lm  [13] MIAO LETTER TONE-2..MIAO LETTER REFORMED TONE-8
-    ('\u{16f93}', '\u{16f9f}', ALetter),
+    (0x016F93, 0x016F9F, ALetter),
     // Lm   [2] TANGUT ITERATION MARK..NUSHU ITERATION MARK
-    ('\u{16fe0}', '\u{16fe1}', ALetter),
+    (0x016FE0, 0x016FE1, ALetter),
     // Lm       OLD CHINESE ITERATION MARK
-    ('\u{16fe3}', '\u{16fe3}', ALetter),
+    (0x016FE3, 0x016FE3, ALetter),
     // Lo       KATAKANA LETTER ARCHAIC E
-    ('\u{1b000}', '\u{1b000}', Katakana),
+    (0x01B000, 0x01B000, Katakana),
     // Lo   [4] KATAKANA LETTER SMALL WI..KATAKANA LETTER SMALL N
-    ('\u{1b164}', '\u{1b167}', Katakana),
+    (0x01B164, 0x01B167, Katakana),
     // Lo [107] DUPLOYAN LETTER H..DUPLOYAN LETTER VOCALIC M
-    ('\u{1bc00}', '\u{1bc6a}', ALetter),
+    (0x01BC00, 0x01BC6A, ALetter),
     // Lo  [13] DUPLOYAN AFFIX LEFT HORIZONTAL SECANT..DUPLOYAN AFFIX ATTACHED TANGENT HOOK
-    ('\u{1bc70}', '\u{1bc7c}', ALetter),
+    (0x01BC70, 0x01BC7C, ALetter),
     // Lo   [9] DUPLOYAN AFFIX HIGH ACUTE..DUPLOYAN AFFIX HIGH VERTICAL
-    ('\u{1bc80}', '\u{1bc88}', ALetter),
+    (0x01BC80, 0x01BC88, ALetter),
     // Lo  [10] DUPLOYAN AFFIX LOW ACUTE..DUPLOYAN AFFIX LOW ARROW
-    ('\u{1bc90}', '\u{1bc99}', ALetter),
+    (0x01BC90, 0x01BC99, ALetter),
     // Mn   [2] DUPLOYAN THICK LETTER SELECTOR..DUPLOYAN DOUBLE MARK
-    ('\u{1bc9d}', '\u{1bc9e}', Extend),
+    (0x01BC9D, 0x01BC9E, Extend),
     // Cf   [4] SHORTHAND FORMAT LETTER OVERLAP..SHORTHAND FORMAT UP STEP
-    ('\u{1bca0}', '\u{1bca3}', Format),
+    (0x01BCA0, 0x01BCA3, Format),
     // Mc   [2] MUSICAL SYMBOL COMBINING STEM..MUSICAL SYMBOL COMBINING SPRECHGESANG STEM
-    ('\u{1d165}', '\u{1d166}', Extend),
+    (0x01D165, 0x01D166, Extend),
     // Mn   [3] MUSICAL SYMBOL COMBINING TREMOLO-1..MUSICAL SYMBOL COMBINING TREMOLO-3
-    ('\u{1d167}', '\u{1d169}', Extend),
+    (0x01D167, 0x01D169, Extend),
     // Mc   [6] MUSICAL SYMBOL COMBINING AUGMENTATION DOT..MUSICAL SYMBOL COMBINING FLAG-5
-    ('\u{1d16d}', '\u{1d172}', Extend),
+    (0x01D16D, 0x01D172, Extend),
     // Cf   [8] MUSICAL SYMBOL BEGIN BEAM..MUSICAL SYMBOL END PHRASE
-    ('\u{1d173}', '\u{1d17a}', Format),
+    (0x01D173, 0x01D17A, Format),
     // Mn   [8] MUSICAL SYMBOL COMBINING ACCENT..MUSICAL SYMBOL COMBINING LOURE
-    ('\u{1d17b}', '\u{1d182}', Extend),
+    (0x01D17B, 0x01D182, Extend),
     // Mn   [7] MUSICAL SYMBOL COMBINING DOIT..MUSICAL SYMBOL COMBINING TRIPLE TONGUE
-    ('\u{1d185}', '\u{1d18b}', Extend),
+    (0x01D185, 0x01D18B, Extend),
     // Mn   [4] MUSICAL SYMBOL COMBINING DOWN BOW..MUSICAL SYMBOL COMBINING SNAP PIZZICATO
-    ('\u{1d1aa}', '\u{1d1ad}', Extend),
+    (0x01D1AA, 0x01D1AD, Extend),
     // Mn   [3] COMBINING GREEK MUSICAL TRISEME..COMBINING GREEK MUSICAL PENTASEME
-    ('\u{1d242}', '\u{1d244}', Extend),
+    (0x01D242, 0x01D244, Extend),
     // L&  [85] MATHEMATICAL BOLD CAPITAL A..MATHEMATICAL ITALIC SMALL G
-    ('\u{1d400}', '\u{1d454}', ALetter),
+    (0x01D400, 0x01D454, ALetter),
     // L&  [71] MATHEMATICAL ITALIC SMALL I..MATHEMATICAL SCRIPT CAPITAL A
-    ('\u{1d456}', '\u{1d49c}', ALetter),
+    (0x01D456, 0x01D49C, ALetter),
     // L&   [2] MATHEMATICAL SCRIPT CAPITAL C..MATHEMATICAL SCRIPT CAPITAL D
-    ('\u{1d49e}', '\u{1d49f}', ALetter),
+    (0x01D49E, 0x01D49F, ALetter),
     // L&       MATHEMATICAL SCRIPT CAPITAL G
-    ('\u{1d4a2}', '\u{1d4a2}', ALetter),
+    (0x01D4A2, 0x01D4A2, ALetter),
     // L&   [2] MATHEMATICAL SCRIPT CAPITAL J..MATHEMATICAL SCRIPT CAPITAL K
-    ('\u{1d4a5}', '\u{1d4a6}', ALetter),
+    (0x01D4A5, 0x01D4A6, ALetter),
     // L&   [4] MATHEMATICAL SCRIPT CAPITAL N..MATHEMATICAL SCRIPT CAPITAL Q
-    ('\u{1d4a9}', '\u{1d4ac}', ALetter),
+    (0x01D4A9, 0x01D4AC, ALetter),
     // L&  [12] MATHEMATICAL SCRIPT CAPITAL S..MATHEMATICAL SCRIPT SMALL D
-    ('\u{1d4ae}', '\u{1d4b9}', ALetter),
+    (0x01D4AE, 0x01D4B9, ALetter),
     // L&       MATHEMATICAL SCRIPT SMALL F
-    ('\u{1d4bb}', '\u{1d4bb}', ALetter),
+    (0x01D4BB, 0x01D4BB, ALetter),
     // L&   [7] MATHEMATICAL SCRIPT SMALL H..MATHEMATICAL SCRIPT SMALL N
-    ('\u{1d4bd}', '\u{1d4c3}', ALetter),
+    (0x01D4BD, 0x01D4C3, ALetter),
     // L&  [65] MATHEMATICAL SCRIPT SMALL P..MATHEMATICAL FRAKTUR CAPITAL B
-    ('\u{1d4c5}', '\u{1d505}', ALetter),
+    (0x01D4C5, 0x01D505, ALetter),
     // L&   [4] MATHEMATICAL FRAKTUR CAPITAL D..MATHEMATICAL FRAKTUR CAPITAL G
-    ('\u{1d507}', '\u{1d50a}', ALetter),
+    (0x01D507, 0x01D50A, ALetter),
     // L&   [8] MATHEMATICAL FRAKTUR CAPITAL J..MATHEMATICAL FRAKTUR CAPITAL Q
-    ('\u{1d50d}', '\u{1d514}', ALetter),
+    (0x01D50D, 0x01D514, ALetter),
     // L&   [7] MATHEMATICAL FRAKTUR CAPITAL S..MATHEMATICAL FRAKTUR CAPITAL Y
-    ('\u{1d516}', '\u{1d51c}', ALetter),
+    (0x01D516, 0x01D51C, ALetter),
     // L&  [28] MATHEMATICAL FRAKTUR SMALL A..MATHEMATICAL DOUBLE-STRUCK CAPITAL B
-    ('\u{1d51e}', '\u{1d539}', ALetter),
+    (0x01D51E, 0x01D539, ALetter),
     // L&   [4] MATHEMATICAL DOUBLE-STRUCK CAPITAL D..MATHEMATICAL DOUBLE-STRUCK CAPITAL G
-    ('\u{1d53b}', '\u{1d53e}', ALetter),
+    (0x01D53B, 0x01D53E, ALetter),
     // L&   [5] MATHEMATICAL DOUBLE-STRUCK CAPITAL I..MATHEMATICAL DOUBLE-STRUCK CAPITAL M
-    ('\u{1d540}', '\u{1d544}', ALetter),
+    (0x01D540, 0x01D544, ALetter),
     // L&       MATHEMATICAL DOUBLE-STRUCK CAPITAL O
-    ('\u{1d546}', '\u{1d546}', ALetter),
+    (0x01D546, 0x01D546, ALetter),
     // L&   [7] MATHEMATICAL DOUBLE-STRUCK CAPITAL S..MATHEMATICAL DOUBLE-STRUCK CAPITAL Y
-    ('\u{1d54a}', '\u{1d550}', ALetter),
+    (0x01D54A, 0x01D550, ALetter),
     // L& [340] MATHEMATICAL DOUBLE-STRUCK SMALL A..MATHEMATICAL ITALIC SMALL DOTLESS J
-    ('\u{1d552}', '\u{1d6a5}', ALetter),
+    (0x01D552, 0x01D6A5, ALetter),
     // L&  [25] MATHEMATICAL BOLD CAPITAL ALPHA..MATHEMATICAL BOLD CAPITAL OMEGA
-    ('\u{1d6a8}', '\u{1d6c0}', ALetter),
+    (0x01D6A8, 0x01D6C0, ALetter),
     // L&  [25] MATHEMATICAL BOLD SMALL ALPHA..MATHEMATICAL BOLD SMALL OMEGA
-    ('\u{1d6c2}', '\u{1d6da}', ALetter),
+    (0x01D6C2, 0x01D6DA, ALetter),
     // L&  [31] MATHEMATICAL BOLD EPSILON SYMBOL..MATHEMATICAL ITALIC CAPITAL OMEGA
-    ('\u{1d6dc}', '\u{1d6fa}', ALetter),
+    (0x01D6DC, 0x01D6FA, ALetter),
     // L&  [25] MATHEMATICAL ITALIC SMALL ALPHA..MATHEMATICAL ITALIC SMALL OMEGA
-    ('\u{1d6fc}', '\u{1d714}', ALetter),
+    (0x01D6FC, 0x01D714, ALetter),
     // L&  [31] MATHEMATICAL ITALIC EPSILON SYMBOL..MATHEMATICAL BOLD ITALIC CAPITAL OMEGA
-    ('\u{1d716}', '\u{1d734}', ALetter),
+    (0x01D716, 0x01D734, ALetter),
     // L&  [25] MATHEMATICAL BOLD ITALIC SMALL ALPHA..MATHEMATICAL BOLD ITALIC SMALL OMEGA
-    ('\u{1d736}', '\u{1d74e}', ALetter),
+    (0x01D736, 0x01D74E, ALetter),
     // L&  [31] MATHEMATICAL BOLD ITALIC EPSILON SYMBOL..MATHEMATICAL SANS-SERIF BOLD CAPITAL OMEGA
-    ('\u{1d750}', '\u{1d76e}', ALetter),
+    (0x01D750, 0x01D76E, ALetter),
     // L&  [25] MATHEMATICAL SANS-SERIF BOLD SMALL ALPHA..MATHEMATICAL SANS-SERIF BOLD SMALL OMEGA
-    ('\u{1d770}', '\u{1d788}', ALetter),
+    (0x01D770, 0x01D788, ALetter),
     // L&  [31] MATHEMATICAL SANS-SERIF BOLD EPSILON SYMBOL..MATHEMATICAL SANS-SERIF BOLD ITALIC CAPITAL OMEGA
-    ('\u{1d78a}', '\u{1d7a8}', ALetter),
+    (0x01D78A, 0x01D7A8, ALetter),
     // L&  [25] MATHEMATICAL SANS-SERIF BOLD ITALIC SMALL ALPHA..MATHEMATICAL SANS-SERIF BOLD ITALIC SMALL OMEGA
-    ('\u{1d7aa}', '\u{1d7c2}', ALetter),
+    (0x01D7AA, 0x01D7C2, ALetter),
     // L&   [8] MATHEMATICAL SANS-SERIF BOLD ITALIC EPSILON SYMBOL..MATHEMATICAL BOLD SMALL DIGAMMA
-    ('\u{1d7c4}', '\u{1d7cb}', ALetter),
+    (0x01D7C4, 0x01D7CB, ALetter),
     // Nd  [50] MATHEMATICAL BOLD DIGIT ZERO..MATHEMATICAL MONOSPACE DIGIT NINE
-    ('\u{1d7ce}', '\u{1d7ff}', Numeric),
+    (0x01D7CE, 0x01D7FF, Numeric),
     // Mn  [55] SIGNWRITING HEAD RIM..SIGNWRITING AIR SUCKING IN
-    ('\u{1da00}', '\u{1da36}', Extend),
+    (0x01DA00, 0x01DA36, Extend),
     // Mn  [50] SIGNWRITING MOUTH CLOSED NEUTRAL..SIGNWRITING EXCITEMENT
-    ('\u{1da3b}', '\u{1da6c}', Extend),
+    (0x01DA3B, 0x01DA6C, Extend),
     // Mn       SIGNWRITING UPPER BODY TILTING FROM HIP JOINTS
-    ('\u{1da75}', '\u{1da75}', Extend),
+    (0x01DA75, 0x01DA75, Extend),
     // Mn       SIGNWRITING LOCATION HEAD NECK
-    ('\u{1da84}', '\u{1da84}', Extend),
+    (0x01DA84, 0x01DA84, Extend),
     // Mn   [5] SIGNWRITING FILL MODIFIER-2..SIGNWRITING FILL MODIFIER-6
-    ('\u{1da9b}', '\u{1da9f}', Extend),
+    (0x01DA9B, 0x01DA9F, Extend),
     // Mn  [15] SIGNWRITING ROTATION MODIFIER-2..SIGNWRITING ROTATION MODIFIER-16
-    ('\u{1daa1}', '\u{1daaf}', Extend),
+    (0x01DAA1, 0x01DAAF, Extend),
     // Mn   [7] COMBINING GLAGOLITIC LETTER AZU..COMBINING GLAGOLITIC LETTER ZHIVETE
-    ('\u{1e000}', '\u{1e006}', Extend),
+    (0x01E000, 0x01E006, Extend),
     // Mn  [17] COMBINING GLAGOLITIC LETTER ZEMLJA..COMBINING GLAGOLITIC LETTER HERU
-    ('\u{1e008}', '\u{1e018}', Extend),
+    (0x01E008, 0x01E018, Extend),
     // Mn   [7] COMBINING GLAGOLITIC LETTER SHTA..COMBINING GLAGOLITIC LETTER YATI
-    ('\u{1e01b}', '\u{1e021}', Extend),
+    (0x01E01B, 0x01E021, Extend),
     // Mn   [2] COMBINING GLAGOLITIC LETTER YU..COMBINING GLAGOLITIC LETTER SMALL YUS
-    ('\u{1e023}', '\u{1e024}', Extend),
+    (0x01E023, 0x01E024, Extend),
     // Mn   [5] COMBINING GLAGOLITIC LETTER YO..COMBINING GLAGOLITIC LETTER FITA
-    ('\u{1e026}', '\u{1e02a}', Extend),
+    (0x01E026, 0x01E02A, Extend),
     // Lo  [45] NYIAKENG PUACHUE HMONG LETTER MA..NYIAKENG PUACHUE HMONG LETTER W
-    ('\u{1e100}', '\u{1e12c}', ALetter),
+    (0x01E100, 0x01E12C, ALetter),
     // Mn   [7] NYIAKENG PUACHUE HMONG TONE-B..NYIAKENG PUACHUE HMONG TONE-D
-    ('\u{1e130}', '\u{1e136}', Extend),
+    (0x01E130, 0x01E136, Extend),
     // Lm   [7] NYIAKENG PUACHUE HMONG SIGN FOR PERSON..NYIAKENG PUACHUE HMONG SYLLABLE LENGTHENER
-    ('\u{1e137}', '\u{1e13d}', ALetter),
+    (0x01E137, 0x01E13D, ALetter),
     // Nd  [10] NYIAKENG PUACHUE HMONG DIGIT ZERO..NYIAKENG PUACHUE HMONG DIGIT NINE
-    ('\u{1e140}', '\u{1e149}', Numeric),
+    (0x01E140, 0x01E149, Numeric),
     // Lo       NYIAKENG PUACHUE HMONG LOGOGRAM NYAJ
-    ('\u{1e14e}', '\u{1e14e}', ALetter),
+    (0x01E14E, 0x01E14E, ALetter),
     // Lo  [44] WANCHO LETTER AA..WANCHO LETTER YIH
-    ('\u{1e2c0}', '\u{1e2eb}', ALetter),
+    (0x01E2C0, 0x01E2EB, ALetter),
     // Mn   [4] WANCHO TONE TUP..WANCHO TONE KOINI
-    ('\u{1e2ec}', '\u{1e2ef}', Extend),
+    (0x01E2EC, 0x01E2EF, Extend),
     // Nd  [10] WANCHO DIGIT ZERO..WANCHO DIGIT NINE
-    ('\u{1e2f0}', '\u{1e2f9}', Numeric),
+    (0x01E2F0, 0x01E2F9, Numeric),
     // Lo [197] MENDE KIKAKUI SYLLABLE M001 KI..MENDE KIKAKUI SYLLABLE M060 NYON
-    ('\u{1e800}', '\u{1e8c4}', ALetter),
+    (0x01E800, 0x01E8C4, ALetter),
     // Mn   [7] MENDE KIKAKUI COMBINING NUMBER TEENS..MENDE KIKAKUI COMBINING NUMBER MILLIONS
-    ('\u{1e8d0}', '\u{1e8d6}', Extend),
+    (0x01E8D0, 0x01E8D6, Extend),
     // L&  [68] ADLAM CAPITAL LETTER ALIF..ADLAM SMALL LETTER SHA
-    ('\u{1e900}', '\u{1e943}', ALetter),
+    (0x01E900, 0x01E943, ALetter),
     // Mn   [7] ADLAM ALIF LENGTHENER..ADLAM NUKTA
-    ('\u{1e944}', '\u{1e94a}', Extend),
+    (0x01E944, 0x01E94A, Extend),
     // Lm       ADLAM NASALIZATION MARK
-    ('\u{1e94b}', '\u{1e94b}', ALetter),
+    (0x01E94B, 0x01E94B, ALetter),
     // Nd  [10] ADLAM DIGIT ZERO..ADLAM DIGIT NINE
-    ('\u{1e950}', '\u{1e959}', Numeric),
+    (0x01E950, 0x01E959, Numeric),
     // Lo   [4] ARABIC MATHEMATICAL ALEF..ARABIC MATHEMATICAL DAL
-    ('\u{1ee00}', '\u{1ee03}', ALetter),
+    (0x01EE00, 0x01EE03, ALetter),
     // Lo  [27] ARABIC MATHEMATICAL WAW..ARABIC MATHEMATICAL DOTLESS QAF
-    ('\u{1ee05}', '\u{1ee1f}', ALetter),
+    (0x01EE05, 0x01EE1F, ALetter),
     // Lo   [2] ARABIC MATHEMATICAL INITIAL BEH..ARABIC MATHEMATICAL INITIAL JEEM
-    ('\u{1ee21}', '\u{1ee22}', ALetter),
+    (0x01EE21, 0x01EE22, ALetter),
     // Lo       ARABIC MATHEMATICAL INITIAL HEH
-    ('\u{1ee24}', '\u{1ee24}', ALetter),
+    (0x01EE24, 0x01EE24, ALetter),
     // Lo       ARABIC MATHEMATICAL INITIAL HAH
-    ('\u{1ee27}', '\u{1ee27}', ALetter),
+    (0x01EE27, 0x01EE27, ALetter),
     // Lo  [10] ARABIC MATHEMATICAL INITIAL YEH..ARABIC MATHEMATICAL INITIAL QAF
-    ('\u{1ee29}', '\u{1ee32}', ALetter),
+    (0x01EE29, 0x01EE32, ALetter),
     // Lo   [4] ARABIC MATHEMATICAL INITIAL SHEEN..ARABIC MATHEMATICAL INITIAL KHAH
-    ('\u{1ee34}', '\u{1ee37}', ALetter),
+    (0x01EE34, 0x01EE37, ALetter),
     // Lo       ARABIC MATHEMATICAL INITIAL DAD
-    ('\u{1ee39}', '\u{1ee39}', ALetter),
+    (0x01EE39, 0x01EE39, ALetter),
     // Lo       ARABIC MATHEMATICAL INITIAL GHAIN
-    ('\u{1ee3b}', '\u{1ee3b}', ALetter),
+    (0x01EE3B, 0x01EE3B, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED JEEM
-    ('\u{1ee42}', '\u{1ee42}', ALetter),
+    (0x01EE42, 0x01EE42, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED HAH
-    ('\u{1ee47}', '\u{1ee47}', ALetter),
+    (0x01EE47, 0x01EE47, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED YEH
-    ('\u{1ee49}', '\u{1ee49}', ALetter),
+    (0x01EE49, 0x01EE49, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED LAM
-    ('\u{1ee4b}', '\u{1ee4b}', ALetter),
+    (0x01EE4B, 0x01EE4B, ALetter),
     // Lo   [3] ARABIC MATHEMATICAL TAILED NOON..ARABIC MATHEMATICAL TAILED AIN
-    ('\u{1ee4d}', '\u{1ee4f}', ALetter),
+    (0x01EE4D, 0x01EE4F, ALetter),
     // Lo   [2] ARABIC MATHEMATICAL TAILED SAD..ARABIC MATHEMATICAL TAILED QAF
-    ('\u{1ee51}', '\u{1ee52}', ALetter),
+    (0x01EE51, 0x01EE52, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED SHEEN
-    ('\u{1ee54}', '\u{1ee54}', ALetter),
+    (0x01EE54, 0x01EE54, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED KHAH
-    ('\u{1ee57}', '\u{1ee57}', ALetter),
+    (0x01EE57, 0x01EE57, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED DAD
-    ('\u{1ee59}', '\u{1ee59}', ALetter),
+    (0x01EE59, 0x01EE59, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED GHAIN
-    ('\u{1ee5b}', '\u{1ee5b}', ALetter),
+    (0x01EE5B, 0x01EE5B, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED DOTLESS NOON
-    ('\u{1ee5d}', '\u{1ee5d}', ALetter),
+    (0x01EE5D, 0x01EE5D, ALetter),
     // Lo       ARABIC MATHEMATICAL TAILED DOTLESS QAF
-    ('\u{1ee5f}', '\u{1ee5f}', ALetter),
+    (0x01EE5F, 0x01EE5F, ALetter),
     // Lo   [2] ARABIC MATHEMATICAL STRETCHED BEH..ARABIC MATHEMATICAL STRETCHED JEEM
-    ('\u{1ee61}', '\u{1ee62}', ALetter),
+    (0x01EE61, 0x01EE62, ALetter),
     // Lo       ARABIC MATHEMATICAL STRETCHED HEH
-    ('\u{1ee64}', '\u{1ee64}', ALetter),
+    (0x01EE64, 0x01EE64, ALetter),
     // Lo   [4] ARABIC MATHEMATICAL STRETCHED HAH..ARABIC MATHEMATICAL STRETCHED KAF
-    ('\u{1ee67}', '\u{1ee6a}', ALetter),
+    (0x01EE67, 0x01EE6A, ALetter),
     // Lo   [7] ARABIC MATHEMATICAL STRETCHED MEEM..ARABIC MATHEMATICAL STRETCHED QAF
-    ('\u{1ee6c}', '\u{1ee72}', ALetter),
+    (0x01EE6C, 0x01EE72, ALetter),
     // Lo   [4] ARABIC MATHEMATICAL STRETCHED SHEEN..ARABIC MATHEMATICAL STRETCHED KHAH
-    ('\u{1ee74}', '\u{1ee77}', ALetter),
+    (0x01EE74, 0x01EE77, ALetter),
     // Lo   [4] ARABIC MATHEMATICAL STRETCHED DAD..ARABIC MATHEMATICAL STRETCHED DOTLESS BEH
-    ('\u{1ee79}', '\u{1ee7c}', ALetter),
+    (0x01EE79, 0x01EE7C, ALetter),
     // Lo       ARABIC MATHEMATICAL STRETCHED DOTLESS FEH
-    ('\u{1ee7e}', '\u{1ee7e}', ALetter),
+    (0x01EE7E, 0x01EE7E, ALetter),
     // Lo  [10] ARABIC MATHEMATICAL LOOPED ALEF..ARABIC MATHEMATICAL LOOPED YEH
-    ('\u{1ee80}', '\u{1ee89}', ALetter),
+    (0x01EE80, 0x01EE89, ALetter),
     // Lo  [17] ARABIC MATHEMATICAL LOOPED LAM..ARABIC MATHEMATICAL LOOPED GHAIN
-    ('\u{1ee8b}', '\u{1ee9b}', ALetter),
+    (0x01EE8B, 0x01EE9B, ALetter),
     // Lo   [3] ARABIC MATHEMATICAL DOUBLE-STRUCK BEH..ARABIC MATHEMATICAL DOUBLE-STRUCK DAL
-    ('\u{1eea1}', '\u{1eea3}', ALetter),
+    (0x01EEA1, 0x01EEA3, ALetter),
     // Lo   [5] ARABIC MATHEMATICAL DOUBLE-STRUCK WAW..ARABIC MATHEMATICAL DOUBLE-STRUCK YEH
-    ('\u{1eea5}', '\u{1eea9}', ALetter),
+    (0x01EEA5, 0x01EEA9, ALetter),
     // Lo  [17] ARABIC MATHEMATICAL DOUBLE-STRUCK LAM..ARABIC MATHEMATICAL DOUBLE-STRUCK GHAIN
-    ('\u{1eeab}', '\u{1eebb}', ALetter),
+    (0x01EEAB, 0x01EEBB, ALetter),
     // So  [26] SQUARED LATIN CAPITAL LETTER A..SQUARED LATIN CAPITAL LETTER Z
-    ('\u{1f130}', '\u{1f149}', ALetter),
+    (0x01F130, 0x01F149, ALetter),
     // So  [26] NEGATIVE CIRCLED LATIN CAPITAL LETTER A..NEGATIVE CIRCLED LATIN CAPITAL LETTER Z
-    ('\u{1f150}', '\u{1f169}', ALetter),
+    (0x01F150, 0x01F169, ALetter),
     // So  [26] NEGATIVE SQUARED LATIN CAPITAL LETTER A..NEGATIVE SQUARED LATIN CAPITAL LETTER Z
-    ('\u{1f170}', '\u{1f189}', ALetter),
+    (0x01F170, 0x01F189, ALetter),
     // So  [26] REGIONAL INDICATOR SYMBOL LETTER A..REGIONAL INDICATOR SYMBOL LETTER Z
-    ('\u{1f1e6}', '\u{1f1ff}', Regional_Indicator),
+    (0x01F1E6, 0x01F1FF, Regional_Indicator),
     // Sk   [5] EMOJI MODIFIER FITZPATRICK TYPE-1-2..EMOJI MODIFIER FITZPATRICK TYPE-6
-    ('\u{1f3fb}', '\u{1f3ff}', Extend),
+    (0x01F3FB, 0x01F3FF, Extend),
     // Cf       LANGUAGE TAG
-    ('\u{e0001}', '\u{e0001}', Format),
+    (0x0E0001, 0x0E0001, Format),
     // Cf  [96] TAG SPACE..CANCEL TAG
-    ('\u{e0020}', '\u{e007f}', Extend),
+    (0x0E0020, 0x0E007F, Extend),
     // Mn [240] VARIATION SELECTOR-17..VARIATION SELECTOR-256
-    ('\u{e0100}', '\u{e01ef}', Extend),
+    (0x0E0100, 0x0E01EF, Extend),
 ];

@@ -9,10 +9,35 @@ use regex::Regex;
 // Eytzinger
 
 fn main() {
+    generate_property(
+        "Grapheme_Cluster_Break",
+        include_str!("../data/GraphemeBreakProperty.txt"),
+        "Other",
+        "src/properties/grapheme_cluster_break.rs",
+    );
+    generate_property(
+        "Word_Break",
+        include_str!("../data/WordBreakProperty.txt"),
+        "Other",
+        "src/properties/word_break.rs",
+    );
+    generate_property(
+        "Sentence_Break",
+        include_str!("../data/SentenceBreakProperty.txt"),
+        "Other",
+        "src/properties/sentence_break.rs",
+    );
+}
+
+fn generate_property(
+    type_name: &'static str,
+    property_definition: &'static str,
+    fallback: &'static str,
+    file_path: &'static str,
+) {
     let mut properties = Vec::new();
     let mut values = HashSet::new();
 
-    let data = include_str!("../data/WordBreakProperty.txt");
     let re = Regex::new(r#"(?x)
         (?P<start>[[:xdigit:]]{4,6})
         (?:
@@ -28,7 +53,7 @@ fn main() {
         \s+
         (?P<comment>.+)
     "#).unwrap();
-    for x in data.lines() {
+    for x in property_definition.lines() {
         if x == "" || x.starts_with("#") { continue }
         let captures = re.captures(x).unwrap_or_else(|| panic!(x));
         let start = parse_char(&captures["start"]);
@@ -46,7 +71,7 @@ fn main() {
     let mut values = values.into_iter().collect::<Vec<_>>();
     values.sort();
 
-    let mut f = File::create("src/properties/word_break.rs").unwrap();
+    let mut f = File::create(file_path).unwrap();
     macro_rules! w {
         () => { w!("") };
         ($($x:tt)+) => {
@@ -58,32 +83,32 @@ fn main() {
     w!();
     w!("#[allow(non_camel_case_types)] // Whatever unicode says, we use");
     w!("#[derive(Debug, Copy, Clone, Eq, PartialEq)]");
-    w!("pub enum Word_Break {{");
-    w!("    Other,");
+    w!("pub enum {} {{", type_name);
+    w!("    {},", fallback);
     for v in values {
         w!("    {},", v);
     }
     w!("}}");
-    w!("use Word_Break::*;");
+    w!("use {}::*;", type_name);
     w!();
-    w!("impl From<char> for Word_Break {{");
+    w!("impl From<char> for {} {{", type_name);
     w!("    #[inline]");
     w!("    fn from(c: char) -> Self {{");
     w!("        if c < ROW0_LIMIT {{");
-    w!("            return ROW0_TABLE.get_or(&(c as u8), Other);");
+    w!("            return ROW0_TABLE.get_or(&(c as u8), {});", fallback);
     w!("        }}");
     w!("        if c < PLANE0_LIMIT {{");
-    w!("            return PLANE0_TABLE.get_or(&(c as u16), Other);");
+    w!("            return PLANE0_TABLE.get_or(&(c as u16), {});", fallback);
     w!("        }}");
-    w!("        return SUPPLEMENTARY_TABLE.get_or(&c, Other);");
+    w!("        return SUPPLEMENTARY_TABLE.get_or(&(c as u32), {});", fallback);
     w!("    }}");
     w!("}}");
     w!();
-    w!("const ROW0_TABLE: LookupTable<u8, Word_Break> = lookup_table![");
+    w!("const ROW0_TABLE: LookupTable<u8, {}> = lookup_table![", type_name);
     if properties.peek().unwrap().0 as u32 > 0 {
         let p = properties.peek().unwrap();
         w!("    // So every possible input is always found in the table");
-        w!("    ({:#04X}, {:#04X}, Other),", 0, p.1 as u32 - 1);
+        w!("    ({:#04X}, {:#04X}, {}),", 0, p.0 as u32 - 1, fallback);
     }
     while properties.peek().unwrap().1 as u32 <= 0xFF {
         let p = properties.next().unwrap();
@@ -93,11 +118,11 @@ fn main() {
     w!("];");
     let row0_limit = char::min('\u{100}', properties.peek().unwrap().0);
     w!("const ROW0_LIMIT: char = '{}';", row0_limit.escape_unicode());
-    w!("const PLANE0_TABLE: LookupTable<u16, Word_Break> = lookup_table![");
+    w!("const PLANE0_TABLE: LookupTable<u16, {}> = lookup_table![", type_name);
     if properties.peek().unwrap().0 as u32 > 0x100 {
         let p = properties.peek().unwrap();
         w!("    // So every possible input is always found in the table");
-        w!("    ({:#06X}, {:#06X}, Other),", 0x100, p.1 as u32 - 1);
+        w!("    ({:#06X}, {:#06X}, {}),", 0x100, p.0 as u32 - 1, fallback);
     }
     while properties.peek().unwrap().1 as u32 <= 0xFFFF {
         let p = properties.next().unwrap();
@@ -107,16 +132,16 @@ fn main() {
     w!("];");
     let plane0_limit = char::min('\u{10000}', properties.peek().unwrap().0);
     w!("const PLANE0_LIMIT: char = '{}';", plane0_limit.escape_unicode());
-    w!("const SUPPLEMENTARY_TABLE: LookupTable<char, Word_Break> = lookup_table![");
+    w!("const SUPPLEMENTARY_TABLE: LookupTable<u32, {}> = lookup_table![", type_name);
     if properties.peek().unwrap().0 as u32 > 0x10000 {
         let p = properties.peek().unwrap();
         w!("    // So every possible input is always found in the table");
-        w!("    ({:#06X}, {:#06X}, Other),", 0x10000, p.1 as u32 - 1);
+        w!("    ({:#08X}, {:#08X}, {}),", 0x10000, p.0 as u32 - 1, fallback);
     }
     for p in properties {
         w!("    // {}", p.3);
-        w!("    ('{}', '{}', {}),",
-            p.0.escape_unicode(), p.1.escape_unicode(), p.2);
+        w!("    ({:#08X}, {:#08X}, {}),",
+            p.0 as u32, p.1 as u32, p.2);
     }
     w!("];");
 }
