@@ -4,10 +4,16 @@
 mod lookup_table;
 mod properties;
 
-use properties::Word_Break;
+use properties::{Grapheme_Cluster_Break, Word_Break, Sentence_Break};
 
-pub fn demo(c: char) -> usize {
+pub fn demo_grapheme_cluster_break(c: char) -> usize {
+    Grapheme_Cluster_Break::from(c) as usize
+}
+pub fn demo_word_break(c: char) -> usize {
     Word_Break::from(c) as usize
+}
+pub fn demo_sentence_break(c: char) -> usize {
+    Sentence_Break::from(c) as usize
 }
 
 #[cfg(test)]
