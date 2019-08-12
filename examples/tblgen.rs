@@ -30,10 +30,10 @@ fn main() {
 }
 
 fn generate_property(
-    type_name: &'static str,
-    property_definition: &'static str,
-    fallback: &'static str,
-    file_path: &'static str,
+    type_name: &str,
+    property_definition: &str,
+    fallback: &str,
+    file_path: &str,
 ) {
     let mut properties = Vec::new();
     let mut values = HashSet::new();
@@ -55,7 +55,7 @@ fn generate_property(
     "#).unwrap();
     for x in property_definition.lines() {
         if x == "" || x.starts_with("#") { continue }
-        let captures = re.captures(x).unwrap_or_else(|| panic!(x));
+        let captures = re.captures(x).unwrap_or_else(|| panic!("{}", x));
         let start = parse_char(&captures["start"]);
         let end = captures.name("end")
             .map(|x| parse_char(x.as_str()))
