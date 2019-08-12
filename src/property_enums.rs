@@ -6,11 +6,6 @@ macro_rules! define_enum {
         pub enum $name {
             $($variant,)+
         }
-        impl $name {
-            pub const ALL: &'static [$name] = &[
-                $($name::$variant,)+
-            ];
-        }
     };
 }
 

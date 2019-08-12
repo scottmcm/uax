@@ -1,25 +1,15 @@
 #![cfg_attr(test, allow(dead_code))]
 
+#[macro_use]
+mod lookup_table;
+
 mod property_enums;
 use property_enums::*;
 
 mod word_break_table;
 
-#[inline]
-pub(crate) fn table_lookup<T: Ord, V: Copy>(starts: &[T], needle: &T, values: &[V]) -> V {
-    assert!(starts.len() == values.len());
-
-    let mut width = starts.len();
-    let mut low = 0;
-    while width > 1 {
-        let mid = low + width/2;
-        let mid_element = unsafe { starts.get_unchecked(mid) };
-        if mid_element <= needle {
-            low = mid;
-        }
-        width -= width/2;
-    }
-    unsafe { *values.get_unchecked(low) }
+pub fn demo(c: char) -> usize {
+    Word_Break::from(c) as usize
 }
 
 #[cfg(test)]

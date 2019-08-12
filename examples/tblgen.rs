@@ -38,7 +38,12 @@ fn main() {
         properties.push((start, end, value, comment));
     }
     properties.sort_by_key(|x| x.0);
-    let properties = properties.as_slice();
+
+    if properties[0].0 > '\0' {
+        let p = prev_char(properties[0].0);
+        properties.insert(0, ('\0', p, "Other".to_owned(),
+            "So every possible input is always found in the table".to_owned()))
+    }
 
     let mut f = File::create("src/word_break_table.rs").unwrap();
     macro_rules! w {
@@ -49,84 +54,30 @@ fn main() {
     }
 
     w!("use crate::property_enums::Word_Break;");
+    w!("use crate::lookup_table::LookupTable;");
+    w!("use Word_Break::*;");
     w!();
     w!("impl From<char> for Word_Break {{");
+    w!("    #[inline]");
     w!("    fn from(c: char) -> Self {{");
-    w!("        use Word_Break::*;");
-    w!("        return crate::table_lookup(&START_TABLE, &(c as u32), &VALUE_TABLE);");
-    w!();
-
-    let (starts, values, comments) = to_gap_tables("Other".to_owned(), properties);
-
-    w!("        const START_TABLE: [u32; {}] = [", comments.len());
-    for (start, comment) in starts.iter().zip(&comments) {
-        w!("            {:#06X},{}", start, comment);
-    }
-    w!("        ];");
-    w!("        const VALUE_TABLE: [Word_Break; {}] = [", comments.len());
-    for (value, comment) in values.iter().zip(&comments) {
-        w!("            {},{}", value, comment);
-    }
-    w!("        ];");
-
+    w!("        return CHAR_TABLE.get_or(&c, Other);");
     w!("    }}");
     w!("}}");
+    w!();
+    w!("static CHAR_TABLE: LookupTable<char, Word_Break> = lookup_table![");
+    for p in properties {
+        w!("    // {}", p.3);
+        w!("    ('{}', '{}', {}),",
+            p.0.escape_unicode(), p.1.escape_unicode(), p.2);
+    }
+    w!("];");
+}
 
-    // for p in properties {
-    //     w!("// {:}..{:}\t{:?}\t# {}",
-    //         p.0.escape_unicode(), p.1.escape_unicode(), p.2, p.3);
-    // }
+fn prev_char(c: char) -> char {
+    std::char::from_u32(c as u32 - 1).unwrap()
 }
 
 fn parse_char(hex: &str) -> char {
     let x = u32::from_str_radix(hex, 16).unwrap();
     std::char::from_u32(x).unwrap()
 }
-
-fn to_gap_tables<T: Clone>(filler: T, properties: &[(char, char, T, String)])
-    -> (Vec<u32>, Vec<T>, Vec<String>)
-{
-    let mut starts = Vec::new();
-    let mut values = Vec::new();
-    let mut comments = Vec::new();
-
-    let mut next = 0;
-    for p in properties {
-        if p.0 as u32 != next {
-            starts.push(next);
-            values.push(filler.clone());
-            comments.push(String::new());
-        }
-
-        starts.push(p.0 as u32);
-        values.push(p.2.clone());
-        comments.push(format!(" // {}", p.3));
-
-        next = p.1 as u32 + 1;
-    }
-
-    starts.push(next);
-    values.push(filler);
-    comments.push(String::new());
-
-    (starts, values, comments)
-}
-
-/*
-
-    w!("            return match c {{");
-
-    //while properties[0].1.is_ascii() {
-    while properties.len() > 0 {
-        let p = &properties[0];
-        w!("                // {}", p.3);
-        w!("                '{}'..='{}' => {:?},",
-            p.0.escape_unicode(), p.1.escape_unicode(), p.2);
-        properties = &properties[1..];
-    }
-
-    w!("                _ => Other,");
-    w!("            }}");
-
-
-*/
