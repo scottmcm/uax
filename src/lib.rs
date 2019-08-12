@@ -21,6 +21,8 @@ mod tests {
         assert_eq!(Word_Break::from(' '), Word_Break::WSegSpace);
         assert_eq!(Word_Break::from('\r'), Word_Break::CR);
         assert_eq!(Word_Break::from('\n'), Word_Break::LF);
+        assert_eq!(Word_Break::from('\u{00FF}'), Word_Break::ALetter);
+        assert_eq!(Word_Break::from('\u{0100}'), Word_Break::ALetter);
         assert_eq!(Word_Break::from('\u{0374}'), Word_Break::ALetter);
         assert_eq!(Word_Break::from('\u{05D0}'), Word_Break::Hebrew_Letter);
         assert_eq!(Word_Break::from('\u{05D1}'), Word_Break::Hebrew_Letter);

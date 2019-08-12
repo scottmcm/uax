@@ -39,11 +39,7 @@ fn main() {
     }
     properties.sort_by_key(|x| x.0);
 
-    if properties[0].0 > '\0' {
-        let p = prev_char(properties[0].0);
-        properties.insert(0, ('\0', p, "Other".to_owned(),
-            "So every possible input is always found in the table".to_owned()))
-    }
+    let mut properties = properties.into_iter().peekable();
 
     let mut f = File::create("src/word_break_table.rs").unwrap();
     macro_rules! w {
@@ -53,18 +49,57 @@ fn main() {
         };
     }
 
-    w!("use crate::property_enums::Word_Break;");
     w!("use crate::lookup_table::LookupTable;");
+    w!("use crate::property_enums::Word_Break;");
     w!("use Word_Break::*;");
     w!();
     w!("impl From<char> for Word_Break {{");
     w!("    #[inline]");
     w!("    fn from(c: char) -> Self {{");
-    w!("        return CHAR_TABLE.get_or(&c, Other);");
+    w!("        if c < ROW0_LIMIT {{");
+    w!("            return ROW0_TABLE.get_or(&(c as u8), Other);");
+    w!("        }}");
+    w!("        if c < PLANE0_LIMIT {{");
+    w!("            return PLANE0_TABLE.get_or(&(c as u16), Other);");
+    w!("        }}");
+    w!("        return SUPPLEMENTARY_TABLE.get_or(&c, Other);");
     w!("    }}");
     w!("}}");
     w!();
-    w!("static CHAR_TABLE: LookupTable<char, Word_Break> = lookup_table![");
+    w!("static ROW0_TABLE: LookupTable<u8, Word_Break> = lookup_table![");
+    if properties.peek().unwrap().0 as u32 > 0 {
+        let p = properties.peek().unwrap();
+        w!("    // So every possible input is always found in the table");
+        w!("    ({:#04X}, {:#04X}, Other),", 0, p.1 as u32 - 1);
+    }
+    while properties.peek().unwrap().1 as u32 <= 0xFF {
+        let p = properties.next().unwrap();
+        w!("    // {}", p.3);
+        w!("    ({:#04X}, {:#04X}, {}),", p.0 as u32, p.1 as u32, p.2);
+    }
+    w!("];");
+    let row0_limit = char::min('\u{100}', properties.peek().unwrap().0);
+    w!("const ROW0_LIMIT: char = '{}';", row0_limit.escape_unicode());
+    w!("static PLANE0_TABLE: LookupTable<u16, Word_Break> = lookup_table![");
+    if properties.peek().unwrap().0 as u32 > 0x100 {
+        let p = properties.peek().unwrap();
+        w!("    // So every possible input is always found in the table");
+        w!("    ({:#06X}, {:#06X}, Other),", 0x100, p.1 as u32 - 1);
+    }
+    while properties.peek().unwrap().1 as u32 <= 0xFFFF {
+        let p = properties.next().unwrap();
+        w!("    // {}", p.3);
+        w!("    ({:#06X}, {:#06X}, {}),", p.0 as u32, p.1 as u32, p.2);
+    }
+    w!("];");
+    let plane0_limit = char::min('\u{10000}', properties.peek().unwrap().0);
+    w!("const PLANE0_LIMIT: char = '{}';", plane0_limit.escape_unicode());
+    w!("static SUPPLEMENTARY_TABLE: LookupTable<char, Word_Break> = lookup_table![");
+    if properties.peek().unwrap().0 as u32 > 0x10000 {
+        let p = properties.peek().unwrap();
+        w!("    // So every possible input is always found in the table");
+        w!("    ({:#06X}, {:#06X}, Other),", 0x10000, p.1 as u32 - 1);
+    }
     for p in properties {
         w!("    // {}", p.3);
         w!("    ('{}', '{}', {}),",

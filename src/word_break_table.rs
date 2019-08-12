@@ -1,1667 +1,1679 @@
-use crate::property_enums::Word_Break;
 use crate::lookup_table::LookupTable;
+use crate::property_enums::Word_Break;
 use Word_Break::*;
 
 impl From<char> for Word_Break {
     #[inline]
     fn from(c: char) -> Self {
-        return CHAR_TABLE.get_or(&c, Other);
+        if c < ROW0_LIMIT {
+            return ROW0_TABLE.get_or(&(c as u8), Other);
+        }
+        if c < PLANE0_LIMIT {
+            return PLANE0_TABLE.get_or(&(c as u16), Other);
+        }
+        return SUPPLEMENTARY_TABLE.get_or(&c, Other);
     }
 }
 
-static CHAR_TABLE: LookupTable<char, Word_Break> = lookup_table![
+static ROW0_TABLE: LookupTable<u8, Word_Break> = lookup_table![
     // So every possible input is always found in the table
-    ('\u{0}', '\u{9}', Other),
+    (0x00, 0x09, Other),
     // Cc       <control-000A>
-    ('\u{a}', '\u{a}', LF),
+    (0x0A, 0x0A, LF),
     // Cc   [2] <control-000B>..<control-000C>
-    ('\u{b}', '\u{c}', Newline),
+    (0x0B, 0x0C, Newline),
     // Cc       <control-000D>
-    ('\u{d}', '\u{d}', CR),
+    (0x0D, 0x0D, CR),
     // Zs       SPACE
-    ('\u{20}', '\u{20}', WSegSpace),
+    (0x20, 0x20, WSegSpace),
     // Po       QUOTATION MARK
-    ('\u{22}', '\u{22}', Double_Quote),
+    (0x22, 0x22, Double_Quote),
     // Po       APOSTROPHE
-    ('\u{27}', '\u{27}', Single_Quote),
+    (0x27, 0x27, Single_Quote),
     // Po       COMMA
-    ('\u{2c}', '\u{2c}', MidNum),
+    (0x2C, 0x2C, MidNum),
     // Po       FULL STOP
-    ('\u{2e}', '\u{2e}', MidNumLet),
+    (0x2E, 0x2E, MidNumLet),
     // Nd  [10] DIGIT ZERO..DIGIT NINE
-    ('\u{30}', '\u{39}', Numeric),
+    (0x30, 0x39, Numeric),
     // Po       COLON
-    ('\u{3a}', '\u{3a}', MidLetter),
+    (0x3A, 0x3A, MidLetter),
     // Po       SEMICOLON
-    ('\u{3b}', '\u{3b}', MidNum),
+    (0x3B, 0x3B, MidNum),
     // L&  [26] LATIN CAPITAL LETTER A..LATIN CAPITAL LETTER Z
-    ('\u{41}', '\u{5a}', ALetter),
+    (0x41, 0x5A, ALetter),
     // Pc       LOW LINE
-    ('\u{5f}', '\u{5f}', ExtendNumLet),
+    (0x5F, 0x5F, ExtendNumLet),
     // L&  [26] LATIN SMALL LETTER A..LATIN SMALL LETTER Z
-    ('\u{61}', '\u{7a}', ALetter),
+    (0x61, 0x7A, ALetter),
     // Cc       <control-0085>
-    ('\u{85}', '\u{85}', Newline),
+    (0x85, 0x85, Newline),
     // Lo       FEMININE ORDINAL INDICATOR
-    ('\u{aa}', '\u{aa}', ALetter),
+    (0xAA, 0xAA, ALetter),
     // Cf       SOFT HYPHEN
-    ('\u{ad}', '\u{ad}', Format),
+    (0xAD, 0xAD, Format),
     // L&       MICRO SIGN
-    ('\u{b5}', '\u{b5}', ALetter),
+    (0xB5, 0xB5, ALetter),
     // Po       MIDDLE DOT
-    ('\u{b7}', '\u{b7}', MidLetter),
+    (0xB7, 0xB7, MidLetter),
     // Lo       MASCULINE ORDINAL INDICATOR
-    ('\u{ba}', '\u{ba}', ALetter),
+    (0xBA, 0xBA, ALetter),
     // L&  [23] LATIN CAPITAL LETTER A WITH GRAVE..LATIN CAPITAL LETTER O WITH DIAERESIS
-    ('\u{c0}', '\u{d6}', ALetter),
+    (0xC0, 0xD6, ALetter),
     // L&  [31] LATIN CAPITAL LETTER O WITH STROKE..LATIN SMALL LETTER O WITH DIAERESIS
-    ('\u{d8}', '\u{f6}', ALetter),
+    (0xD8, 0xF6, ALetter),
+];
+const ROW0_LIMIT: char = '\u{f8}';
+static PLANE0_TABLE: LookupTable<u16, Word_Break> = lookup_table![
     // L& [195] LATIN SMALL LETTER O WITH STROKE..LATIN SMALL LETTER EZH WITH TAIL
-    ('\u{f8}', '\u{1ba}', ALetter),
+    (0x00F8, 0x01BA, ALetter),
     // Lo       LATIN LETTER TWO WITH STROKE
-    ('\u{1bb}', '\u{1bb}', ALetter),
+    (0x01BB, 0x01BB, ALetter),
     // L&   [4] LATIN CAPITAL LETTER TONE FIVE..LATIN LETTER WYNN
-    ('\u{1bc}', '\u{1bf}', ALetter),
+    (0x01BC, 0x01BF, ALetter),
     // Lo   [4] LATIN LETTER DENTAL CLICK..LATIN LETTER RETROFLEX CLICK
-    ('\u{1c0}', '\u{1c3}', ALetter),
+    (0x01C0, 0x01C3, ALetter),
     // L& [208] LATIN CAPITAL LETTER DZ WITH CARON..LATIN SMALL LETTER EZH WITH CURL
-    ('\u{1c4}', '\u{293}', ALetter),
+    (0x01C4, 0x0293, ALetter),
     // Lo       LATIN LETTER GLOTTAL STOP
-    ('\u{294}', '\u{294}', ALetter),
+    (0x0294, 0x0294, ALetter),
     // L&  [27] LATIN LETTER PHARYNGEAL VOICED FRICATIVE..LATIN SMALL LETTER TURNED H WITH FISHHOOK AND TAIL
-    ('\u{295}', '\u{2af}', ALetter),
+    (0x0295, 0x02AF, ALetter),
     // Lm  [18] MODIFIER LETTER SMALL H..MODIFIER LETTER REVERSED GLOTTAL STOP
-    ('\u{2b0}', '\u{2c1}', ALetter),
+    (0x02B0, 0x02C1, ALetter),
     // Sk   [4] MODIFIER LETTER LEFT ARROWHEAD..MODIFIER LETTER DOWN ARROWHEAD
-    ('\u{2c2}', '\u{2c5}', ALetter),
+    (0x02C2, 0x02C5, ALetter),
     // Lm  [12] MODIFIER LETTER CIRCUMFLEX ACCENT..MODIFIER LETTER HALF TRIANGULAR COLON
-    ('\u{2c6}', '\u{2d1}', ALetter),
+    (0x02C6, 0x02D1, ALetter),
     // Sk   [6] MODIFIER LETTER CENTRED RIGHT HALF RING..MODIFIER LETTER MINUS SIGN
-    ('\u{2d2}', '\u{2d7}', ALetter),
+    (0x02D2, 0x02D7, ALetter),
     // Sk   [2] MODIFIER LETTER RHOTIC HOOK..MODIFIER LETTER CROSS ACCENT
-    ('\u{2de}', '\u{2df}', ALetter),
+    (0x02DE, 0x02DF, ALetter),
     // Lm   [5] MODIFIER LETTER SMALL GAMMA..MODIFIER LETTER SMALL REVERSED GLOTTAL STOP
-    ('\u{2e0}', '\u{2e4}', ALetter),
+    (0x02E0, 0x02E4, ALetter),
     // Lm       MODIFIER LETTER VOICING
-    ('\u{2ec}', '\u{2ec}', ALetter),
+    (0x02EC, 0x02EC, ALetter),
     // Sk       MODIFIER LETTER UNASPIRATED
-    ('\u{2ed}', '\u{2ed}', ALetter),
+    (0x02ED, 0x02ED, ALetter),
     // Lm       MODIFIER LETTER DOUBLE APOSTROPHE
-    ('\u{2ee}', '\u{2ee}', ALetter),
+    (0x02EE, 0x02EE, ALetter),
     // Sk  [17] MODIFIER LETTER LOW DOWN ARROWHEAD..MODIFIER LETTER LOW LEFT ARROW
-    ('\u{2ef}', '\u{2ff}', ALetter),
+    (0x02EF, 0x02FF, ALetter),
     // Mn [112] COMBINING GRAVE ACCENT..COMBINING LATIN SMALL LETTER X
-    ('\u{300}', '\u{36f}', Extend),
+    (0x0300, 0x036F, Extend),
     // L&   [4] GREEK CAPITAL LETTER HETA..GREEK SMALL LETTER ARCHAIC SAMPI
-    ('\u{370}', '\u{373}', ALetter),
+    (0x0370, 0x0373, ALetter),
     // Lm       GREEK NUMERAL SIGN
-    ('\u{374}', '\u{374}', ALetter),
+    (0x0374, 0x0374, ALetter),
     // L&   [2] GREEK CAPITAL LETTER PAMPHYLIAN DIGAMMA..GREEK SMALL LETTER PAMPHYLIAN DIGAMMA
-    ('\u{376}', '\u{377}', ALetter),
+    (0x0376, 0x0377, ALetter),
     // Lm       GREEK YPOGEGRAMMENI
-    ('\u{37a}', '\u{37a}', ALetter),
+    (0x037A, 0x037A, ALetter),
     // L&   [3] GREEK SMALL REVERSED LUNATE SIGMA SYMBOL..GREEK SMALL REVERSED DOTTED LUNATE SIGMA SYMBOL
-    ('\u{37b}', '\u{37d}', ALetter),
+    (0x037B, 0x037D, ALetter),
     // Po       GREEK QUESTION MARK
-    ('\u{37e}', '\u{37e}', MidNum),
+    (0x037E, 0x037E, MidNum),
     // L&       GREEK CAPITAL LETTER YOT
-    ('\u{37f}', '\u{37f}', ALetter),
+    (0x037F, 0x037F, ALetter),
     // L&       GREEK CAPITAL LETTER ALPHA WITH TONOS
-    ('\u{386}', '\u{386}', ALetter),
+    (0x0386, 0x0386, ALetter),
     // Po       GREEK ANO TELEIA
-    ('\u{387}', '\u{387}', MidLetter),
+    (0x0387, 0x0387, MidLetter),
     // L&   [3] GREEK CAPITAL LETTER EPSILON WITH TONOS..GREEK CAPITAL LETTER IOTA WITH TONOS
-    ('\u{388}', '\u{38a}', ALetter),
+    (0x0388, 0x038A, ALetter),
     // L&       GREEK CAPITAL LETTER OMICRON WITH TONOS
-    ('\u{38c}', '\u{38c}', ALetter),
+    (0x038C, 0x038C, ALetter),
     // L&  [20] GREEK CAPITAL LETTER UPSILON WITH TONOS..GREEK CAPITAL LETTER RHO
-    ('\u{38e}', '\u{3a1}', ALetter),
+    (0x038E, 0x03A1, ALetter),
     // L&  [83] GREEK CAPITAL LETTER SIGMA..GREEK LUNATE EPSILON SYMBOL
-    ('\u{3a3}', '\u{3f5}', ALetter),
+    (0x03A3, 0x03F5, ALetter),
     // L& [139] GREEK CAPITAL LETTER SHO..CYRILLIC SMALL LETTER KOPPA
-    ('\u{3f7}', '\u{481}', ALetter),
+    (0x03F7, 0x0481, ALetter),
     // Mn   [5] COMBINING CYRILLIC TITLO..COMBINING CYRILLIC POKRYTIE
-    ('\u{483}', '\u{487}', Extend),
+    (0x0483, 0x0487, Extend),
     // Me   [2] COMBINING CYRILLIC HUNDRED THOUSANDS SIGN..COMBINING CYRILLIC MILLIONS SIGN
-    ('\u{488}', '\u{489}', Extend),
+    (0x0488, 0x0489, Extend),
     // L& [166] CYRILLIC CAPITAL LETTER SHORT I WITH TAIL..CYRILLIC SMALL LETTER EL WITH DESCENDER
-    ('\u{48a}', '\u{52f}', ALetter),
+    (0x048A, 0x052F, ALetter),
     // L&  [38] ARMENIAN CAPITAL LETTER AYB..ARMENIAN CAPITAL LETTER FEH
-    ('\u{531}', '\u{556}', ALetter),
+    (0x0531, 0x0556, ALetter),
     // Lm       ARMENIAN MODIFIER LETTER LEFT HALF RING
-    ('\u{559}', '\u{559}', ALetter),
+    (0x0559, 0x0559, ALetter),
     // Po   [2] ARMENIAN EMPHASIS MARK..ARMENIAN EXCLAMATION MARK
-    ('\u{55b}', '\u{55c}', ALetter),
+    (0x055B, 0x055C, ALetter),
     // Po       ARMENIAN QUESTION MARK
-    ('\u{55e}', '\u{55e}', ALetter),
+    (0x055E, 0x055E, ALetter),
     // L&  [41] ARMENIAN SMALL LETTER TURNED AYB..ARMENIAN SMALL LETTER YI WITH STROKE
-    ('\u{560}', '\u{588}', ALetter),
+    (0x0560, 0x0588, ALetter),
     // Po       ARMENIAN FULL STOP
-    ('\u{589}', '\u{589}', MidNum),
+    (0x0589, 0x0589, MidNum),
     // Mn  [45] HEBREW ACCENT ETNAHTA..HEBREW POINT METEG
-    ('\u{591}', '\u{5bd}', Extend),
+    (0x0591, 0x05BD, Extend),
     // Mn       HEBREW POINT RAFE
-    ('\u{5bf}', '\u{5bf}', Extend),
+    (0x05BF, 0x05BF, Extend),
     // Mn   [2] HEBREW POINT SHIN DOT..HEBREW POINT SIN DOT
-    ('\u{5c1}', '\u{5c2}', Extend),
+    (0x05C1, 0x05C2, Extend),
     // Mn   [2] HEBREW MARK UPPER DOT..HEBREW MARK LOWER DOT
-    ('\u{5c4}', '\u{5c5}', Extend),
+    (0x05C4, 0x05C5, Extend),
     // Mn       HEBREW POINT QAMATS QATAN
-    ('\u{5c7}', '\u{5c7}', Extend),
+    (0x05C7, 0x05C7, Extend),
     // Lo  [27] HEBREW LETTER ALEF..HEBREW LETTER TAV
-    ('\u{5d0}', '\u{5ea}', Hebrew_Letter),
+    (0x05D0, 0x05EA, Hebrew_Letter),
     // Lo   [4] HEBREW YOD TRIANGLE..HEBREW LIGATURE YIDDISH DOUBLE YOD
-    ('\u{5ef}', '\u{5f2}', Hebrew_Letter),
+    (0x05EF, 0x05F2, Hebrew_Letter),
     // Po       HEBREW PUNCTUATION GERESH
-    ('\u{5f3}', '\u{5f3}', ALetter),
+    (0x05F3, 0x05F3, ALetter),
     // Po       HEBREW PUNCTUATION GERSHAYIM
-    ('\u{5f4}', '\u{5f4}', MidLetter),
+    (0x05F4, 0x05F4, MidLetter),
     // Cf   [6] ARABIC NUMBER SIGN..ARABIC NUMBER MARK ABOVE
-    ('\u{600}', '\u{605}', Format),
+    (0x0600, 0x0605, Format),
     // Po   [2] ARABIC COMMA..ARABIC DATE SEPARATOR
-    ('\u{60c}', '\u{60d}', MidNum),
+    (0x060C, 0x060D, MidNum),
     // Mn  [11] ARABIC SIGN SALLALLAHOU ALAYHE WASSALLAM..ARABIC SMALL KASRA
-    ('\u{610}', '\u{61a}', Extend),
+    (0x0610, 0x061A, Extend),
     // Cf       ARABIC LETTER MARK
-    ('\u{61c}', '\u{61c}', Format),
+    (0x061C, 0x061C, Format),
     // Lo  [32] ARABIC LETTER KASHMIRI YEH..ARABIC LETTER FARSI YEH WITH THREE DOTS ABOVE
-    ('\u{620}', '\u{63f}', ALetter),
+    (0x0620, 0x063F, ALetter),
     // Lm       ARABIC TATWEEL
-    ('\u{640}', '\u{640}', ALetter),
+    (0x0640, 0x0640, ALetter),
     // Lo  [10] ARABIC LETTER FEH..ARABIC LETTER YEH
-    ('\u{641}', '\u{64a}', ALetter),
+    (0x0641, 0x064A, ALetter),
     // Mn  [21] ARABIC FATHATAN..ARABIC WAVY HAMZA BELOW
-    ('\u{64b}', '\u{65f}', Extend),
+    (0x064B, 0x065F, Extend),
     // Nd  [10] ARABIC-INDIC DIGIT ZERO..ARABIC-INDIC DIGIT NINE
-    ('\u{660}', '\u{669}', Numeric),
+    (0x0660, 0x0669, Numeric),
     // Po       ARABIC DECIMAL SEPARATOR
-    ('\u{66b}', '\u{66b}', Numeric),
+    (0x066B, 0x066B, Numeric),
     // Po       ARABIC THOUSANDS SEPARATOR
-    ('\u{66c}', '\u{66c}', MidNum),
+    (0x066C, 0x066C, MidNum),
     // Lo   [2] ARABIC LETTER DOTLESS BEH..ARABIC LETTER DOTLESS QAF
-    ('\u{66e}', '\u{66f}', ALetter),
+    (0x066E, 0x066F, ALetter),
     // Mn       ARABIC LETTER SUPERSCRIPT ALEF
-    ('\u{670}', '\u{670}', Extend),
+    (0x0670, 0x0670, Extend),
     // Lo  [99] ARABIC LETTER ALEF WASLA..ARABIC LETTER YEH BARREE WITH HAMZA ABOVE
-    ('\u{671}', '\u{6d3}', ALetter),
+    (0x0671, 0x06D3, ALetter),
     // Lo       ARABIC LETTER AE
-    ('\u{6d5}', '\u{6d5}', ALetter),
+    (0x06D5, 0x06D5, ALetter),
     // Mn   [7] ARABIC SMALL HIGH LIGATURE SAD WITH LAM WITH ALEF MAKSURA..ARABIC SMALL HIGH SEEN
-    ('\u{6d6}', '\u{6dc}', Extend),
+    (0x06D6, 0x06DC, Extend),
     // Cf       ARABIC END OF AYAH
-    ('\u{6dd}', '\u{6dd}', Format),
+    (0x06DD, 0x06DD, Format),
     // Mn   [6] ARABIC SMALL HIGH ROUNDED ZERO..ARABIC SMALL HIGH MADDA
-    ('\u{6df}', '\u{6e4}', Extend),
+    (0x06DF, 0x06E4, Extend),
     // Lm   [2] ARABIC SMALL WAW..ARABIC SMALL YEH
-    ('\u{6e5}', '\u{6e6}', ALetter),
+    (0x06E5, 0x06E6, ALetter),
     // Mn   [2] ARABIC SMALL HIGH YEH..ARABIC SMALL HIGH NOON
-    ('\u{6e7}', '\u{6e8}', Extend),
+    (0x06E7, 0x06E8, Extend),
     // Mn   [4] ARABIC EMPTY CENTRE LOW STOP..ARABIC SMALL LOW MEEM
-    ('\u{6ea}', '\u{6ed}', Extend),
+    (0x06EA, 0x06ED, Extend),
     // Lo   [2] ARABIC LETTER DAL WITH INVERTED V..ARABIC LETTER REH WITH INVERTED V
-    ('\u{6ee}', '\u{6ef}', ALetter),
+    (0x06EE, 0x06EF, ALetter),
     // Nd  [10] EXTENDED ARABIC-INDIC DIGIT ZERO..EXTENDED ARABIC-INDIC DIGIT NINE
-    ('\u{6f0}', '\u{6f9}', Numeric),
+    (0x06F0, 0x06F9, Numeric),
     // Lo   [3] ARABIC LETTER SHEEN WITH DOT BELOW..ARABIC LETTER GHAIN WITH DOT BELOW
-    ('\u{6fa}', '\u{6fc}', ALetter),
+    (0x06FA, 0x06FC, ALetter),
     // Lo       ARABIC LETTER HEH WITH INVERTED V
-    ('\u{6ff}', '\u{6ff}', ALetter),
+    (0x06FF, 0x06FF, ALetter),
     // Cf       SYRIAC ABBREVIATION MARK
-    ('\u{70f}', '\u{70f}', Format),
+    (0x070F, 0x070F, Format),
     // Lo       SYRIAC LETTER ALAPH
-    ('\u{710}', '\u{710}', ALetter),
+    (0x0710, 0x0710, ALetter),
     // Mn       SYRIAC LETTER SUPERSCRIPT ALAPH
-    ('\u{711}', '\u{711}', Extend),
+    (0x0711, 0x0711, Extend),
     // Lo  [30] SYRIAC LETTER BETH..SYRIAC LETTER PERSIAN DHALATH
-    ('\u{712}', '\u{72f}', ALetter),
+    (0x0712, 0x072F, ALetter),
     // Mn  [27] SYRIAC PTHAHA ABOVE..SYRIAC BARREKH
-    ('\u{730}', '\u{74a}', Extend),
+    (0x0730, 0x074A, Extend),
     // Lo  [89] SYRIAC LETTER SOGDIAN ZHAIN..THAANA LETTER WAAVU
-    ('\u{74d}', '\u{7a5}', ALetter),
+    (0x074D, 0x07A5, ALetter),
     // Mn  [11] THAANA ABAFILI..THAANA SUKUN
-    ('\u{7a6}', '\u{7b0}', Extend),
+    (0x07A6, 0x07B0, Extend),
     // Lo       THAANA LETTER NAA
-    ('\u{7b1}', '\u{7b1}', ALetter),
+    (0x07B1, 0x07B1, ALetter),
     // Nd  [10] NKO DIGIT ZERO..NKO DIGIT NINE
-    ('\u{7c0}', '\u{7c9}', Numeric),
+    (0x07C0, 0x07C9, Numeric),
     // Lo  [33] NKO LETTER A..NKO LETTER JONA RA
-    ('\u{7ca}', '\u{7ea}', ALetter),
+    (0x07CA, 0x07EA, ALetter),
     // Mn   [9] NKO COMBINING SHORT HIGH TONE..NKO COMBINING DOUBLE DOT ABOVE
-    ('\u{7eb}', '\u{7f3}', Extend),
+    (0x07EB, 0x07F3, Extend),
     // Lm   [2] NKO HIGH TONE APOSTROPHE..NKO LOW TONE APOSTROPHE
-    ('\u{7f4}', '\u{7f5}', ALetter),
+    (0x07F4, 0x07F5, ALetter),
     // Po       NKO COMMA
-    ('\u{7f8}', '\u{7f8}', MidNum),
+    (0x07F8, 0x07F8, MidNum),
     // Lm       NKO LAJANYALAN
-    ('\u{7fa}', '\u{7fa}', ALetter),
+    (0x07FA, 0x07FA, ALetter),
     // Mn       NKO DANTAYALAN
-    ('\u{7fd}', '\u{7fd}', Extend),
+    (0x07FD, 0x07FD, Extend),
     // Lo  [22] SAMARITAN LETTER ALAF..SAMARITAN LETTER TAAF
-    ('\u{800}', '\u{815}', ALetter),
+    (0x0800, 0x0815, ALetter),
     // Mn   [4] SAMARITAN MARK IN..SAMARITAN MARK DAGESH
-    ('\u{816}', '\u{819}', Extend),
+    (0x0816, 0x0819, Extend),
     // Lm       SAMARITAN MODIFIER LETTER EPENTHETIC YUT
-    ('\u{81a}', '\u{81a}', ALetter),
+    (0x081A, 0x081A, ALetter),
     // Mn   [9] SAMARITAN MARK EPENTHETIC YUT..SAMARITAN VOWEL SIGN A
-    ('\u{81b}', '\u{823}', Extend),
+    (0x081B, 0x0823, Extend),
     // Lm       SAMARITAN MODIFIER LETTER SHORT A
-    ('\u{824}', '\u{824}', ALetter),
+    (0x0824, 0x0824, ALetter),
     // Mn   [3] SAMARITAN VOWEL SIGN SHORT A..SAMARITAN VOWEL SIGN U
-    ('\u{825}', '\u{827}', Extend),
+    (0x0825, 0x0827, Extend),
     // Lm       SAMARITAN MODIFIER LETTER I
-    ('\u{828}', '\u{828}', ALetter),
+    (0x0828, 0x0828, ALetter),
     // Mn   [5] SAMARITAN VOWEL SIGN LONG I..SAMARITAN MARK NEQUDAA
-    ('\u{829}', '\u{82d}', Extend),
+    (0x0829, 0x082D, Extend),
     // Lo  [25] MANDAIC LETTER HALQA..MANDAIC LETTER AIN
-    ('\u{840}', '\u{858}', ALetter),
+    (0x0840, 0x0858, ALetter),
     // Mn   [3] MANDAIC AFFRICATION MARK..MANDAIC GEMINATION MARK
-    ('\u{859}', '\u{85b}', Extend),
+    (0x0859, 0x085B, Extend),
     // Lo  [11] SYRIAC LETTER MALAYALAM NGA..SYRIAC LETTER MALAYALAM SSA
-    ('\u{860}', '\u{86a}', ALetter),
+    (0x0860, 0x086A, ALetter),
     // Lo  [21] ARABIC LETTER BEH WITH SMALL V BELOW..ARABIC LETTER KAF WITH DOT BELOW
-    ('\u{8a0}', '\u{8b4}', ALetter),
+    (0x08A0, 0x08B4, ALetter),
     // Lo   [8] ARABIC LETTER BEH WITH SMALL MEEM ABOVE..ARABIC LETTER AFRICAN NOON
-    ('\u{8b6}', '\u{8bd}', ALetter),
+    (0x08B6, 0x08BD, ALetter),
     // Mn  [15] ARABIC SMALL LOW WAW..ARABIC SMALL HIGH SIGN SAFHA
-    ('\u{8d3}', '\u{8e1}', Extend),
+    (0x08D3, 0x08E1, Extend),
     // Cf       ARABIC DISPUTED END OF AYAH
-    ('\u{8e2}', '\u{8e2}', Format),
+    (0x08E2, 0x08E2, Format),
     // Mn  [32] ARABIC TURNED DAMMA BELOW..DEVANAGARI SIGN ANUSVARA
-    ('\u{8e3}', '\u{902}', Extend),
+    (0x08E3, 0x0902, Extend),
     // Mc       DEVANAGARI SIGN VISARGA
-    ('\u{903}', '\u{903}', Extend),
+    (0x0903, 0x0903, Extend),
     // Lo  [54] DEVANAGARI LETTER SHORT A..DEVANAGARI LETTER HA
-    ('\u{904}', '\u{939}', ALetter),
+    (0x0904, 0x0939, ALetter),
     // Mn       DEVANAGARI VOWEL SIGN OE
-    ('\u{93a}', '\u{93a}', Extend),
+    (0x093A, 0x093A, Extend),
     // Mc       DEVANAGARI VOWEL SIGN OOE
-    ('\u{93b}', '\u{93b}', Extend),
+    (0x093B, 0x093B, Extend),
     // Mn       DEVANAGARI SIGN NUKTA
-    ('\u{93c}', '\u{93c}', Extend),
+    (0x093C, 0x093C, Extend),
     // Lo       DEVANAGARI SIGN AVAGRAHA
-    ('\u{93d}', '\u{93d}', ALetter),
+    (0x093D, 0x093D, ALetter),
     // Mc   [3] DEVANAGARI VOWEL SIGN AA..DEVANAGARI VOWEL SIGN II
-    ('\u{93e}', '\u{940}', Extend),
+    (0x093E, 0x0940, Extend),
     // Mn   [8] DEVANAGARI VOWEL SIGN U..DEVANAGARI VOWEL SIGN AI
-    ('\u{941}', '\u{948}', Extend),
+    (0x0941, 0x0948, Extend),
     // Mc   [4] DEVANAGARI VOWEL SIGN CANDRA O..DEVANAGARI VOWEL SIGN AU
-    ('\u{949}', '\u{94c}', Extend),
+    (0x0949, 0x094C, Extend),
     // Mn       DEVANAGARI SIGN VIRAMA
-    ('\u{94d}', '\u{94d}', Extend),
+    (0x094D, 0x094D, Extend),
     // Mc   [2] DEVANAGARI VOWEL SIGN PRISHTHAMATRA E..DEVANAGARI VOWEL SIGN AW
-    ('\u{94e}', '\u{94f}', Extend),
+    (0x094E, 0x094F, Extend),
     // Lo       DEVANAGARI OM
-    ('\u{950}', '\u{950}', ALetter),
+    (0x0950, 0x0950, ALetter),
     // Mn   [7] DEVANAGARI STRESS SIGN UDATTA..DEVANAGARI VOWEL SIGN UUE
-    ('\u{951}', '\u{957}', Extend),
+    (0x0951, 0x0957, Extend),
     // Lo  [10] DEVANAGARI LETTER QA..DEVANAGARI LETTER VOCALIC LL
-    ('\u{958}', '\u{961}', ALetter),
+    (0x0958, 0x0961, ALetter),
     // Mn   [2] DEVANAGARI VOWEL SIGN VOCALIC L..DEVANAGARI VOWEL SIGN VOCALIC LL
-    ('\u{962}', '\u{963}', Extend),
+    (0x0962, 0x0963, Extend),
     // Nd  [10] DEVANAGARI DIGIT ZERO..DEVANAGARI DIGIT NINE
-    ('\u{966}', '\u{96f}', Numeric),
+    (0x0966, 0x096F, Numeric),
     // Lm       DEVANAGARI SIGN HIGH SPACING DOT
-    ('\u{971}', '\u{971}', ALetter),
+    (0x0971, 0x0971, ALetter),
     // Lo  [15] DEVANAGARI LETTER CANDRA A..BENGALI ANJI
-    ('\u{972}', '\u{980}', ALetter),
+    (0x0972, 0x0980, ALetter),
     // Mn       BENGALI SIGN CANDRABINDU
-    ('\u{981}', '\u{981}', Extend),
+    (0x0981, 0x0981, Extend),
     // Mc   [2] BENGALI SIGN ANUSVARA..BENGALI SIGN VISARGA
-    ('\u{982}', '\u{983}', Extend),
+    (0x0982, 0x0983, Extend),
     // Lo   [8] BENGALI LETTER A..BENGALI LETTER VOCALIC L
-    ('\u{985}', '\u{98c}', ALetter),
+    (0x0985, 0x098C, ALetter),
     // Lo   [2] BENGALI LETTER E..BENGALI LETTER AI
-    ('\u{98f}', '\u{990}', ALetter),
+    (0x098F, 0x0990, ALetter),
     // Lo  [22] BENGALI LETTER O..BENGALI LETTER NA
-    ('\u{993}', '\u{9a8}', ALetter),
+    (0x0993, 0x09A8, ALetter),
     // Lo   [7] BENGALI LETTER PA..BENGALI LETTER RA
-    ('\u{9aa}', '\u{9b0}', ALetter),
+    (0x09AA, 0x09B0, ALetter),
     // Lo       BENGALI LETTER LA
-    ('\u{9b2}', '\u{9b2}', ALetter),
+    (0x09B2, 0x09B2, ALetter),
     // Lo   [4] BENGALI LETTER SHA..BENGALI LETTER HA
-    ('\u{9b6}', '\u{9b9}', ALetter),
+    (0x09B6, 0x09B9, ALetter),
     // Mn       BENGALI SIGN NUKTA
-    ('\u{9bc}', '\u{9bc}', Extend),
+    (0x09BC, 0x09BC, Extend),
     // Lo       BENGALI SIGN AVAGRAHA
-    ('\u{9bd}', '\u{9bd}', ALetter),
+    (0x09BD, 0x09BD, ALetter),
     // Mc   [3] BENGALI VOWEL SIGN AA..BENGALI VOWEL SIGN II
-    ('\u{9be}', '\u{9c0}', Extend),
+    (0x09BE, 0x09C0, Extend),
     // Mn   [4] BENGALI VOWEL SIGN U..BENGALI VOWEL SIGN VOCALIC RR
-    ('\u{9c1}', '\u{9c4}', Extend),
+    (0x09C1, 0x09C4, Extend),
     // Mc   [2] BENGALI VOWEL SIGN E..BENGALI VOWEL SIGN AI
-    ('\u{9c7}', '\u{9c8}', Extend),
+    (0x09C7, 0x09C8, Extend),
     // Mc   [2] BENGALI VOWEL SIGN O..BENGALI VOWEL SIGN AU
-    ('\u{9cb}', '\u{9cc}', Extend),
+    (0x09CB, 0x09CC, Extend),
     // Mn       BENGALI SIGN VIRAMA
-    ('\u{9cd}', '\u{9cd}', Extend),
+    (0x09CD, 0x09CD, Extend),
     // Lo       BENGALI LETTER KHANDA TA
-    ('\u{9ce}', '\u{9ce}', ALetter),
+    (0x09CE, 0x09CE, ALetter),
     // Mc       BENGALI AU LENGTH MARK
-    ('\u{9d7}', '\u{9d7}', Extend),
+    (0x09D7, 0x09D7, Extend),
     // Lo   [2] BENGALI LETTER RRA..BENGALI LETTER RHA
-    ('\u{9dc}', '\u{9dd}', ALetter),
+    (0x09DC, 0x09DD, ALetter),
     // Lo   [3] BENGALI LETTER YYA..BENGALI LETTER VOCALIC LL
-    ('\u{9df}', '\u{9e1}', ALetter),
+    (0x09DF, 0x09E1, ALetter),
     // Mn   [2] BENGALI VOWEL SIGN VOCALIC L..BENGALI VOWEL SIGN VOCALIC LL
-    ('\u{9e2}', '\u{9e3}', Extend),
+    (0x09E2, 0x09E3, Extend),
     // Nd  [10] BENGALI DIGIT ZERO..BENGALI DIGIT NINE
-    ('\u{9e6}', '\u{9ef}', Numeric),
+    (0x09E6, 0x09EF, Numeric),
     // Lo   [2] BENGALI LETTER RA WITH MIDDLE DIAGONAL..BENGALI LETTER RA WITH LOWER DIAGONAL
-    ('\u{9f0}', '\u{9f1}', ALetter),
+    (0x09F0, 0x09F1, ALetter),
     // Lo       BENGALI LETTER VEDIC ANUSVARA
-    ('\u{9fc}', '\u{9fc}', ALetter),
+    (0x09FC, 0x09FC, ALetter),
     // Mn       BENGALI SANDHI MARK
-    ('\u{9fe}', '\u{9fe}', Extend),
+    (0x09FE, 0x09FE, Extend),
     // Mn   [2] GURMUKHI SIGN ADAK BINDI..GURMUKHI SIGN BINDI
-    ('\u{a01}', '\u{a02}', Extend),
+    (0x0A01, 0x0A02, Extend),
     // Mc       GURMUKHI SIGN VISARGA
-    ('\u{a03}', '\u{a03}', Extend),
+    (0x0A03, 0x0A03, Extend),
     // Lo   [6] GURMUKHI LETTER A..GURMUKHI LETTER UU
-    ('\u{a05}', '\u{a0a}', ALetter),
+    (0x0A05, 0x0A0A, ALetter),
     // Lo   [2] GURMUKHI LETTER EE..GURMUKHI LETTER AI
-    ('\u{a0f}', '\u{a10}', ALetter),
+    (0x0A0F, 0x0A10, ALetter),
     // Lo  [22] GURMUKHI LETTER OO..GURMUKHI LETTER NA
-    ('\u{a13}', '\u{a28}', ALetter),
+    (0x0A13, 0x0A28, ALetter),
     // Lo   [7] GURMUKHI LETTER PA..GURMUKHI LETTER RA
-    ('\u{a2a}', '\u{a30}', ALetter),
+    (0x0A2A, 0x0A30, ALetter),
     // Lo   [2] GURMUKHI LETTER LA..GURMUKHI LETTER LLA
-    ('\u{a32}', '\u{a33}', ALetter),
+    (0x0A32, 0x0A33, ALetter),
     // Lo   [2] GURMUKHI LETTER VA..GURMUKHI LETTER SHA
-    ('\u{a35}', '\u{a36}', ALetter),
+    (0x0A35, 0x0A36, ALetter),
     // Lo   [2] GURMUKHI LETTER SA..GURMUKHI LETTER HA
-    ('\u{a38}', '\u{a39}', ALetter),
+    (0x0A38, 0x0A39, ALetter),
     // Mn       GURMUKHI SIGN NUKTA
-    ('\u{a3c}', '\u{a3c}', Extend),
+    (0x0A3C, 0x0A3C, Extend),
     // Mc   [3] GURMUKHI VOWEL SIGN AA..GURMUKHI VOWEL SIGN II
-    ('\u{a3e}', '\u{a40}', Extend),
+    (0x0A3E, 0x0A40, Extend),
     // Mn   [2] GURMUKHI VOWEL SIGN U..GURMUKHI VOWEL SIGN UU
-    ('\u{a41}', '\u{a42}', Extend),
+    (0x0A41, 0x0A42, Extend),
     // Mn   [2] GURMUKHI VOWEL SIGN EE..GURMUKHI VOWEL SIGN AI
-    ('\u{a47}', '\u{a48}', Extend),
+    (0x0A47, 0x0A48, Extend),
     // Mn   [3] GURMUKHI VOWEL SIGN OO..GURMUKHI SIGN VIRAMA
-    ('\u{a4b}', '\u{a4d}', Extend),
+    (0x0A4B, 0x0A4D, Extend),
     // Mn       GURMUKHI SIGN UDAAT
-    ('\u{a51}', '\u{a51}', Extend),
+    (0x0A51, 0x0A51, Extend),
     // Lo   [4] GURMUKHI LETTER KHHA..GURMUKHI LETTER RRA
-    ('\u{a59}', '\u{a5c}', ALetter),
+    (0x0A59, 0x0A5C, ALetter),
     // Lo       GURMUKHI LETTER FA
-    ('\u{a5e}', '\u{a5e}', ALetter),
+    (0x0A5E, 0x0A5E, ALetter),
     // Nd  [10] GURMUKHI DIGIT ZERO..GURMUKHI DIGIT NINE
-    ('\u{a66}', '\u{a6f}', Numeric),
+    (0x0A66, 0x0A6F, Numeric),
     // Mn   [2] GURMUKHI TIPPI..GURMUKHI ADDAK
-    ('\u{a70}', '\u{a71}', Extend),
+    (0x0A70, 0x0A71, Extend),
     // Lo   [3] GURMUKHI IRI..GURMUKHI EK ONKAR
-    ('\u{a72}', '\u{a74}', ALetter),
+    (0x0A72, 0x0A74, ALetter),
     // Mn       GURMUKHI SIGN YAKASH
-    ('\u{a75}', '\u{a75}', Extend),
+    (0x0A75, 0x0A75, Extend),
     // Mn   [2] GUJARATI SIGN CANDRABINDU..GUJARATI SIGN ANUSVARA
-    ('\u{a81}', '\u{a82}', Extend),
+    (0x0A81, 0x0A82, Extend),
     // Mc       GUJARATI SIGN VISARGA
-    ('\u{a83}', '\u{a83}', Extend),
+    (0x0A83, 0x0A83, Extend),
     // Lo   [9] GUJARATI LETTER A..GUJARATI VOWEL CANDRA E
-    ('\u{a85}', '\u{a8d}', ALetter),
+    (0x0A85, 0x0A8D, ALetter),
     // Lo   [3] GUJARATI LETTER E..GUJARATI VOWEL CANDRA O
-    ('\u{a8f}', '\u{a91}', ALetter),
+    (0x0A8F, 0x0A91, ALetter),
     // Lo  [22] GUJARATI LETTER O..GUJARATI LETTER NA
-    ('\u{a93}', '\u{aa8}', ALetter),
+    (0x0A93, 0x0AA8, ALetter),
     // Lo   [7] GUJARATI LETTER PA..GUJARATI LETTER RA
-    ('\u{aaa}', '\u{ab0}', ALetter),
+    (0x0AAA, 0x0AB0, ALetter),
     // Lo   [2] GUJARATI LETTER LA..GUJARATI LETTER LLA
-    ('\u{ab2}', '\u{ab3}', ALetter),
+    (0x0AB2, 0x0AB3, ALetter),
     // Lo   [5] GUJARATI LETTER VA..GUJARATI LETTER HA
-    ('\u{ab5}', '\u{ab9}', ALetter),
+    (0x0AB5, 0x0AB9, ALetter),
     // Mn       GUJARATI SIGN NUKTA
-    ('\u{abc}', '\u{abc}', Extend),
+    (0x0ABC, 0x0ABC, Extend),
     // Lo       GUJARATI SIGN AVAGRAHA
-    ('\u{abd}', '\u{abd}', ALetter),
+    (0x0ABD, 0x0ABD, ALetter),
     // Mc   [3] GUJARATI VOWEL SIGN AA..GUJARATI VOWEL SIGN II
-    ('\u{abe}', '\u{ac0}', Extend),
+    (0x0ABE, 0x0AC0, Extend),
     // Mn   [5] GUJARATI VOWEL SIGN U..GUJARATI VOWEL SIGN CANDRA E
-    ('\u{ac1}', '\u{ac5}', Extend),
+    (0x0AC1, 0x0AC5, Extend),
     // Mn   [2] GUJARATI VOWEL SIGN E..GUJARATI VOWEL SIGN AI
-    ('\u{ac7}', '\u{ac8}', Extend),
+    (0x0AC7, 0x0AC8, Extend),
     // Mc       GUJARATI VOWEL SIGN CANDRA O
-    ('\u{ac9}', '\u{ac9}', Extend),
+    (0x0AC9, 0x0AC9, Extend),
     // Mc   [2] GUJARATI VOWEL SIGN O..GUJARATI VOWEL SIGN AU
-    ('\u{acb}', '\u{acc}', Extend),
+    (0x0ACB, 0x0ACC, Extend),
     // Mn       GUJARATI SIGN VIRAMA
-    ('\u{acd}', '\u{acd}', Extend),
+    (0x0ACD, 0x0ACD, Extend),
     // Lo       GUJARATI OM
-    ('\u{ad0}', '\u{ad0}', ALetter),
+    (0x0AD0, 0x0AD0, ALetter),
     // Lo   [2] GUJARATI LETTER VOCALIC RR..GUJARATI LETTER VOCALIC LL
-    ('\u{ae0}', '\u{ae1}', ALetter),
+    (0x0AE0, 0x0AE1, ALetter),
     // Mn   [2] GUJARATI VOWEL SIGN VOCALIC L..GUJARATI VOWEL SIGN VOCALIC LL
-    ('\u{ae2}', '\u{ae3}', Extend),
+    (0x0AE2, 0x0AE3, Extend),
     // Nd  [10] GUJARATI DIGIT ZERO..GUJARATI DIGIT NINE
-    ('\u{ae6}', '\u{aef}', Numeric),
+    (0x0AE6, 0x0AEF, Numeric),
     // Lo       GUJARATI LETTER ZHA
-    ('\u{af9}', '\u{af9}', ALetter),
+    (0x0AF9, 0x0AF9, ALetter),
     // Mn   [6] GUJARATI SIGN SUKUN..GUJARATI SIGN TWO-CIRCLE NUKTA ABOVE
-    ('\u{afa}', '\u{aff}', Extend),
+    (0x0AFA, 0x0AFF, Extend),
     // Mn       ORIYA SIGN CANDRABINDU
-    ('\u{b01}', '\u{b01}', Extend),
+    (0x0B01, 0x0B01, Extend),
     // Mc   [2] ORIYA SIGN ANUSVARA..ORIYA SIGN VISARGA
-    ('\u{b02}', '\u{b03}', Extend),
+    (0x0B02, 0x0B03, Extend),
     // Lo   [8] ORIYA LETTER A..ORIYA LETTER VOCALIC L
-    ('\u{b05}', '\u{b0c}', ALetter),
+    (0x0B05, 0x0B0C, ALetter),
     // Lo   [2] ORIYA LETTER E..ORIYA LETTER AI
-    ('\u{b0f}', '\u{b10}', ALetter),
+    (0x0B0F, 0x0B10, ALetter),
     // Lo  [22] ORIYA LETTER O..ORIYA LETTER NA
-    ('\u{b13}', '\u{b28}', ALetter),
+    (0x0B13, 0x0B28, ALetter),
     // Lo   [7] ORIYA LETTER PA..ORIYA LETTER RA
-    ('\u{b2a}', '\u{b30}', ALetter),
+    (0x0B2A, 0x0B30, ALetter),
     // Lo   [2] ORIYA LETTER LA..ORIYA LETTER LLA
-    ('\u{b32}', '\u{b33}', ALetter),
+    (0x0B32, 0x0B33, ALetter),
     // Lo   [5] ORIYA LETTER VA..ORIYA LETTER HA
-    ('\u{b35}', '\u{b39}', ALetter),
+    (0x0B35, 0x0B39, ALetter),
     // Mn       ORIYA SIGN NUKTA
-    ('\u{b3c}', '\u{b3c}', Extend),
+    (0x0B3C, 0x0B3C, Extend),
     // Lo       ORIYA SIGN AVAGRAHA
-    ('\u{b3d}', '\u{b3d}', ALetter),
+    (0x0B3D, 0x0B3D, ALetter),
     // Mc       ORIYA VOWEL SIGN AA
-    ('\u{b3e}', '\u{b3e}', Extend),
+    (0x0B3E, 0x0B3E, Extend),
     // Mn       ORIYA VOWEL SIGN I
-    ('\u{b3f}', '\u{b3f}', Extend),
+    (0x0B3F, 0x0B3F, Extend),
     // Mc       ORIYA VOWEL SIGN II
-    ('\u{b40}', '\u{b40}', Extend),
+    (0x0B40, 0x0B40, Extend),
     // Mn   [4] ORIYA VOWEL SIGN U..ORIYA VOWEL SIGN VOCALIC RR
-    ('\u{b41}', '\u{b44}', Extend),
+    (0x0B41, 0x0B44, Extend),
     // Mc   [2] ORIYA VOWEL SIGN E..ORIYA VOWEL SIGN AI
-    ('\u{b47}', '\u{b48}', Extend),
+    (0x0B47, 0x0B48, Extend),
     // Mc   [2] ORIYA VOWEL SIGN O..ORIYA VOWEL SIGN AU
-    ('\u{b4b}', '\u{b4c}', Extend),
+    (0x0B4B, 0x0B4C, Extend),
     // Mn       ORIYA SIGN VIRAMA
-    ('\u{b4d}', '\u{b4d}', Extend),
+    (0x0B4D, 0x0B4D, Extend),
     // Mn       ORIYA AI LENGTH MARK
-    ('\u{b56}', '\u{b56}', Extend),
+    (0x0B56, 0x0B56, Extend),
     // Mc       ORIYA AU LENGTH MARK
-    ('\u{b57}', '\u{b57}', Extend),
+    (0x0B57, 0x0B57, Extend),
     // Lo   [2] ORIYA LETTER RRA..ORIYA LETTER RHA
-    ('\u{b5c}', '\u{b5d}', ALetter),
+    (0x0B5C, 0x0B5D, ALetter),
     // Lo   [3] ORIYA LETTER YYA..ORIYA LETTER VOCALIC LL
-    ('\u{b5f}', '\u{b61}', ALetter),
+    (0x0B5F, 0x0B61, ALetter),
     // Mn   [2] ORIYA VOWEL SIGN VOCALIC L..ORIYA VOWEL SIGN VOCALIC LL
-    ('\u{b62}', '\u{b63}', Extend),
+    (0x0B62, 0x0B63, Extend),
     // Nd  [10] ORIYA DIGIT ZERO..ORIYA DIGIT NINE
-    ('\u{b66}', '\u{b6f}', Numeric),
+    (0x0B66, 0x0B6F, Numeric),
     // Lo       ORIYA LETTER WA
-    ('\u{b71}', '\u{b71}', ALetter),
+    (0x0B71, 0x0B71, ALetter),
     // Mn       TAMIL SIGN ANUSVARA
-    ('\u{b82}', '\u{b82}', Extend),
+    (0x0B82, 0x0B82, Extend),
     // Lo       TAMIL SIGN VISARGA
-    ('\u{b83}', '\u{b83}', ALetter),
+    (0x0B83, 0x0B83, ALetter),
     // Lo   [6] TAMIL LETTER A..TAMIL LETTER UU
-    ('\u{b85}', '\u{b8a}', ALetter),
+    (0x0B85, 0x0B8A, ALetter),
     // Lo   [3] TAMIL LETTER E..TAMIL LETTER AI
-    ('\u{b8e}', '\u{b90}', ALetter),
+    (0x0B8E, 0x0B90, ALetter),
     // Lo   [4] TAMIL LETTER O..TAMIL LETTER KA
-    ('\u{b92}', '\u{b95}', ALetter),
+    (0x0B92, 0x0B95, ALetter),
     // Lo   [2] TAMIL LETTER NGA..TAMIL LETTER CA
-    ('\u{b99}', '\u{b9a}', ALetter),
+    (0x0B99, 0x0B9A, ALetter),
     // Lo       TAMIL LETTER JA
-    ('\u{b9c}', '\u{b9c}', ALetter),
+    (0x0B9C, 0x0B9C, ALetter),
     // Lo   [2] TAMIL LETTER NYA..TAMIL LETTER TTA
-    ('\u{b9e}', '\u{b9f}', ALetter),
+    (0x0B9E, 0x0B9F, ALetter),
     // Lo   [2] TAMIL LETTER NNA..TAMIL LETTER TA
-    ('\u{ba3}', '\u{ba4}', ALetter),
+    (0x0BA3, 0x0BA4, ALetter),
     // Lo   [3] TAMIL LETTER NA..TAMIL LETTER PA
-    ('\u{ba8}', '\u{baa}', ALetter),
+    (0x0BA8, 0x0BAA, ALetter),
     // Lo  [12] TAMIL LETTER MA..TAMIL LETTER HA
-    ('\u{bae}', '\u{bb9}', ALetter),
+    (0x0BAE, 0x0BB9, ALetter),
     // Mc   [2] TAMIL VOWEL SIGN AA..TAMIL VOWEL SIGN I
-    ('\u{bbe}', '\u{bbf}', Extend),
+    (0x0BBE, 0x0BBF, Extend),
     // Mn       TAMIL VOWEL SIGN II
-    ('\u{bc0}', '\u{bc0}', Extend),
+    (0x0BC0, 0x0BC0, Extend),
     // Mc   [2] TAMIL VOWEL SIGN U..TAMIL VOWEL SIGN UU
-    ('\u{bc1}', '\u{bc2}', Extend),
+    (0x0BC1, 0x0BC2, Extend),
     // Mc   [3] TAMIL VOWEL SIGN E..TAMIL VOWEL SIGN AI
-    ('\u{bc6}', '\u{bc8}', Extend),
+    (0x0BC6, 0x0BC8, Extend),
     // Mc   [3] TAMIL VOWEL SIGN O..TAMIL VOWEL SIGN AU
-    ('\u{bca}', '\u{bcc}', Extend),
+    (0x0BCA, 0x0BCC, Extend),
     // Mn       TAMIL SIGN VIRAMA
-    ('\u{bcd}', '\u{bcd}', Extend),
+    (0x0BCD, 0x0BCD, Extend),
     // Lo       TAMIL OM
-    ('\u{bd0}', '\u{bd0}', ALetter),
+    (0x0BD0, 0x0BD0, ALetter),
     // Mc       TAMIL AU LENGTH MARK
-    ('\u{bd7}', '\u{bd7}', Extend),
+    (0x0BD7, 0x0BD7, Extend),
     // Nd  [10] TAMIL DIGIT ZERO..TAMIL DIGIT NINE
-    ('\u{be6}', '\u{bef}', Numeric),
+    (0x0BE6, 0x0BEF, Numeric),
     // Mn       TELUGU SIGN COMBINING CANDRABINDU ABOVE
-    ('\u{c00}', '\u{c00}', Extend),
+    (0x0C00, 0x0C00, Extend),
     // Mc   [3] TELUGU SIGN CANDRABINDU..TELUGU SIGN VISARGA
-    ('\u{c01}', '\u{c03}', Extend),
+    (0x0C01, 0x0C03, Extend),
     // Mn       TELUGU SIGN COMBINING ANUSVARA ABOVE
-    ('\u{c04}', '\u{c04}', Extend),
+    (0x0C04, 0x0C04, Extend),
     // Lo   [8] TELUGU LETTER A..TELUGU LETTER VOCALIC L
-    ('\u{c05}', '\u{c0c}', ALetter),
+    (0x0C05, 0x0C0C, ALetter),
     // Lo   [3] TELUGU LETTER E..TELUGU LETTER AI
-    ('\u{c0e}', '\u{c10}', ALetter),
+    (0x0C0E, 0x0C10, ALetter),
     // Lo  [23] TELUGU LETTER O..TELUGU LETTER NA
-    ('\u{c12}', '\u{c28}', ALetter),
+    (0x0C12, 0x0C28, ALetter),
     // Lo  [16] TELUGU LETTER PA..TELUGU LETTER HA
-    ('\u{c2a}', '\u{c39}', ALetter),
+    (0x0C2A, 0x0C39, ALetter),
     // Lo       TELUGU SIGN AVAGRAHA
-    ('\u{c3d}', '\u{c3d}', ALetter),
+    (0x0C3D, 0x0C3D, ALetter),
     // Mn   [3] TELUGU VOWEL SIGN AA..TELUGU VOWEL SIGN II
-    ('\u{c3e}', '\u{c40}', Extend),
+    (0x0C3E, 0x0C40, Extend),
     // Mc   [4] TELUGU VOWEL SIGN U..TELUGU VOWEL SIGN VOCALIC RR
-    ('\u{c41}', '\u{c44}', Extend),
+    (0x0C41, 0x0C44, Extend),
     // Mn   [3] TELUGU VOWEL SIGN E..TELUGU VOWEL SIGN AI
-    ('\u{c46}', '\u{c48}', Extend),
+    (0x0C46, 0x0C48, Extend),
     // Mn   [4] TELUGU VOWEL SIGN O..TELUGU SIGN VIRAMA
-    ('\u{c4a}', '\u{c4d}', Extend),
+    (0x0C4A, 0x0C4D, Extend),
     // Mn   [2] TELUGU LENGTH MARK..TELUGU AI LENGTH MARK
-    ('\u{c55}', '\u{c56}', Extend),
+    (0x0C55, 0x0C56, Extend),
     // Lo   [3] TELUGU LETTER TSA..TELUGU LETTER RRRA
-    ('\u{c58}', '\u{c5a}', ALetter),
+    (0x0C58, 0x0C5A, ALetter),
     // Lo   [2] TELUGU LETTER VOCALIC RR..TELUGU LETTER VOCALIC LL
-    ('\u{c60}', '\u{c61}', ALetter),
+    (0x0C60, 0x0C61, ALetter),
     // Mn   [2] TELUGU VOWEL SIGN VOCALIC L..TELUGU VOWEL SIGN VOCALIC LL
-    ('\u{c62}', '\u{c63}', Extend),
+    (0x0C62, 0x0C63, Extend),
     // Nd  [10] TELUGU DIGIT ZERO..TELUGU DIGIT NINE
-    ('\u{c66}', '\u{c6f}', Numeric),
+    (0x0C66, 0x0C6F, Numeric),
     // Lo       KANNADA SIGN SPACING CANDRABINDU
-    ('\u{c80}', '\u{c80}', ALetter),
+    (0x0C80, 0x0C80, ALetter),
     // Mn       KANNADA SIGN CANDRABINDU
-    ('\u{c81}', '\u{c81}', Extend),
+    (0x0C81, 0x0C81, Extend),
     // Mc   [2] KANNADA SIGN ANUSVARA..KANNADA SIGN VISARGA
-    ('\u{c82}', '\u{c83}', Extend),
+    (0x0C82, 0x0C83, Extend),
     // Lo   [8] KANNADA LETTER A..KANNADA LETTER VOCALIC L
-    ('\u{c85}', '\u{c8c}', ALetter),
+    (0x0C85, 0x0C8C, ALetter),
     // Lo   [3] KANNADA LETTER E..KANNADA LETTER AI
-    ('\u{c8e}', '\u{c90}', ALetter),
+    (0x0C8E, 0x0C90, ALetter),
     // Lo  [23] KANNADA LETTER O..KANNADA LETTER NA
-    ('\u{c92}', '\u{ca8}', ALetter),
+    (0x0C92, 0x0CA8, ALetter),
     // Lo  [10] KANNADA LETTER PA..KANNADA LETTER LLA
-    ('\u{caa}', '\u{cb3}', ALetter),
+    (0x0CAA, 0x0CB3, ALetter),
     // Lo   [5] KANNADA LETTER VA..KANNADA LETTER HA
-    ('\u{cb5}', '\u{cb9}', ALetter),
+    (0x0CB5, 0x0CB9, ALetter),
     // Mn       KANNADA SIGN NUKTA
-    ('\u{cbc}', '\u{cbc}', Extend),
+    (0x0CBC, 0x0CBC, Extend),
     // Lo       KANNADA SIGN AVAGRAHA
-    ('\u{cbd}', '\u{cbd}', ALetter),
+    (0x0CBD, 0x0CBD, ALetter),
     // Mc       KANNADA VOWEL SIGN AA
-    ('\u{cbe}', '\u{cbe}', Extend),
+    (0x0CBE, 0x0CBE, Extend),
     // Mn       KANNADA VOWEL SIGN I
-    ('\u{cbf}', '\u{cbf}', Extend),
+    (0x0CBF, 0x0CBF, Extend),
     // Mc   [5] KANNADA VOWEL SIGN II..KANNADA VOWEL SIGN VOCALIC RR
-    ('\u{cc0}', '\u{cc4}', Extend),
+    (0x0CC0, 0x0CC4, Extend),
     // Mn       KANNADA VOWEL SIGN E
-    ('\u{cc6}', '\u{cc6}', Extend),
+    (0x0CC6, 0x0CC6, Extend),
     // Mc   [2] KANNADA VOWEL SIGN EE..KANNADA VOWEL SIGN AI
-    ('\u{cc7}', '\u{cc8}', Extend),
+    (0x0CC7, 0x0CC8, Extend),
     // Mc   [2] KANNADA VOWEL SIGN O..KANNADA VOWEL SIGN OO
-    ('\u{cca}', '\u{ccb}', Extend),
+    (0x0CCA, 0x0CCB, Extend),
     // Mn   [2] KANNADA VOWEL SIGN AU..KANNADA SIGN VIRAMA
-    ('\u{ccc}', '\u{ccd}', Extend),
+    (0x0CCC, 0x0CCD, Extend),
     // Mc   [2] KANNADA LENGTH MARK..KANNADA AI LENGTH MARK
-    ('\u{cd5}', '\u{cd6}', Extend),
+    (0x0CD5, 0x0CD6, Extend),
     // Lo       KANNADA LETTER FA
-    ('\u{cde}', '\u{cde}', ALetter),
+    (0x0CDE, 0x0CDE, ALetter),
     // Lo   [2] KANNADA LETTER VOCALIC RR..KANNADA LETTER VOCALIC LL
-    ('\u{ce0}', '\u{ce1}', ALetter),
+    (0x0CE0, 0x0CE1, ALetter),
     // Mn   [2] KANNADA VOWEL SIGN VOCALIC L..KANNADA VOWEL SIGN VOCALIC LL
-    ('\u{ce2}', '\u{ce3}', Extend),
+    (0x0CE2, 0x0CE3, Extend),
     // Nd  [10] KANNADA DIGIT ZERO..KANNADA DIGIT NINE
-    ('\u{ce6}', '\u{cef}', Numeric),
+    (0x0CE6, 0x0CEF, Numeric),
     // Lo   [2] KANNADA SIGN JIHVAMULIYA..KANNADA SIGN UPADHMANIYA
-    ('\u{cf1}', '\u{cf2}', ALetter),
+    (0x0CF1, 0x0CF2, ALetter),
     // Mn   [2] MALAYALAM SIGN COMBINING ANUSVARA ABOVE..MALAYALAM SIGN CANDRABINDU
-    ('\u{d00}', '\u{d01}', Extend),
+    (0x0D00, 0x0D01, Extend),
     // Mc   [2] MALAYALAM SIGN ANUSVARA..MALAYALAM SIGN VISARGA
-    ('\u{d02}', '\u{d03}', Extend),
+    (0x0D02, 0x0D03, Extend),
     // Lo   [8] MALAYALAM LETTER A..MALAYALAM LETTER VOCALIC L
-    ('\u{d05}', '\u{d0c}', ALetter),
+    (0x0D05, 0x0D0C, ALetter),
     // Lo   [3] MALAYALAM LETTER E..MALAYALAM LETTER AI
-    ('\u{d0e}', '\u{d10}', ALetter),
+    (0x0D0E, 0x0D10, ALetter),
     // Lo  [41] MALAYALAM LETTER O..MALAYALAM LETTER TTTA
-    ('\u{d12}', '\u{d3a}', ALetter),
+    (0x0D12, 0x0D3A, ALetter),
     // Mn   [2] MALAYALAM SIGN VERTICAL BAR VIRAMA..MALAYALAM SIGN CIRCULAR VIRAMA
-    ('\u{d3b}', '\u{d3c}', Extend),
+    (0x0D3B, 0x0D3C, Extend),
     // Lo       MALAYALAM SIGN AVAGRAHA
-    ('\u{d3d}', '\u{d3d}', ALetter),
+    (0x0D3D, 0x0D3D, ALetter),
     // Mc   [3] MALAYALAM VOWEL SIGN AA..MALAYALAM VOWEL SIGN II
-    ('\u{d3e}', '\u{d40}', Extend),
+    (0x0D3E, 0x0D40, Extend),
     // Mn   [4] MALAYALAM VOWEL SIGN U..MALAYALAM VOWEL SIGN VOCALIC RR
-    ('\u{d41}', '\u{d44}', Extend),
+    (0x0D41, 0x0D44, Extend),
     // Mc   [3] MALAYALAM VOWEL SIGN E..MALAYALAM VOWEL SIGN AI
-    ('\u{d46}', '\u{d48}', Extend),
+    (0x0D46, 0x0D48, Extend),
     // Mc   [3] MALAYALAM VOWEL SIGN O..MALAYALAM VOWEL SIGN AU
-    ('\u{d4a}', '\u{d4c}', Extend),
+    (0x0D4A, 0x0D4C, Extend),
     // Mn       MALAYALAM SIGN VIRAMA
-    ('\u{d4d}', '\u{d4d}', Extend),
+    (0x0D4D, 0x0D4D, Extend),
     // Lo       MALAYALAM LETTER DOT REPH
-    ('\u{d4e}', '\u{d4e}', ALetter),
+    (0x0D4E, 0x0D4E, ALetter),
     // Lo   [3] MALAYALAM LETTER CHILLU M..MALAYALAM LETTER CHILLU LLL
-    ('\u{d54}', '\u{d56}', ALetter),
+    (0x0D54, 0x0D56, ALetter),
     // Mc       MALAYALAM AU LENGTH MARK
-    ('\u{d57}', '\u{d57}', Extend),
+    (0x0D57, 0x0D57, Extend),
     // Lo   [3] MALAYALAM LETTER ARCHAIC II..MALAYALAM LETTER VOCALIC LL
-    ('\u{d5f}', '\u{d61}', ALetter),
+    (0x0D5F, 0x0D61, ALetter),
     // Mn   [2] MALAYALAM VOWEL SIGN VOCALIC L..MALAYALAM VOWEL SIGN VOCALIC LL
-    ('\u{d62}', '\u{d63}', Extend),
+    (0x0D62, 0x0D63, Extend),
     // Nd  [10] MALAYALAM DIGIT ZERO..MALAYALAM DIGIT NINE
-    ('\u{d66}', '\u{d6f}', Numeric),
+    (0x0D66, 0x0D6F, Numeric),
     // Lo   [6] MALAYALAM LETTER CHILLU NN..MALAYALAM LETTER CHILLU K
-    ('\u{d7a}', '\u{d7f}', ALetter),
+    (0x0D7A, 0x0D7F, ALetter),
     // Mc   [2] SINHALA SIGN ANUSVARAYA..SINHALA SIGN VISARGAYA
-    ('\u{d82}', '\u{d83}', Extend),
+    (0x0D82, 0x0D83, Extend),
     // Lo  [18] SINHALA LETTER AYANNA..SINHALA LETTER AUYANNA
-    ('\u{d85}', '\u{d96}', ALetter),
+    (0x0D85, 0x0D96, ALetter),
     // Lo  [24] SINHALA LETTER ALPAPRAANA KAYANNA..SINHALA LETTER DANTAJA NAYANNA
-    ('\u{d9a}', '\u{db1}', ALetter),
+    (0x0D9A, 0x0DB1, ALetter),
     // Lo   [9] SINHALA LETTER SANYAKA DAYANNA..SINHALA LETTER RAYANNA
-    ('\u{db3}', '\u{dbb}', ALetter),
+    (0x0DB3, 0x0DBB, ALetter),
     // Lo       SINHALA LETTER DANTAJA LAYANNA
-    ('\u{dbd}', '\u{dbd}', ALetter),
+    (0x0DBD, 0x0DBD, ALetter),
     // Lo   [7] SINHALA LETTER VAYANNA..SINHALA LETTER FAYANNA
-    ('\u{dc0}', '\u{dc6}', ALetter),
+    (0x0DC0, 0x0DC6, ALetter),
     // Mn       SINHALA SIGN AL-LAKUNA
-    ('\u{dca}', '\u{dca}', Extend),
+    (0x0DCA, 0x0DCA, Extend),
     // Mc   [3] SINHALA VOWEL SIGN AELA-PILLA..SINHALA VOWEL SIGN DIGA AEDA-PILLA
-    ('\u{dcf}', '\u{dd1}', Extend),
+    (0x0DCF, 0x0DD1, Extend),
     // Mn   [3] SINHALA VOWEL SIGN KETTI IS-PILLA..SINHALA VOWEL SIGN KETTI PAA-PILLA
-    ('\u{dd2}', '\u{dd4}', Extend),
+    (0x0DD2, 0x0DD4, Extend),
     // Mn       SINHALA VOWEL SIGN DIGA PAA-PILLA
-    ('\u{dd6}', '\u{dd6}', Extend),
+    (0x0DD6, 0x0DD6, Extend),
     // Mc   [8] SINHALA VOWEL SIGN GAETTA-PILLA..SINHALA VOWEL SIGN GAYANUKITTA
-    ('\u{dd8}', '\u{ddf}', Extend),
+    (0x0DD8, 0x0DDF, Extend),
     // Nd  [10] SINHALA LITH DIGIT ZERO..SINHALA LITH DIGIT NINE
-    ('\u{de6}', '\u{def}', Numeric),
+    (0x0DE6, 0x0DEF, Numeric),
     // Mc   [2] SINHALA VOWEL SIGN DIGA GAETTA-PILLA..SINHALA VOWEL SIGN DIGA GAYANUKITTA
-    ('\u{df2}', '\u{df3}', Extend),
+    (0x0DF2, 0x0DF3, Extend),
     // Mn       THAI CHARACTER MAI HAN-AKAT
-    ('\u{e31}', '\u{e31}', Extend),
+    (0x0E31, 0x0E31, Extend),
     // Mn   [7] THAI CHARACTER SARA I..THAI CHARACTER PHINTHU
-    ('\u{e34}', '\u{e3a}', Extend),
+    (0x0E34, 0x0E3A, Extend),
     // Mn   [8] THAI CHARACTER MAITAIKHU..THAI CHARACTER YAMAKKAN
-    ('\u{e47}', '\u{e4e}', Extend),
+    (0x0E47, 0x0E4E, Extend),
     // Nd  [10] THAI DIGIT ZERO..THAI DIGIT NINE
-    ('\u{e50}', '\u{e59}', Numeric),
+    (0x0E50, 0x0E59, Numeric),
     // Mn       LAO VOWEL SIGN MAI KAN
-    ('\u{eb1}', '\u{eb1}', Extend),
+    (0x0EB1, 0x0EB1, Extend),
     // Mn   [9] LAO VOWEL SIGN I..LAO SEMIVOWEL SIGN LO
-    ('\u{eb4}', '\u{ebc}', Extend),
+    (0x0EB4, 0x0EBC, Extend),
     // Mn   [6] LAO TONE MAI EK..LAO NIGGAHITA
-    ('\u{ec8}', '\u{ecd}', Extend),
+    (0x0EC8, 0x0ECD, Extend),
     // Nd  [10] LAO DIGIT ZERO..LAO DIGIT NINE
-    ('\u{ed0}', '\u{ed9}', Numeric),
+    (0x0ED0, 0x0ED9, Numeric),
     // Lo       TIBETAN SYLLABLE OM
-    ('\u{f00}', '\u{f00}', ALetter),
+    (0x0F00, 0x0F00, ALetter),
     // Mn   [2] TIBETAN ASTROLOGICAL SIGN -KHYUD PA..TIBETAN ASTROLOGICAL SIGN SDONG TSHUGS
-    ('\u{f18}', '\u{f19}', Extend),
+    (0x0F18, 0x0F19, Extend),
     // Nd  [10] TIBETAN DIGIT ZERO..TIBETAN DIGIT NINE
-    ('\u{f20}', '\u{f29}', Numeric),
+    (0x0F20, 0x0F29, Numeric),
     // Mn       TIBETAN MARK NGAS BZUNG NYI ZLA
-    ('\u{f35}', '\u{f35}', Extend),
+    (0x0F35, 0x0F35, Extend),
     // Mn       TIBETAN MARK NGAS BZUNG SGOR RTAGS
-    ('\u{f37}', '\u{f37}', Extend),
+    (0x0F37, 0x0F37, Extend),
     // Mn       TIBETAN MARK TSA -PHRU
-    ('\u{f39}', '\u{f39}', Extend),
+    (0x0F39, 0x0F39, Extend),
     // Mc   [2] TIBETAN SIGN YAR TSHES..TIBETAN SIGN MAR TSHES
-    ('\u{f3e}', '\u{f3f}', Extend),
+    (0x0F3E, 0x0F3F, Extend),
     // Lo   [8] TIBETAN LETTER KA..TIBETAN LETTER JA
-    ('\u{f40}', '\u{f47}', ALetter),
+    (0x0F40, 0x0F47, ALetter),
     // Lo  [36] TIBETAN LETTER NYA..TIBETAN LETTER RRA
-    ('\u{f49}', '\u{f6c}', ALetter),
+    (0x0F49, 0x0F6C, ALetter),
     // Mn  [14] TIBETAN VOWEL SIGN AA..TIBETAN SIGN RJES SU NGA RO
-    ('\u{f71}', '\u{f7e}', Extend),
+    (0x0F71, 0x0F7E, Extend),
     // Mc       TIBETAN SIGN RNAM BCAD
-    ('\u{f7f}', '\u{f7f}', Extend),
+    (0x0F7F, 0x0F7F, Extend),
     // Mn   [5] TIBETAN VOWEL SIGN REVERSED I..TIBETAN MARK HALANTA
-    ('\u{f80}', '\u{f84}', Extend),
+    (0x0F80, 0x0F84, Extend),
     // Mn   [2] TIBETAN SIGN LCI RTAGS..TIBETAN SIGN YANG RTAGS
-    ('\u{f86}', '\u{f87}', Extend),
+    (0x0F86, 0x0F87, Extend),
     // Lo   [5] TIBETAN SIGN LCE TSA CAN..TIBETAN SIGN INVERTED MCHU CAN
-    ('\u{f88}', '\u{f8c}', ALetter),
+    (0x0F88, 0x0F8C, ALetter),
     // Mn  [11] TIBETAN SUBJOINED SIGN LCE TSA CAN..TIBETAN SUBJOINED LETTER JA
-    ('\u{f8d}', '\u{f97}', Extend),
+    (0x0F8D, 0x0F97, Extend),
     // Mn  [36] TIBETAN SUBJOINED LETTER NYA..TIBETAN SUBJOINED LETTER FIXED-FORM RA
-    ('\u{f99}', '\u{fbc}', Extend),
+    (0x0F99, 0x0FBC, Extend),
     // Mn       TIBETAN SYMBOL PADMA GDAN
-    ('\u{fc6}', '\u{fc6}', Extend),
+    (0x0FC6, 0x0FC6, Extend),
     // Mc   [2] MYANMAR VOWEL SIGN TALL AA..MYANMAR VOWEL SIGN AA
-    ('\u{102b}', '\u{102c}', Extend),
+    (0x102B, 0x102C, Extend),
     // Mn   [4] MYANMAR VOWEL SIGN I..MYANMAR VOWEL SIGN UU
-    ('\u{102d}', '\u{1030}', Extend),
+    (0x102D, 0x1030, Extend),
     // Mc       MYANMAR VOWEL SIGN E
-    ('\u{1031}', '\u{1031}', Extend),
+    (0x1031, 0x1031, Extend),
     // Mn   [6] MYANMAR VOWEL SIGN AI..MYANMAR SIGN DOT BELOW
-    ('\u{1032}', '\u{1037}', Extend),
+    (0x1032, 0x1037, Extend),
     // Mc       MYANMAR SIGN VISARGA
-    ('\u{1038}', '\u{1038}', Extend),
+    (0x1038, 0x1038, Extend),
     // Mn   [2] MYANMAR SIGN VIRAMA..MYANMAR SIGN ASAT
-    ('\u{1039}', '\u{103a}', Extend),
+    (0x1039, 0x103A, Extend),
     // Mc   [2] MYANMAR CONSONANT SIGN MEDIAL YA..MYANMAR CONSONANT SIGN MEDIAL RA
-    ('\u{103b}', '\u{103c}', Extend),
+    (0x103B, 0x103C, Extend),
     // Mn   [2] MYANMAR CONSONANT SIGN MEDIAL WA..MYANMAR CONSONANT SIGN MEDIAL HA
-    ('\u{103d}', '\u{103e}', Extend),
+    (0x103D, 0x103E, Extend),
     // Nd  [10] MYANMAR DIGIT ZERO..MYANMAR DIGIT NINE
-    ('\u{1040}', '\u{1049}', Numeric),
+    (0x1040, 0x1049, Numeric),
     // Mc   [2] MYANMAR VOWEL SIGN VOCALIC R..MYANMAR VOWEL SIGN VOCALIC RR
-    ('\u{1056}', '\u{1057}', Extend),
+    (0x1056, 0x1057, Extend),
     // Mn   [2] MYANMAR VOWEL SIGN VOCALIC L..MYANMAR VOWEL SIGN VOCALIC LL
-    ('\u{1058}', '\u{1059}', Extend),
+    (0x1058, 0x1059, Extend),
     // Mn   [3] MYANMAR CONSONANT SIGN MON MEDIAL NA..MYANMAR CONSONANT SIGN MON MEDIAL LA
-    ('\u{105e}', '\u{1060}', Extend),
+    (0x105E, 0x1060, Extend),
     // Mc   [3] MYANMAR VOWEL SIGN SGAW KAREN EU..MYANMAR TONE MARK SGAW KAREN KE PHO
-    ('\u{1062}', '\u{1064}', Extend),
+    (0x1062, 0x1064, Extend),
     // Mc   [7] MYANMAR VOWEL SIGN WESTERN PWO KAREN EU..MYANMAR SIGN WESTERN PWO KAREN TONE-5
-    ('\u{1067}', '\u{106d}', Extend),
+    (0x1067, 0x106D, Extend),
     // Mn   [4] MYANMAR VOWEL SIGN GEBA KAREN I..MYANMAR VOWEL SIGN KAYAH EE
-    ('\u{1071}', '\u{1074}', Extend),
+    (0x1071, 0x1074, Extend),
     // Mn       MYANMAR CONSONANT SIGN SHAN MEDIAL WA
-    ('\u{1082}', '\u{1082}', Extend),
+    (0x1082, 0x1082, Extend),
     // Mc   [2] MYANMAR VOWEL SIGN SHAN AA..MYANMAR VOWEL SIGN SHAN E
-    ('\u{1083}', '\u{1084}', Extend),
+    (0x1083, 0x1084, Extend),
     // Mn   [2] MYANMAR VOWEL SIGN SHAN E ABOVE..MYANMAR VOWEL SIGN SHAN FINAL Y
-    ('\u{1085}', '\u{1086}', Extend),
+    (0x1085, 0x1086, Extend),
     // Mc   [6] MYANMAR SIGN SHAN TONE-2..MYANMAR SIGN SHAN COUNCIL TONE-3
-    ('\u{1087}', '\u{108c}', Extend),
+    (0x1087, 0x108C, Extend),
     // Mn       MYANMAR SIGN SHAN COUNCIL EMPHATIC TONE
-    ('\u{108d}', '\u{108d}', Extend),
+    (0x108D, 0x108D, Extend),
     // Mc       MYANMAR SIGN RUMAI PALAUNG TONE-5
-    ('\u{108f}', '\u{108f}', Extend),
+    (0x108F, 0x108F, Extend),
     // Nd  [10] MYANMAR SHAN DIGIT ZERO..MYANMAR SHAN DIGIT NINE
-    ('\u{1090}', '\u{1099}', Numeric),
+    (0x1090, 0x1099, Numeric),
     // Mc   [3] MYANMAR SIGN KHAMTI TONE-1..MYANMAR VOWEL SIGN AITON A
-    ('\u{109a}', '\u{109c}', Extend),
+    (0x109A, 0x109C, Extend),
     // Mn       MYANMAR VOWEL SIGN AITON AI
-    ('\u{109d}', '\u{109d}', Extend),
+    (0x109D, 0x109D, Extend),
     // L&  [38] GEORGIAN CAPITAL LETTER AN..GEORGIAN CAPITAL LETTER HOE
-    ('\u{10a0}', '\u{10c5}', ALetter),
+    (0x10A0, 0x10C5, ALetter),
     // L&       GEORGIAN CAPITAL LETTER YN
-    ('\u{10c7}', '\u{10c7}', ALetter),
+    (0x10C7, 0x10C7, ALetter),
     // L&       GEORGIAN CAPITAL LETTER AEN
-    ('\u{10cd}', '\u{10cd}', ALetter),
+    (0x10CD, 0x10CD, ALetter),
     // L&  [43] GEORGIAN LETTER AN..GEORGIAN LETTER AIN
-    ('\u{10d0}', '\u{10fa}', ALetter),
+    (0x10D0, 0x10FA, ALetter),
     // Lm       MODIFIER LETTER GEORGIAN NAR
-    ('\u{10fc}', '\u{10fc}', ALetter),
+    (0x10FC, 0x10FC, ALetter),
     // L&   [3] GEORGIAN LETTER AEN..GEORGIAN LETTER LABIAL SIGN
-    ('\u{10fd}', '\u{10ff}', ALetter),
+    (0x10FD, 0x10FF, ALetter),
     // Lo [329] HANGUL CHOSEONG KIYEOK..ETHIOPIC SYLLABLE QWA
-    ('\u{1100}', '\u{1248}', ALetter),
+    (0x1100, 0x1248, ALetter),
     // Lo   [4] ETHIOPIC SYLLABLE QWI..ETHIOPIC SYLLABLE QWE
-    ('\u{124a}', '\u{124d}', ALetter),
+    (0x124A, 0x124D, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE QHA..ETHIOPIC SYLLABLE QHO
-    ('\u{1250}', '\u{1256}', ALetter),
+    (0x1250, 0x1256, ALetter),
     // Lo       ETHIOPIC SYLLABLE QHWA
-    ('\u{1258}', '\u{1258}', ALetter),
+    (0x1258, 0x1258, ALetter),
     // Lo   [4] ETHIOPIC SYLLABLE QHWI..ETHIOPIC SYLLABLE QHWE
-    ('\u{125a}', '\u{125d}', ALetter),
+    (0x125A, 0x125D, ALetter),
     // Lo  [41] ETHIOPIC SYLLABLE BA..ETHIOPIC SYLLABLE XWA
-    ('\u{1260}', '\u{1288}', ALetter),
+    (0x1260, 0x1288, ALetter),
     // Lo   [4] ETHIOPIC SYLLABLE XWI..ETHIOPIC SYLLABLE XWE
-    ('\u{128a}', '\u{128d}', ALetter),
+    (0x128A, 0x128D, ALetter),
     // Lo  [33] ETHIOPIC SYLLABLE NA..ETHIOPIC SYLLABLE KWA
-    ('\u{1290}', '\u{12b0}', ALetter),
+    (0x1290, 0x12B0, ALetter),
     // Lo   [4] ETHIOPIC SYLLABLE KWI..ETHIOPIC SYLLABLE KWE
-    ('\u{12b2}', '\u{12b5}', ALetter),
+    (0x12B2, 0x12B5, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE KXA..ETHIOPIC SYLLABLE KXO
-    ('\u{12b8}', '\u{12be}', ALetter),
+    (0x12B8, 0x12BE, ALetter),
     // Lo       ETHIOPIC SYLLABLE KXWA
-    ('\u{12c0}', '\u{12c0}', ALetter),
+    (0x12C0, 0x12C0, ALetter),
     // Lo   [4] ETHIOPIC SYLLABLE KXWI..ETHIOPIC SYLLABLE KXWE
-    ('\u{12c2}', '\u{12c5}', ALetter),
+    (0x12C2, 0x12C5, ALetter),
     // Lo  [15] ETHIOPIC SYLLABLE WA..ETHIOPIC SYLLABLE PHARYNGEAL O
-    ('\u{12c8}', '\u{12d6}', ALetter),
+    (0x12C8, 0x12D6, ALetter),
     // Lo  [57] ETHIOPIC SYLLABLE ZA..ETHIOPIC SYLLABLE GWA
-    ('\u{12d8}', '\u{1310}', ALetter),
+    (0x12D8, 0x1310, ALetter),
     // Lo   [4] ETHIOPIC SYLLABLE GWI..ETHIOPIC SYLLABLE GWE
-    ('\u{1312}', '\u{1315}', ALetter),
+    (0x1312, 0x1315, ALetter),
     // Lo  [67] ETHIOPIC SYLLABLE GGA..ETHIOPIC SYLLABLE FYA
-    ('\u{1318}', '\u{135a}', ALetter),
+    (0x1318, 0x135A, ALetter),
     // Mn   [3] ETHIOPIC COMBINING GEMINATION AND VOWEL LENGTH MARK..ETHIOPIC COMBINING GEMINATION MARK
-    ('\u{135d}', '\u{135f}', Extend),
+    (0x135D, 0x135F, Extend),
     // Lo  [16] ETHIOPIC SYLLABLE SEBATBEIT MWA..ETHIOPIC SYLLABLE PWE
-    ('\u{1380}', '\u{138f}', ALetter),
+    (0x1380, 0x138F, ALetter),
     // L&  [86] CHEROKEE LETTER A..CHEROKEE LETTER MV
-    ('\u{13a0}', '\u{13f5}', ALetter),
+    (0x13A0, 0x13F5, ALetter),
     // L&   [6] CHEROKEE SMALL LETTER YE..CHEROKEE SMALL LETTER MV
-    ('\u{13f8}', '\u{13fd}', ALetter),
+    (0x13F8, 0x13FD, ALetter),
     // Lo [620] CANADIAN SYLLABICS E..CANADIAN SYLLABICS CARRIER TTSA
-    ('\u{1401}', '\u{166c}', ALetter),
+    (0x1401, 0x166C, ALetter),
     // Lo  [17] CANADIAN SYLLABICS QAI..CANADIAN SYLLABICS BLACKFOOT W
-    ('\u{166f}', '\u{167f}', ALetter),
+    (0x166F, 0x167F, ALetter),
     // Zs       OGHAM SPACE MARK
-    ('\u{1680}', '\u{1680}', WSegSpace),
+    (0x1680, 0x1680, WSegSpace),
     // Lo  [26] OGHAM LETTER BEITH..OGHAM LETTER PEITH
-    ('\u{1681}', '\u{169a}', ALetter),
+    (0x1681, 0x169A, ALetter),
     // Lo  [75] RUNIC LETTER FEHU FEOH FE F..RUNIC LETTER X
-    ('\u{16a0}', '\u{16ea}', ALetter),
+    (0x16A0, 0x16EA, ALetter),
     // Nl   [3] RUNIC ARLAUG SYMBOL..RUNIC BELGTHOR SYMBOL
-    ('\u{16ee}', '\u{16f0}', ALetter),
+    (0x16EE, 0x16F0, ALetter),
     // Lo   [8] RUNIC LETTER K..RUNIC LETTER FRANKS CASKET AESC
-    ('\u{16f1}', '\u{16f8}', ALetter),
+    (0x16F1, 0x16F8, ALetter),
     // Lo  [13] TAGALOG LETTER A..TAGALOG LETTER YA
-    ('\u{1700}', '\u{170c}', ALetter),
+    (0x1700, 0x170C, ALetter),
     // Lo   [4] TAGALOG LETTER LA..TAGALOG LETTER HA
-    ('\u{170e}', '\u{1711}', ALetter),
+    (0x170E, 0x1711, ALetter),
     // Mn   [3] TAGALOG VOWEL SIGN I..TAGALOG SIGN VIRAMA
-    ('\u{1712}', '\u{1714}', Extend),
+    (0x1712, 0x1714, Extend),
     // Lo  [18] HANUNOO LETTER A..HANUNOO LETTER HA
-    ('\u{1720}', '\u{1731}', ALetter),
+    (0x1720, 0x1731, ALetter),
     // Mn   [3] HANUNOO VOWEL SIGN I..HANUNOO SIGN PAMUDPOD
-    ('\u{1732}', '\u{1734}', Extend),
+    (0x1732, 0x1734, Extend),
     // Lo  [18] BUHID LETTER A..BUHID LETTER HA
-    ('\u{1740}', '\u{1751}', ALetter),
+    (0x1740, 0x1751, ALetter),
     // Mn   [2] BUHID VOWEL SIGN I..BUHID VOWEL SIGN U
-    ('\u{1752}', '\u{1753}', Extend),
+    (0x1752, 0x1753, Extend),
     // Lo  [13] TAGBANWA LETTER A..TAGBANWA LETTER YA
-    ('\u{1760}', '\u{176c}', ALetter),
+    (0x1760, 0x176C, ALetter),
     // Lo   [3] TAGBANWA LETTER LA..TAGBANWA LETTER SA
-    ('\u{176e}', '\u{1770}', ALetter),
+    (0x176E, 0x1770, ALetter),
     // Mn   [2] TAGBANWA VOWEL SIGN I..TAGBANWA VOWEL SIGN U
-    ('\u{1772}', '\u{1773}', Extend),
+    (0x1772, 0x1773, Extend),
     // Mn   [2] KHMER VOWEL INHERENT AQ..KHMER VOWEL INHERENT AA
-    ('\u{17b4}', '\u{17b5}', Extend),
+    (0x17B4, 0x17B5, Extend),
     // Mc       KHMER VOWEL SIGN AA
-    ('\u{17b6}', '\u{17b6}', Extend),
+    (0x17B6, 0x17B6, Extend),
     // Mn   [7] KHMER VOWEL SIGN I..KHMER VOWEL SIGN UA
-    ('\u{17b7}', '\u{17bd}', Extend),
+    (0x17B7, 0x17BD, Extend),
     // Mc   [8] KHMER VOWEL SIGN OE..KHMER VOWEL SIGN AU
-    ('\u{17be}', '\u{17c5}', Extend),
+    (0x17BE, 0x17C5, Extend),
     // Mn       KHMER SIGN NIKAHIT
-    ('\u{17c6}', '\u{17c6}', Extend),
+    (0x17C6, 0x17C6, Extend),
     // Mc   [2] KHMER SIGN REAHMUK..KHMER SIGN YUUKALEAPINTU
-    ('\u{17c7}', '\u{17c8}', Extend),
+    (0x17C7, 0x17C8, Extend),
     // Mn  [11] KHMER SIGN MUUSIKATOAN..KHMER SIGN BATHAMASAT
-    ('\u{17c9}', '\u{17d3}', Extend),
+    (0x17C9, 0x17D3, Extend),
     // Mn       KHMER SIGN ATTHACAN
-    ('\u{17dd}', '\u{17dd}', Extend),
+    (0x17DD, 0x17DD, Extend),
     // Nd  [10] KHMER DIGIT ZERO..KHMER DIGIT NINE
-    ('\u{17e0}', '\u{17e9}', Numeric),
+    (0x17E0, 0x17E9, Numeric),
     // Mn   [3] MONGOLIAN FREE VARIATION SELECTOR ONE..MONGOLIAN FREE VARIATION SELECTOR THREE
-    ('\u{180b}', '\u{180d}', Extend),
+    (0x180B, 0x180D, Extend),
     // Cf       MONGOLIAN VOWEL SEPARATOR
-    ('\u{180e}', '\u{180e}', Format),
+    (0x180E, 0x180E, Format),
     // Nd  [10] MONGOLIAN DIGIT ZERO..MONGOLIAN DIGIT NINE
-    ('\u{1810}', '\u{1819}', Numeric),
+    (0x1810, 0x1819, Numeric),
     // Lo  [35] MONGOLIAN LETTER A..MONGOLIAN LETTER CHI
-    ('\u{1820}', '\u{1842}', ALetter),
+    (0x1820, 0x1842, ALetter),
     // Lm       MONGOLIAN LETTER TODO LONG VOWEL SIGN
-    ('\u{1843}', '\u{1843}', ALetter),
+    (0x1843, 0x1843, ALetter),
     // Lo  [53] MONGOLIAN LETTER TODO E..MONGOLIAN LETTER CHA WITH TWO DOTS
-    ('\u{1844}', '\u{1878}', ALetter),
+    (0x1844, 0x1878, ALetter),
     // Lo   [5] MONGOLIAN LETTER ALI GALI ANUSVARA ONE..MONGOLIAN LETTER ALI GALI INVERTED UBADAMA
-    ('\u{1880}', '\u{1884}', ALetter),
+    (0x1880, 0x1884, ALetter),
     // Mn   [2] MONGOLIAN LETTER ALI GALI BALUDA..MONGOLIAN LETTER ALI GALI THREE BALUDA
-    ('\u{1885}', '\u{1886}', Extend),
+    (0x1885, 0x1886, Extend),
     // Lo  [34] MONGOLIAN LETTER ALI GALI A..MONGOLIAN LETTER MANCHU ALI GALI BHA
-    ('\u{1887}', '\u{18a8}', ALetter),
+    (0x1887, 0x18A8, ALetter),
     // Mn       MONGOLIAN LETTER ALI GALI DAGALGA
-    ('\u{18a9}', '\u{18a9}', Extend),
+    (0x18A9, 0x18A9, Extend),
     // Lo       MONGOLIAN LETTER MANCHU ALI GALI LHA
-    ('\u{18aa}', '\u{18aa}', ALetter),
+    (0x18AA, 0x18AA, ALetter),
     // Lo  [70] CANADIAN SYLLABICS OY..CANADIAN SYLLABICS CARRIER DENTAL S
-    ('\u{18b0}', '\u{18f5}', ALetter),
+    (0x18B0, 0x18F5, ALetter),
     // Lo  [31] LIMBU VOWEL-CARRIER LETTER..LIMBU LETTER TRA
-    ('\u{1900}', '\u{191e}', ALetter),
+    (0x1900, 0x191E, ALetter),
     // Mn   [3] LIMBU VOWEL SIGN A..LIMBU VOWEL SIGN U
-    ('\u{1920}', '\u{1922}', Extend),
+    (0x1920, 0x1922, Extend),
     // Mc   [4] LIMBU VOWEL SIGN EE..LIMBU VOWEL SIGN AU
-    ('\u{1923}', '\u{1926}', Extend),
+    (0x1923, 0x1926, Extend),
     // Mn   [2] LIMBU VOWEL SIGN E..LIMBU VOWEL SIGN O
-    ('\u{1927}', '\u{1928}', Extend),
+    (0x1927, 0x1928, Extend),
     // Mc   [3] LIMBU SUBJOINED LETTER YA..LIMBU SUBJOINED LETTER WA
-    ('\u{1929}', '\u{192b}', Extend),
+    (0x1929, 0x192B, Extend),
     // Mc   [2] LIMBU SMALL LETTER KA..LIMBU SMALL LETTER NGA
-    ('\u{1930}', '\u{1931}', Extend),
+    (0x1930, 0x1931, Extend),
     // Mn       LIMBU SMALL LETTER ANUSVARA
-    ('\u{1932}', '\u{1932}', Extend),
+    (0x1932, 0x1932, Extend),
     // Mc   [6] LIMBU SMALL LETTER TA..LIMBU SMALL LETTER LA
-    ('\u{1933}', '\u{1938}', Extend),
+    (0x1933, 0x1938, Extend),
     // Mn   [3] LIMBU SIGN MUKPHRENG..LIMBU SIGN SA-I
-    ('\u{1939}', '\u{193b}', Extend),
+    (0x1939, 0x193B, Extend),
     // Nd  [10] LIMBU DIGIT ZERO..LIMBU DIGIT NINE
-    ('\u{1946}', '\u{194f}', Numeric),
+    (0x1946, 0x194F, Numeric),
     // Nd  [10] NEW TAI LUE DIGIT ZERO..NEW TAI LUE DIGIT NINE
-    ('\u{19d0}', '\u{19d9}', Numeric),
+    (0x19D0, 0x19D9, Numeric),
     // Lo  [23] BUGINESE LETTER KA..BUGINESE LETTER HA
-    ('\u{1a00}', '\u{1a16}', ALetter),
+    (0x1A00, 0x1A16, ALetter),
     // Mn   [2] BUGINESE VOWEL SIGN I..BUGINESE VOWEL SIGN U
-    ('\u{1a17}', '\u{1a18}', Extend),
+    (0x1A17, 0x1A18, Extend),
     // Mc   [2] BUGINESE VOWEL SIGN E..BUGINESE VOWEL SIGN O
-    ('\u{1a19}', '\u{1a1a}', Extend),
+    (0x1A19, 0x1A1A, Extend),
     // Mn       BUGINESE VOWEL SIGN AE
-    ('\u{1a1b}', '\u{1a1b}', Extend),
+    (0x1A1B, 0x1A1B, Extend),
     // Mc       TAI THAM CONSONANT SIGN MEDIAL RA
-    ('\u{1a55}', '\u{1a55}', Extend),
+    (0x1A55, 0x1A55, Extend),
     // Mn       TAI THAM CONSONANT SIGN MEDIAL LA
-    ('\u{1a56}', '\u{1a56}', Extend),
+    (0x1A56, 0x1A56, Extend),
     // Mc       TAI THAM CONSONANT SIGN LA TANG LAI
-    ('\u{1a57}', '\u{1a57}', Extend),
+    (0x1A57, 0x1A57, Extend),
     // Mn   [7] TAI THAM SIGN MAI KANG LAI..TAI THAM CONSONANT SIGN SA
-    ('\u{1a58}', '\u{1a5e}', Extend),
+    (0x1A58, 0x1A5E, Extend),
     // Mn       TAI THAM SIGN SAKOT
-    ('\u{1a60}', '\u{1a60}', Extend),
+    (0x1A60, 0x1A60, Extend),
     // Mc       TAI THAM VOWEL SIGN A
-    ('\u{1a61}', '\u{1a61}', Extend),
+    (0x1A61, 0x1A61, Extend),
     // Mn       TAI THAM VOWEL SIGN MAI SAT
-    ('\u{1a62}', '\u{1a62}', Extend),
+    (0x1A62, 0x1A62, Extend),
     // Mc   [2] TAI THAM VOWEL SIGN AA..TAI THAM VOWEL SIGN TALL AA
-    ('\u{1a63}', '\u{1a64}', Extend),
+    (0x1A63, 0x1A64, Extend),
     // Mn   [8] TAI THAM VOWEL SIGN I..TAI THAM VOWEL SIGN OA BELOW
-    ('\u{1a65}', '\u{1a6c}', Extend),
+    (0x1A65, 0x1A6C, Extend),
     // Mc   [6] TAI THAM VOWEL SIGN OY..TAI THAM VOWEL SIGN THAM AI
-    ('\u{1a6d}', '\u{1a72}', Extend),
+    (0x1A6D, 0x1A72, Extend),
     // Mn  [10] TAI THAM VOWEL SIGN OA ABOVE..TAI THAM SIGN KHUEN-LUE KARAN
-    ('\u{1a73}', '\u{1a7c}', Extend),
+    (0x1A73, 0x1A7C, Extend),
     // Mn       TAI THAM COMBINING CRYPTOGRAMMIC DOT
-    ('\u{1a7f}', '\u{1a7f}', Extend),
+    (0x1A7F, 0x1A7F, Extend),
     // Nd  [10] TAI THAM HORA DIGIT ZERO..TAI THAM HORA DIGIT NINE
-    ('\u{1a80}', '\u{1a89}', Numeric),
+    (0x1A80, 0x1A89, Numeric),
     // Nd  [10] TAI THAM THAM DIGIT ZERO..TAI THAM THAM DIGIT NINE
-    ('\u{1a90}', '\u{1a99}', Numeric),
+    (0x1A90, 0x1A99, Numeric),
     // Mn  [14] COMBINING DOUBLED CIRCUMFLEX ACCENT..COMBINING PARENTHESES BELOW
-    ('\u{1ab0}', '\u{1abd}', Extend),
+    (0x1AB0, 0x1ABD, Extend),
     // Me       COMBINING PARENTHESES OVERLAY
-    ('\u{1abe}', '\u{1abe}', Extend),
+    (0x1ABE, 0x1ABE, Extend),
     // Mn   [4] BALINESE SIGN ULU RICEM..BALINESE SIGN SURANG
-    ('\u{1b00}', '\u{1b03}', Extend),
+    (0x1B00, 0x1B03, Extend),
     // Mc       BALINESE SIGN BISAH
-    ('\u{1b04}', '\u{1b04}', Extend),
+    (0x1B04, 0x1B04, Extend),
     // Lo  [47] BALINESE LETTER AKARA..BALINESE LETTER HA
-    ('\u{1b05}', '\u{1b33}', ALetter),
+    (0x1B05, 0x1B33, ALetter),
     // Mn       BALINESE SIGN REREKAN
-    ('\u{1b34}', '\u{1b34}', Extend),
+    (0x1B34, 0x1B34, Extend),
     // Mc       BALINESE VOWEL SIGN TEDUNG
-    ('\u{1b35}', '\u{1b35}', Extend),
+    (0x1B35, 0x1B35, Extend),
     // Mn   [5] BALINESE VOWEL SIGN ULU..BALINESE VOWEL SIGN RA REPA
-    ('\u{1b36}', '\u{1b3a}', Extend),
+    (0x1B36, 0x1B3A, Extend),
     // Mc       BALINESE VOWEL SIGN RA REPA TEDUNG
-    ('\u{1b3b}', '\u{1b3b}', Extend),
+    (0x1B3B, 0x1B3B, Extend),
     // Mn       BALINESE VOWEL SIGN LA LENGA
-    ('\u{1b3c}', '\u{1b3c}', Extend),
+    (0x1B3C, 0x1B3C, Extend),
     // Mc   [5] BALINESE VOWEL SIGN LA LENGA TEDUNG..BALINESE VOWEL SIGN TALING REPA TEDUNG
-    ('\u{1b3d}', '\u{1b41}', Extend),
+    (0x1B3D, 0x1B41, Extend),
     // Mn       BALINESE VOWEL SIGN PEPET
-    ('\u{1b42}', '\u{1b42}', Extend),
+    (0x1B42, 0x1B42, Extend),
     // Mc   [2] BALINESE VOWEL SIGN PEPET TEDUNG..BALINESE ADEG ADEG
-    ('\u{1b43}', '\u{1b44}', Extend),
+    (0x1B43, 0x1B44, Extend),
     // Lo   [7] BALINESE LETTER KAF SASAK..BALINESE LETTER ASYURA SASAK
-    ('\u{1b45}', '\u{1b4b}', ALetter),
+    (0x1B45, 0x1B4B, ALetter),
     // Nd  [10] BALINESE DIGIT ZERO..BALINESE DIGIT NINE
-    ('\u{1b50}', '\u{1b59}', Numeric),
+    (0x1B50, 0x1B59, Numeric),
     // Mn   [9] BALINESE MUSICAL SYMBOL COMBINING TEGEH..BALINESE MUSICAL SYMBOL COMBINING GONG
-    ('\u{1b6b}', '\u{1b73}', Extend),
+    (0x1B6B, 0x1B73, Extend),
     // Mn   [2] SUNDANESE SIGN PANYECEK..SUNDANESE SIGN PANGLAYAR
-    ('\u{1b80}', '\u{1b81}', Extend),
+    (0x1B80, 0x1B81, Extend),
     // Mc       SUNDANESE SIGN PANGWISAD
-    ('\u{1b82}', '\u{1b82}', Extend),
+    (0x1B82, 0x1B82, Extend),
     // Lo  [30] SUNDANESE LETTER A..SUNDANESE LETTER HA
-    ('\u{1b83}', '\u{1ba0}', ALetter),
+    (0x1B83, 0x1BA0, ALetter),
     // Mc       SUNDANESE CONSONANT SIGN PAMINGKAL
-    ('\u{1ba1}', '\u{1ba1}', Extend),
+    (0x1BA1, 0x1BA1, Extend),
     // Mn   [4] SUNDANESE CONSONANT SIGN PANYAKRA..SUNDANESE VOWEL SIGN PANYUKU
-    ('\u{1ba2}', '\u{1ba5}', Extend),
+    (0x1BA2, 0x1BA5, Extend),
     // Mc   [2] SUNDANESE VOWEL SIGN PANAELAENG..SUNDANESE VOWEL SIGN PANOLONG
-    ('\u{1ba6}', '\u{1ba7}', Extend),
+    (0x1BA6, 0x1BA7, Extend),
     // Mn   [2] SUNDANESE VOWEL SIGN PAMEPET..SUNDANESE VOWEL SIGN PANEULEUNG
-    ('\u{1ba8}', '\u{1ba9}', Extend),
+    (0x1BA8, 0x1BA9, Extend),
     // Mc       SUNDANESE SIGN PAMAAEH
-    ('\u{1baa}', '\u{1baa}', Extend),
+    (0x1BAA, 0x1BAA, Extend),
     // Mn   [3] SUNDANESE SIGN VIRAMA..SUNDANESE CONSONANT SIGN PASANGAN WA
-    ('\u{1bab}', '\u{1bad}', Extend),
+    (0x1BAB, 0x1BAD, Extend),
     // Lo   [2] SUNDANESE LETTER KHA..SUNDANESE LETTER SYA
-    ('\u{1bae}', '\u{1baf}', ALetter),
+    (0x1BAE, 0x1BAF, ALetter),
     // Nd  [10] SUNDANESE DIGIT ZERO..SUNDANESE DIGIT NINE
-    ('\u{1bb0}', '\u{1bb9}', Numeric),
+    (0x1BB0, 0x1BB9, Numeric),
     // Lo  [44] SUNDANESE AVAGRAHA..BATAK LETTER U
-    ('\u{1bba}', '\u{1be5}', ALetter),
+    (0x1BBA, 0x1BE5, ALetter),
     // Mn       BATAK SIGN TOMPI
-    ('\u{1be6}', '\u{1be6}', Extend),
+    (0x1BE6, 0x1BE6, Extend),
     // Mc       BATAK VOWEL SIGN E
-    ('\u{1be7}', '\u{1be7}', Extend),
+    (0x1BE7, 0x1BE7, Extend),
     // Mn   [2] BATAK VOWEL SIGN PAKPAK E..BATAK VOWEL SIGN EE
-    ('\u{1be8}', '\u{1be9}', Extend),
+    (0x1BE8, 0x1BE9, Extend),
     // Mc   [3] BATAK VOWEL SIGN I..BATAK VOWEL SIGN O
-    ('\u{1bea}', '\u{1bec}', Extend),
+    (0x1BEA, 0x1BEC, Extend),
     // Mn       BATAK VOWEL SIGN KARO O
-    ('\u{1bed}', '\u{1bed}', Extend),
+    (0x1BED, 0x1BED, Extend),
     // Mc       BATAK VOWEL SIGN U
-    ('\u{1bee}', '\u{1bee}', Extend),
+    (0x1BEE, 0x1BEE, Extend),
     // Mn   [3] BATAK VOWEL SIGN U FOR SIMALUNGUN SA..BATAK CONSONANT SIGN H
-    ('\u{1bef}', '\u{1bf1}', Extend),
+    (0x1BEF, 0x1BF1, Extend),
     // Mc   [2] BATAK PANGOLAT..BATAK PANONGONAN
-    ('\u{1bf2}', '\u{1bf3}', Extend),
+    (0x1BF2, 0x1BF3, Extend),
     // Lo  [36] LEPCHA LETTER KA..LEPCHA LETTER A
-    ('\u{1c00}', '\u{1c23}', ALetter),
+    (0x1C00, 0x1C23, ALetter),
     // Mc   [8] LEPCHA SUBJOINED LETTER YA..LEPCHA VOWEL SIGN UU
-    ('\u{1c24}', '\u{1c2b}', Extend),
+    (0x1C24, 0x1C2B, Extend),
     // Mn   [8] LEPCHA VOWEL SIGN E..LEPCHA CONSONANT SIGN T
-    ('\u{1c2c}', '\u{1c33}', Extend),
+    (0x1C2C, 0x1C33, Extend),
     // Mc   [2] LEPCHA CONSONANT SIGN NYIN-DO..LEPCHA CONSONANT SIGN KANG
-    ('\u{1c34}', '\u{1c35}', Extend),
+    (0x1C34, 0x1C35, Extend),
     // Mn   [2] LEPCHA SIGN RAN..LEPCHA SIGN NUKTA
-    ('\u{1c36}', '\u{1c37}', Extend),
+    (0x1C36, 0x1C37, Extend),
     // Nd  [10] LEPCHA DIGIT ZERO..LEPCHA DIGIT NINE
-    ('\u{1c40}', '\u{1c49}', Numeric),
+    (0x1C40, 0x1C49, Numeric),
     // Lo   [3] LEPCHA LETTER TTA..LEPCHA LETTER DDA
-    ('\u{1c4d}', '\u{1c4f}', ALetter),
+    (0x1C4D, 0x1C4F, ALetter),
     // Nd  [10] OL CHIKI DIGIT ZERO..OL CHIKI DIGIT NINE
-    ('\u{1c50}', '\u{1c59}', Numeric),
+    (0x1C50, 0x1C59, Numeric),
     // Lo  [30] OL CHIKI LETTER LA..OL CHIKI LETTER OH
-    ('\u{1c5a}', '\u{1c77}', ALetter),
+    (0x1C5A, 0x1C77, ALetter),
     // Lm   [6] OL CHIKI MU TTUDDAG..OL CHIKI AHAD
-    ('\u{1c78}', '\u{1c7d}', ALetter),
+    (0x1C78, 0x1C7D, ALetter),
     // L&   [9] CYRILLIC SMALL LETTER ROUNDED VE..CYRILLIC SMALL LETTER UNBLENDED UK
-    ('\u{1c80}', '\u{1c88}', ALetter),
+    (0x1C80, 0x1C88, ALetter),
     // L&  [43] GEORGIAN MTAVRULI CAPITAL LETTER AN..GEORGIAN MTAVRULI CAPITAL LETTER AIN
-    ('\u{1c90}', '\u{1cba}', ALetter),
+    (0x1C90, 0x1CBA, ALetter),
     // L&   [3] GEORGIAN MTAVRULI CAPITAL LETTER AEN..GEORGIAN MTAVRULI CAPITAL LETTER LABIAL SIGN
-    ('\u{1cbd}', '\u{1cbf}', ALetter),
+    (0x1CBD, 0x1CBF, ALetter),
     // Mn   [3] VEDIC TONE KARSHANA..VEDIC TONE PRENKHA
-    ('\u{1cd0}', '\u{1cd2}', Extend),
+    (0x1CD0, 0x1CD2, Extend),
     // Mn  [13] VEDIC SIGN YAJURVEDIC MIDLINE SVARITA..VEDIC TONE RIGVEDIC KASHMIRI INDEPENDENT SVARITA
-    ('\u{1cd4}', '\u{1ce0}', Extend),
+    (0x1CD4, 0x1CE0, Extend),
     // Mc       VEDIC TONE ATHARVAVEDIC INDEPENDENT SVARITA
-    ('\u{1ce1}', '\u{1ce1}', Extend),
+    (0x1CE1, 0x1CE1, Extend),
     // Mn   [7] VEDIC SIGN VISARGA SVARITA..VEDIC SIGN VISARGA ANUDATTA WITH TAIL
-    ('\u{1ce2}', '\u{1ce8}', Extend),
+    (0x1CE2, 0x1CE8, Extend),
     // Lo   [4] VEDIC SIGN ANUSVARA ANTARGOMUKHA..VEDIC SIGN ANUSVARA VAMAGOMUKHA WITH TAIL
-    ('\u{1ce9}', '\u{1cec}', ALetter),
+    (0x1CE9, 0x1CEC, ALetter),
     // Mn       VEDIC SIGN TIRYAK
-    ('\u{1ced}', '\u{1ced}', Extend),
+    (0x1CED, 0x1CED, Extend),
     // Lo   [6] VEDIC SIGN HEXIFORM LONG ANUSVARA..VEDIC SIGN ROTATED ARDHAVISARGA
-    ('\u{1cee}', '\u{1cf3}', ALetter),
+    (0x1CEE, 0x1CF3, ALetter),
     // Mn       VEDIC TONE CANDRA ABOVE
-    ('\u{1cf4}', '\u{1cf4}', Extend),
+    (0x1CF4, 0x1CF4, Extend),
     // Lo   [2] VEDIC SIGN JIHVAMULIYA..VEDIC SIGN UPADHMANIYA
-    ('\u{1cf5}', '\u{1cf6}', ALetter),
+    (0x1CF5, 0x1CF6, ALetter),
     // Mc       VEDIC SIGN ATIKRAMA
-    ('\u{1cf7}', '\u{1cf7}', Extend),
+    (0x1CF7, 0x1CF7, Extend),
     // Mn   [2] VEDIC TONE RING ABOVE..VEDIC TONE DOUBLE RING ABOVE
-    ('\u{1cf8}', '\u{1cf9}', Extend),
+    (0x1CF8, 0x1CF9, Extend),
     // Lo       VEDIC SIGN DOUBLE ANUSVARA ANTARGOMUKHA
-    ('\u{1cfa}', '\u{1cfa}', ALetter),
+    (0x1CFA, 0x1CFA, ALetter),
     // L&  [44] LATIN LETTER SMALL CAPITAL A..CYRILLIC LETTER SMALL CAPITAL EL
-    ('\u{1d00}', '\u{1d2b}', ALetter),
+    (0x1D00, 0x1D2B, ALetter),
     // Lm  [63] MODIFIER LETTER CAPITAL A..GREEK SUBSCRIPT SMALL LETTER CHI
-    ('\u{1d2c}', '\u{1d6a}', ALetter),
+    (0x1D2C, 0x1D6A, ALetter),
     // L&  [13] LATIN SMALL LETTER UE..LATIN SMALL LETTER TURNED G
-    ('\u{1d6b}', '\u{1d77}', ALetter),
+    (0x1D6B, 0x1D77, ALetter),
     // Lm       MODIFIER LETTER CYRILLIC EN
-    ('\u{1d78}', '\u{1d78}', ALetter),
+    (0x1D78, 0x1D78, ALetter),
     // L&  [34] LATIN SMALL LETTER INSULAR G..LATIN SMALL LETTER EZH WITH RETROFLEX HOOK
-    ('\u{1d79}', '\u{1d9a}', ALetter),
+    (0x1D79, 0x1D9A, ALetter),
     // Lm  [37] MODIFIER LETTER SMALL TURNED ALPHA..MODIFIER LETTER SMALL THETA
-    ('\u{1d9b}', '\u{1dbf}', ALetter),
+    (0x1D9B, 0x1DBF, ALetter),
     // Mn  [58] COMBINING DOTTED GRAVE ACCENT..COMBINING WIDE INVERTED BRIDGE BELOW
-    ('\u{1dc0}', '\u{1df9}', Extend),
+    (0x1DC0, 0x1DF9, Extend),
     // Mn   [5] COMBINING DELETION MARK..COMBINING RIGHT ARROWHEAD AND DOWN ARROWHEAD BELOW
-    ('\u{1dfb}', '\u{1dff}', Extend),
+    (0x1DFB, 0x1DFF, Extend),
     // L& [278] LATIN CAPITAL LETTER A WITH RING BELOW..GREEK SMALL LETTER EPSILON WITH DASIA AND OXIA
-    ('\u{1e00}', '\u{1f15}', ALetter),
+    (0x1E00, 0x1F15, ALetter),
     // L&   [6] GREEK CAPITAL LETTER EPSILON WITH PSILI..GREEK CAPITAL LETTER EPSILON WITH DASIA AND OXIA
-    ('\u{1f18}', '\u{1f1d}', ALetter),
+    (0x1F18, 0x1F1D, ALetter),
     // L&  [38] GREEK SMALL LETTER ETA WITH PSILI..GREEK SMALL LETTER OMICRON WITH DASIA AND OXIA
-    ('\u{1f20}', '\u{1f45}', ALetter),
+    (0x1F20, 0x1F45, ALetter),
     // L&   [6] GREEK CAPITAL LETTER OMICRON WITH PSILI..GREEK CAPITAL LETTER OMICRON WITH DASIA AND OXIA
-    ('\u{1f48}', '\u{1f4d}', ALetter),
+    (0x1F48, 0x1F4D, ALetter),
     // L&   [8] GREEK SMALL LETTER UPSILON WITH PSILI..GREEK SMALL LETTER UPSILON WITH DASIA AND PERISPOMENI
-    ('\u{1f50}', '\u{1f57}', ALetter),
+    (0x1F50, 0x1F57, ALetter),
     // L&       GREEK CAPITAL LETTER UPSILON WITH DASIA
-    ('\u{1f59}', '\u{1f59}', ALetter),
+    (0x1F59, 0x1F59, ALetter),
     // L&       GREEK CAPITAL LETTER UPSILON WITH DASIA AND VARIA
-    ('\u{1f5b}', '\u{1f5b}', ALetter),
+    (0x1F5B, 0x1F5B, ALetter),
     // L&       GREEK CAPITAL LETTER UPSILON WITH DASIA AND OXIA
-    ('\u{1f5d}', '\u{1f5d}', ALetter),
+    (0x1F5D, 0x1F5D, ALetter),
     // L&  [31] GREEK CAPITAL LETTER UPSILON WITH DASIA AND PERISPOMENI..GREEK SMALL LETTER OMEGA WITH OXIA
-    ('\u{1f5f}', '\u{1f7d}', ALetter),
+    (0x1F5F, 0x1F7D, ALetter),
     // L&  [53] GREEK SMALL LETTER ALPHA WITH PSILI AND YPOGEGRAMMENI..GREEK SMALL LETTER ALPHA WITH OXIA AND YPOGEGRAMMENI
-    ('\u{1f80}', '\u{1fb4}', ALetter),
+    (0x1F80, 0x1FB4, ALetter),
     // L&   [7] GREEK SMALL LETTER ALPHA WITH PERISPOMENI..GREEK CAPITAL LETTER ALPHA WITH PROSGEGRAMMENI
-    ('\u{1fb6}', '\u{1fbc}', ALetter),
+    (0x1FB6, 0x1FBC, ALetter),
     // L&       GREEK PROSGEGRAMMENI
-    ('\u{1fbe}', '\u{1fbe}', ALetter),
+    (0x1FBE, 0x1FBE, ALetter),
     // L&   [3] GREEK SMALL LETTER ETA WITH VARIA AND YPOGEGRAMMENI..GREEK SMALL LETTER ETA WITH OXIA AND YPOGEGRAMMENI
-    ('\u{1fc2}', '\u{1fc4}', ALetter),
+    (0x1FC2, 0x1FC4, ALetter),
     // L&   [7] GREEK SMALL LETTER ETA WITH PERISPOMENI..GREEK CAPITAL LETTER ETA WITH PROSGEGRAMMENI
-    ('\u{1fc6}', '\u{1fcc}', ALetter),
+    (0x1FC6, 0x1FCC, ALetter),
     // L&   [4] GREEK SMALL LETTER IOTA WITH VRACHY..GREEK SMALL LETTER IOTA WITH DIALYTIKA AND OXIA
-    ('\u{1fd0}', '\u{1fd3}', ALetter),
+    (0x1FD0, 0x1FD3, ALetter),
     // L&   [6] GREEK SMALL LETTER IOTA WITH PERISPOMENI..GREEK CAPITAL LETTER IOTA WITH OXIA
-    ('\u{1fd6}', '\u{1fdb}', ALetter),
+    (0x1FD6, 0x1FDB, ALetter),
     // L&  [13] GREEK SMALL LETTER UPSILON WITH VRACHY..GREEK CAPITAL LETTER RHO WITH DASIA
-    ('\u{1fe0}', '\u{1fec}', ALetter),
+    (0x1FE0, 0x1FEC, ALetter),
     // L&   [3] GREEK SMALL LETTER OMEGA WITH VARIA AND YPOGEGRAMMENI..GREEK SMALL LETTER OMEGA WITH OXIA AND YPOGEGRAMMENI
-    ('\u{1ff2}', '\u{1ff4}', ALetter),
+    (0x1FF2, 0x1FF4, ALetter),
     // L&   [7] GREEK SMALL LETTER OMEGA WITH PERISPOMENI..GREEK CAPITAL LETTER OMEGA WITH PROSGEGRAMMENI
-    ('\u{1ff6}', '\u{1ffc}', ALetter),
+    (0x1FF6, 0x1FFC, ALetter),
     // Zs   [7] EN QUAD..SIX-PER-EM SPACE
-    ('\u{2000}', '\u{2006}', WSegSpace),
+    (0x2000, 0x2006, WSegSpace),
     // Zs   [3] PUNCTUATION SPACE..HAIR SPACE
-    ('\u{2008}', '\u{200a}', WSegSpace),
+    (0x2008, 0x200A, WSegSpace),
     // Cf       ZERO WIDTH NON-JOINER
-    ('\u{200c}', '\u{200c}', Extend),
+    (0x200C, 0x200C, Extend),
     // Cf       ZERO WIDTH JOINER
-    ('\u{200d}', '\u{200d}', ZWJ),
+    (0x200D, 0x200D, ZWJ),
     // Cf   [2] LEFT-TO-RIGHT MARK..RIGHT-TO-LEFT MARK
-    ('\u{200e}', '\u{200f}', Format),
+    (0x200E, 0x200F, Format),
     // Pi       LEFT SINGLE QUOTATION MARK
-    ('\u{2018}', '\u{2018}', MidNumLet),
+    (0x2018, 0x2018, MidNumLet),
     // Pf       RIGHT SINGLE QUOTATION MARK
-    ('\u{2019}', '\u{2019}', MidNumLet),
+    (0x2019, 0x2019, MidNumLet),
     // Po       ONE DOT LEADER
-    ('\u{2024}', '\u{2024}', MidNumLet),
+    (0x2024, 0x2024, MidNumLet),
     // Po       HYPHENATION POINT
-    ('\u{2027}', '\u{2027}', MidLetter),
+    (0x2027, 0x2027, MidLetter),
     // Zl       LINE SEPARATOR
-    ('\u{2028}', '\u{2028}', Newline),
+    (0x2028, 0x2028, Newline),
     // Zp       PARAGRAPH SEPARATOR
-    ('\u{2029}', '\u{2029}', Newline),
+    (0x2029, 0x2029, Newline),
     // Cf   [5] LEFT-TO-RIGHT EMBEDDING..RIGHT-TO-LEFT OVERRIDE
-    ('\u{202a}', '\u{202e}', Format),
+    (0x202A, 0x202E, Format),
     // Zs       NARROW NO-BREAK SPACE
-    ('\u{202f}', '\u{202f}', ExtendNumLet),
+    (0x202F, 0x202F, ExtendNumLet),
     // Pc   [2] UNDERTIE..CHARACTER TIE
-    ('\u{203f}', '\u{2040}', ExtendNumLet),
+    (0x203F, 0x2040, ExtendNumLet),
     // Sm       FRACTION SLASH
-    ('\u{2044}', '\u{2044}', MidNum),
+    (0x2044, 0x2044, MidNum),
     // Pc       INVERTED UNDERTIE
-    ('\u{2054}', '\u{2054}', ExtendNumLet),
+    (0x2054, 0x2054, ExtendNumLet),
     // Zs       MEDIUM MATHEMATICAL SPACE
-    ('\u{205f}', '\u{205f}', WSegSpace),
+    (0x205F, 0x205F, WSegSpace),
     // Cf   [5] WORD JOINER..INVISIBLE PLUS
-    ('\u{2060}', '\u{2064}', Format),
+    (0x2060, 0x2064, Format),
     // Cf  [10] LEFT-TO-RIGHT ISOLATE..NOMINAL DIGIT SHAPES
-    ('\u{2066}', '\u{206f}', Format),
+    (0x2066, 0x206F, Format),
     // Lm       SUPERSCRIPT LATIN SMALL LETTER I
-    ('\u{2071}', '\u{2071}', ALetter),
+    (0x2071, 0x2071, ALetter),
     // Lm       SUPERSCRIPT LATIN SMALL LETTER N
-    ('\u{207f}', '\u{207f}', ALetter),
+    (0x207F, 0x207F, ALetter),
     // Lm  [13] LATIN SUBSCRIPT SMALL LETTER A..LATIN SUBSCRIPT SMALL LETTER T
-    ('\u{2090}', '\u{209c}', ALetter),
+    (0x2090, 0x209C, ALetter),
     // Mn  [13] COMBINING LEFT HARPOON ABOVE..COMBINING FOUR DOTS ABOVE
-    ('\u{20d0}', '\u{20dc}', Extend),
+    (0x20D0, 0x20DC, Extend),
     // Me   [4] COMBINING ENCLOSING CIRCLE..COMBINING ENCLOSING CIRCLE BACKSLASH
-    ('\u{20dd}', '\u{20e0}', Extend),
+    (0x20DD, 0x20E0, Extend),
     // Mn       COMBINING LEFT RIGHT ARROW ABOVE
-    ('\u{20e1}', '\u{20e1}', Extend),
+    (0x20E1, 0x20E1, Extend),
     // Me   [3] COMBINING ENCLOSING SCREEN..COMBINING ENCLOSING UPWARD POINTING TRIANGLE
-    ('\u{20e2}', '\u{20e4}', Extend),
+    (0x20E2, 0x20E4, Extend),
     // Mn  [12] COMBINING REVERSE SOLIDUS OVERLAY..COMBINING ASTERISK ABOVE
-    ('\u{20e5}', '\u{20f0}', Extend),
+    (0x20E5, 0x20F0, Extend),
     // L&       DOUBLE-STRUCK CAPITAL C
-    ('\u{2102}', '\u{2102}', ALetter),
+    (0x2102, 0x2102, ALetter),
     // L&       EULER CONSTANT
-    ('\u{2107}', '\u{2107}', ALetter),
+    (0x2107, 0x2107, ALetter),
     // L&  [10] SCRIPT SMALL G..SCRIPT SMALL L
-    ('\u{210a}', '\u{2113}', ALetter),
+    (0x210A, 0x2113, ALetter),
     // L&       DOUBLE-STRUCK CAPITAL N
-    ('\u{2115}', '\u{2115}', ALetter),
+    (0x2115, 0x2115, ALetter),
     // L&   [5] DOUBLE-STRUCK CAPITAL P..DOUBLE-STRUCK CAPITAL R
-    ('\u{2119}', '\u{211d}', ALetter),
+    (0x2119, 0x211D, ALetter),
     // L&       DOUBLE-STRUCK CAPITAL Z
-    ('\u{2124}', '\u{2124}', ALetter),
+    (0x2124, 0x2124, ALetter),
     // L&       OHM SIGN
-    ('\u{2126}', '\u{2126}', ALetter),
+    (0x2126, 0x2126, ALetter),
     // L&       BLACK-LETTER CAPITAL Z
-    ('\u{2128}', '\u{2128}', ALetter),
+    (0x2128, 0x2128, ALetter),
     // L&   [4] KELVIN SIGN..BLACK-LETTER CAPITAL C
-    ('\u{212a}', '\u{212d}', ALetter),
+    (0x212A, 0x212D, ALetter),
     // L&   [6] SCRIPT SMALL E..SCRIPT SMALL O
-    ('\u{212f}', '\u{2134}', ALetter),
+    (0x212F, 0x2134, ALetter),
     // Lo   [4] ALEF SYMBOL..DALET SYMBOL
-    ('\u{2135}', '\u{2138}', ALetter),
+    (0x2135, 0x2138, ALetter),
     // L&       INFORMATION SOURCE
-    ('\u{2139}', '\u{2139}', ALetter),
+    (0x2139, 0x2139, ALetter),
     // L&   [4] DOUBLE-STRUCK SMALL PI..DOUBLE-STRUCK CAPITAL PI
-    ('\u{213c}', '\u{213f}', ALetter),
+    (0x213C, 0x213F, ALetter),
     // L&   [5] DOUBLE-STRUCK ITALIC CAPITAL D..DOUBLE-STRUCK ITALIC SMALL J
-    ('\u{2145}', '\u{2149}', ALetter),
+    (0x2145, 0x2149, ALetter),
     // L&       TURNED SMALL F
-    ('\u{214e}', '\u{214e}', ALetter),
+    (0x214E, 0x214E, ALetter),
     // Nl  [35] ROMAN NUMERAL ONE..ROMAN NUMERAL TEN THOUSAND
-    ('\u{2160}', '\u{2182}', ALetter),
+    (0x2160, 0x2182, ALetter),
     // L&   [2] ROMAN NUMERAL REVERSED ONE HUNDRED..LATIN SMALL LETTER REVERSED C
-    ('\u{2183}', '\u{2184}', ALetter),
+    (0x2183, 0x2184, ALetter),
     // Nl   [4] ROMAN NUMERAL SIX LATE FORM..ROMAN NUMERAL ONE HUNDRED THOUSAND
-    ('\u{2185}', '\u{2188}', ALetter),
+    (0x2185, 0x2188, ALetter),
     // So  [52] CIRCLED LATIN CAPITAL LETTER A..CIRCLED LATIN SMALL LETTER Z
-    ('\u{24b6}', '\u{24e9}', ALetter),
+    (0x24B6, 0x24E9, ALetter),
     // L&  [47] GLAGOLITIC CAPITAL LETTER AZU..GLAGOLITIC CAPITAL LETTER LATINATE MYSLITE
-    ('\u{2c00}', '\u{2c2e}', ALetter),
+    (0x2C00, 0x2C2E, ALetter),
     // L&  [47] GLAGOLITIC SMALL LETTER AZU..GLAGOLITIC SMALL LETTER LATINATE MYSLITE
-    ('\u{2c30}', '\u{2c5e}', ALetter),
+    (0x2C30, 0x2C5E, ALetter),
     // L&  [28] LATIN CAPITAL LETTER L WITH DOUBLE BAR..LATIN LETTER SMALL CAPITAL TURNED E
-    ('\u{2c60}', '\u{2c7b}', ALetter),
+    (0x2C60, 0x2C7B, ALetter),
     // Lm   [2] LATIN SUBSCRIPT SMALL LETTER J..MODIFIER LETTER CAPITAL V
-    ('\u{2c7c}', '\u{2c7d}', ALetter),
+    (0x2C7C, 0x2C7D, ALetter),
     // L& [103] LATIN CAPITAL LETTER S WITH SWASH TAIL..COPTIC SYMBOL KAI
-    ('\u{2c7e}', '\u{2ce4}', ALetter),
+    (0x2C7E, 0x2CE4, ALetter),
     // L&   [4] COPTIC CAPITAL LETTER CRYPTOGRAMMIC SHEI..COPTIC SMALL LETTER CRYPTOGRAMMIC GANGIA
-    ('\u{2ceb}', '\u{2cee}', ALetter),
+    (0x2CEB, 0x2CEE, ALetter),
     // Mn   [3] COPTIC COMBINING NI ABOVE..COPTIC COMBINING SPIRITUS LENIS
-    ('\u{2cef}', '\u{2cf1}', Extend),
+    (0x2CEF, 0x2CF1, Extend),
     // L&   [2] COPTIC CAPITAL LETTER BOHAIRIC KHEI..COPTIC SMALL LETTER BOHAIRIC KHEI
-    ('\u{2cf2}', '\u{2cf3}', ALetter),
+    (0x2CF2, 0x2CF3, ALetter),
     // L&  [38] GEORGIAN SMALL LETTER AN..GEORGIAN SMALL LETTER HOE
-    ('\u{2d00}', '\u{2d25}', ALetter),
+    (0x2D00, 0x2D25, ALetter),
     // L&       GEORGIAN SMALL LETTER YN
-    ('\u{2d27}', '\u{2d27}', ALetter),
+    (0x2D27, 0x2D27, ALetter),
     // L&       GEORGIAN SMALL LETTER AEN
-    ('\u{2d2d}', '\u{2d2d}', ALetter),
+    (0x2D2D, 0x2D2D, ALetter),
     // Lo  [56] TIFINAGH LETTER YA..TIFINAGH LETTER YO
-    ('\u{2d30}', '\u{2d67}', ALetter),
+    (0x2D30, 0x2D67, ALetter),
     // Lm       TIFINAGH MODIFIER LETTER LABIALIZATION MARK
-    ('\u{2d6f}', '\u{2d6f}', ALetter),
+    (0x2D6F, 0x2D6F, ALetter),
     // Mn       TIFINAGH CONSONANT JOINER
-    ('\u{2d7f}', '\u{2d7f}', Extend),
+    (0x2D7F, 0x2D7F, Extend),
     // Lo  [23] ETHIOPIC SYLLABLE LOA..ETHIOPIC SYLLABLE GGWE
-    ('\u{2d80}', '\u{2d96}', ALetter),
+    (0x2D80, 0x2D96, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE SSA..ETHIOPIC SYLLABLE SSO
-    ('\u{2da0}', '\u{2da6}', ALetter),
+    (0x2DA0, 0x2DA6, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE CCA..ETHIOPIC SYLLABLE CCO
-    ('\u{2da8}', '\u{2dae}', ALetter),
+    (0x2DA8, 0x2DAE, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE ZZA..ETHIOPIC SYLLABLE ZZO
-    ('\u{2db0}', '\u{2db6}', ALetter),
+    (0x2DB0, 0x2DB6, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE CCHA..ETHIOPIC SYLLABLE CCHO
-    ('\u{2db8}', '\u{2dbe}', ALetter),
+    (0x2DB8, 0x2DBE, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE QYA..ETHIOPIC SYLLABLE QYO
-    ('\u{2dc0}', '\u{2dc6}', ALetter),
+    (0x2DC0, 0x2DC6, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE KYA..ETHIOPIC SYLLABLE KYO
-    ('\u{2dc8}', '\u{2dce}', ALetter),
+    (0x2DC8, 0x2DCE, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE XYA..ETHIOPIC SYLLABLE XYO
-    ('\u{2dd0}', '\u{2dd6}', ALetter),
+    (0x2DD0, 0x2DD6, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE GYA..ETHIOPIC SYLLABLE GYO
-    ('\u{2dd8}', '\u{2dde}', ALetter),
+    (0x2DD8, 0x2DDE, ALetter),
     // Mn  [32] COMBINING CYRILLIC LETTER BE..COMBINING CYRILLIC LETTER IOTIFIED BIG YUS
-    ('\u{2de0}', '\u{2dff}', Extend),
+    (0x2DE0, 0x2DFF, Extend),
     // Lm       VERTICAL TILDE
-    ('\u{2e2f}', '\u{2e2f}', ALetter),
+    (0x2E2F, 0x2E2F, ALetter),
     // Zs       IDEOGRAPHIC SPACE
-    ('\u{3000}', '\u{3000}', WSegSpace),
+    (0x3000, 0x3000, WSegSpace),
     // Lm       IDEOGRAPHIC ITERATION MARK
-    ('\u{3005}', '\u{3005}', ALetter),
+    (0x3005, 0x3005, ALetter),
     // Mn   [4] IDEOGRAPHIC LEVEL TONE MARK..IDEOGRAPHIC ENTERING TONE MARK
-    ('\u{302a}', '\u{302d}', Extend),
+    (0x302A, 0x302D, Extend),
     // Mc   [2] HANGUL SINGLE DOT TONE MARK..HANGUL DOUBLE DOT TONE MARK
-    ('\u{302e}', '\u{302f}', Extend),
+    (0x302E, 0x302F, Extend),
     // Lm   [5] VERTICAL KANA REPEAT MARK..VERTICAL KANA REPEAT MARK LOWER HALF
-    ('\u{3031}', '\u{3035}', Katakana),
+    (0x3031, 0x3035, Katakana),
     // Lm       VERTICAL IDEOGRAPHIC ITERATION MARK
-    ('\u{303b}', '\u{303b}', ALetter),
+    (0x303B, 0x303B, ALetter),
     // Lo       MASU MARK
-    ('\u{303c}', '\u{303c}', ALetter),
+    (0x303C, 0x303C, ALetter),
     // Mn   [2] COMBINING KATAKANA-HIRAGANA VOICED SOUND MARK..COMBINING KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK
-    ('\u{3099}', '\u{309a}', Extend),
+    (0x3099, 0x309A, Extend),
     // Sk   [2] KATAKANA-HIRAGANA VOICED SOUND MARK..KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK
-    ('\u{309b}', '\u{309c}', Katakana),
+    (0x309B, 0x309C, Katakana),
     // Pd       KATAKANA-HIRAGANA DOUBLE HYPHEN
-    ('\u{30a0}', '\u{30a0}', Katakana),
+    (0x30A0, 0x30A0, Katakana),
     // Lo  [90] KATAKANA LETTER SMALL A..KATAKANA LETTER VO
-    ('\u{30a1}', '\u{30fa}', Katakana),
+    (0x30A1, 0x30FA, Katakana),
     // Lm   [3] KATAKANA-HIRAGANA PROLONGED SOUND MARK..KATAKANA VOICED ITERATION MARK
-    ('\u{30fc}', '\u{30fe}', Katakana),
+    (0x30FC, 0x30FE, Katakana),
     // Lo       KATAKANA DIGRAPH KOTO
-    ('\u{30ff}', '\u{30ff}', Katakana),
+    (0x30FF, 0x30FF, Katakana),
     // Lo  [43] BOPOMOFO LETTER B..BOPOMOFO LETTER NN
-    ('\u{3105}', '\u{312f}', ALetter),
+    (0x3105, 0x312F, ALetter),
     // Lo  [94] HANGUL LETTER KIYEOK..HANGUL LETTER ARAEAE
-    ('\u{3131}', '\u{318e}', ALetter),
+    (0x3131, 0x318E, ALetter),
     // Lo  [27] BOPOMOFO LETTER BU..BOPOMOFO LETTER ZY
-    ('\u{31a0}', '\u{31ba}', ALetter),
+    (0x31A0, 0x31BA, ALetter),
     // Lo  [16] KATAKANA LETTER SMALL KU..KATAKANA LETTER SMALL RO
-    ('\u{31f0}', '\u{31ff}', Katakana),
+    (0x31F0, 0x31FF, Katakana),
     // So  [47] CIRCLED KATAKANA A..CIRCLED KATAKANA WO
-    ('\u{32d0}', '\u{32fe}', Katakana),
+    (0x32D0, 0x32FE, Katakana),
     // So  [88] SQUARE APAATO..SQUARE WATTO
-    ('\u{3300}', '\u{3357}', Katakana),
+    (0x3300, 0x3357, Katakana),
     // Lo  [21] YI SYLLABLE IT..YI SYLLABLE E
-    ('\u{a000}', '\u{a014}', ALetter),
+    (0xA000, 0xA014, ALetter),
     // Lm       YI SYLLABLE WU
-    ('\u{a015}', '\u{a015}', ALetter),
+    (0xA015, 0xA015, ALetter),
     // Lo [1143] YI SYLLABLE BIT..YI SYLLABLE YYR
-    ('\u{a016}', '\u{a48c}', ALetter),
+    (0xA016, 0xA48C, ALetter),
     // Lo  [40] LISU LETTER BA..LISU LETTER OE
-    ('\u{a4d0}', '\u{a4f7}', ALetter),
+    (0xA4D0, 0xA4F7, ALetter),
     // Lm   [6] LISU LETTER TONE MYA TI..LISU LETTER TONE MYA JEU
-    ('\u{a4f8}', '\u{a4fd}', ALetter),
+    (0xA4F8, 0xA4FD, ALetter),
     // Lo [268] VAI SYLLABLE EE..VAI SYLLABLE NG
-    ('\u{a500}', '\u{a60b}', ALetter),
+    (0xA500, 0xA60B, ALetter),
     // Lm       VAI SYLLABLE LENGTHENER
-    ('\u{a60c}', '\u{a60c}', ALetter),
+    (0xA60C, 0xA60C, ALetter),
     // Lo  [16] VAI SYLLABLE NDOLE FA..VAI SYMBOL JONG
-    ('\u{a610}', '\u{a61f}', ALetter),
+    (0xA610, 0xA61F, ALetter),
     // Nd  [10] VAI DIGIT ZERO..VAI DIGIT NINE
-    ('\u{a620}', '\u{a629}', Numeric),
+    (0xA620, 0xA629, Numeric),
     // Lo   [2] VAI SYLLABLE NDOLE MA..VAI SYLLABLE NDOLE DO
-    ('\u{a62a}', '\u{a62b}', ALetter),
+    (0xA62A, 0xA62B, ALetter),
     // L&  [46] CYRILLIC CAPITAL LETTER ZEMLYA..CYRILLIC SMALL LETTER DOUBLE MONOCULAR O
-    ('\u{a640}', '\u{a66d}', ALetter),
+    (0xA640, 0xA66D, ALetter),
     // Lo       CYRILLIC LETTER MULTIOCULAR O
-    ('\u{a66e}', '\u{a66e}', ALetter),
+    (0xA66E, 0xA66E, ALetter),
     // Mn       COMBINING CYRILLIC VZMET
-    ('\u{a66f}', '\u{a66f}', Extend),
+    (0xA66F, 0xA66F, Extend),
     // Me   [3] COMBINING CYRILLIC TEN MILLIONS SIGN..COMBINING CYRILLIC THOUSAND MILLIONS SIGN
-    ('\u{a670}', '\u{a672}', Extend),
+    (0xA670, 0xA672, Extend),
     // Mn  [10] COMBINING CYRILLIC LETTER UKRAINIAN IE..COMBINING CYRILLIC PAYEROK
-    ('\u{a674}', '\u{a67d}', Extend),
+    (0xA674, 0xA67D, Extend),
     // Lm       CYRILLIC PAYEROK
-    ('\u{a67f}', '\u{a67f}', ALetter),
+    (0xA67F, 0xA67F, ALetter),
     // L&  [28] CYRILLIC CAPITAL LETTER DWE..CYRILLIC SMALL LETTER CROSSED O
-    ('\u{a680}', '\u{a69b}', ALetter),
+    (0xA680, 0xA69B, ALetter),
     // Lm   [2] MODIFIER LETTER CYRILLIC HARD SIGN..MODIFIER LETTER CYRILLIC SOFT SIGN
-    ('\u{a69c}', '\u{a69d}', ALetter),
+    (0xA69C, 0xA69D, ALetter),
     // Mn   [2] COMBINING CYRILLIC LETTER EF..COMBINING CYRILLIC LETTER IOTIFIED E
-    ('\u{a69e}', '\u{a69f}', Extend),
+    (0xA69E, 0xA69F, Extend),
     // Lo  [70] BAMUM LETTER A..BAMUM LETTER KI
-    ('\u{a6a0}', '\u{a6e5}', ALetter),
+    (0xA6A0, 0xA6E5, ALetter),
     // Nl  [10] BAMUM LETTER MO..BAMUM LETTER KOGHOM
-    ('\u{a6e6}', '\u{a6ef}', ALetter),
+    (0xA6E6, 0xA6EF, ALetter),
     // Mn   [2] BAMUM COMBINING MARK KOQNDON..BAMUM COMBINING MARK TUKWENTIS
-    ('\u{a6f0}', '\u{a6f1}', Extend),
+    (0xA6F0, 0xA6F1, Extend),
     // Lm   [9] MODIFIER LETTER DOT VERTICAL BAR..MODIFIER LETTER LOW INVERTED EXCLAMATION MARK
-    ('\u{a717}', '\u{a71f}', ALetter),
+    (0xA717, 0xA71F, ALetter),
     // Sk   [2] MODIFIER LETTER STRESS AND HIGH TONE..MODIFIER LETTER STRESS AND LOW TONE
-    ('\u{a720}', '\u{a721}', ALetter),
+    (0xA720, 0xA721, ALetter),
     // L&  [78] LATIN CAPITAL LETTER EGYPTOLOGICAL ALEF..LATIN SMALL LETTER CON
-    ('\u{a722}', '\u{a76f}', ALetter),
+    (0xA722, 0xA76F, ALetter),
     // Lm       MODIFIER LETTER US
-    ('\u{a770}', '\u{a770}', ALetter),
+    (0xA770, 0xA770, ALetter),
     // L&  [23] LATIN SMALL LETTER DUM..LATIN SMALL LETTER INSULAR T
-    ('\u{a771}', '\u{a787}', ALetter),
+    (0xA771, 0xA787, ALetter),
     // Lm       MODIFIER LETTER LOW CIRCUMFLEX ACCENT
-    ('\u{a788}', '\u{a788}', ALetter),
+    (0xA788, 0xA788, ALetter),
     // Sk   [2] MODIFIER LETTER COLON..MODIFIER LETTER SHORT EQUALS SIGN
-    ('\u{a789}', '\u{a78a}', ALetter),
+    (0xA789, 0xA78A, ALetter),
     // L&   [4] LATIN CAPITAL LETTER SALTILLO..LATIN SMALL LETTER L WITH RETROFLEX HOOK AND BELT
-    ('\u{a78b}', '\u{a78e}', ALetter),
+    (0xA78B, 0xA78E, ALetter),
     // Lo       LATIN LETTER SINOLOGICAL DOT
-    ('\u{a78f}', '\u{a78f}', ALetter),
+    (0xA78F, 0xA78F, ALetter),
     // L&  [48] LATIN CAPITAL LETTER N WITH DESCENDER..LATIN SMALL LETTER GLOTTAL U
-    ('\u{a790}', '\u{a7bf}', ALetter),
+    (0xA790, 0xA7BF, ALetter),
     // L&   [5] LATIN CAPITAL LETTER ANGLICANA W..LATIN CAPITAL LETTER Z WITH PALATAL HOOK
-    ('\u{a7c2}', '\u{a7c6}', ALetter),
+    (0xA7C2, 0xA7C6, ALetter),
     // Lo       LATIN EPIGRAPHIC LETTER SIDEWAYS I
-    ('\u{a7f7}', '\u{a7f7}', ALetter),
+    (0xA7F7, 0xA7F7, ALetter),
     // Lm   [2] MODIFIER LETTER CAPITAL H WITH STROKE..MODIFIER LETTER SMALL LIGATURE OE
-    ('\u{a7f8}', '\u{a7f9}', ALetter),
+    (0xA7F8, 0xA7F9, ALetter),
     // L&       LATIN LETTER SMALL CAPITAL TURNED M
-    ('\u{a7fa}', '\u{a7fa}', ALetter),
+    (0xA7FA, 0xA7FA, ALetter),
     // Lo   [7] LATIN EPIGRAPHIC LETTER REVERSED F..SYLOTI NAGRI LETTER I
-    ('\u{a7fb}', '\u{a801}', ALetter),
+    (0xA7FB, 0xA801, ALetter),
     // Mn       SYLOTI NAGRI SIGN DVISVARA
-    ('\u{a802}', '\u{a802}', Extend),
+    (0xA802, 0xA802, Extend),
     // Lo   [3] SYLOTI NAGRI LETTER U..SYLOTI NAGRI LETTER O
-    ('\u{a803}', '\u{a805}', ALetter),
+    (0xA803, 0xA805, ALetter),
     // Mn       SYLOTI NAGRI SIGN HASANTA
-    ('\u{a806}', '\u{a806}', Extend),
+    (0xA806, 0xA806, Extend),
     // Lo   [4] SYLOTI NAGRI LETTER KO..SYLOTI NAGRI LETTER GHO
-    ('\u{a807}', '\u{a80a}', ALetter),
+    (0xA807, 0xA80A, ALetter),
     // Mn       SYLOTI NAGRI SIGN ANUSVARA
-    ('\u{a80b}', '\u{a80b}', Extend),
+    (0xA80B, 0xA80B, Extend),
     // Lo  [23] SYLOTI NAGRI LETTER CO..SYLOTI NAGRI LETTER HO
-    ('\u{a80c}', '\u{a822}', ALetter),
+    (0xA80C, 0xA822, ALetter),
     // Mc   [2] SYLOTI NAGRI VOWEL SIGN A..SYLOTI NAGRI VOWEL SIGN I
-    ('\u{a823}', '\u{a824}', Extend),
+    (0xA823, 0xA824, Extend),
     // Mn   [2] SYLOTI NAGRI VOWEL SIGN U..SYLOTI NAGRI VOWEL SIGN E
-    ('\u{a825}', '\u{a826}', Extend),
+    (0xA825, 0xA826, Extend),
     // Mc       SYLOTI NAGRI VOWEL SIGN OO
-    ('\u{a827}', '\u{a827}', Extend),
+    (0xA827, 0xA827, Extend),
     // Lo  [52] PHAGS-PA LETTER KA..PHAGS-PA LETTER CANDRABINDU
-    ('\u{a840}', '\u{a873}', ALetter),
+    (0xA840, 0xA873, ALetter),
     // Mc   [2] SAURASHTRA SIGN ANUSVARA..SAURASHTRA SIGN VISARGA
-    ('\u{a880}', '\u{a881}', Extend),
+    (0xA880, 0xA881, Extend),
     // Lo  [50] SAURASHTRA LETTER A..SAURASHTRA LETTER LLA
-    ('\u{a882}', '\u{a8b3}', ALetter),
+    (0xA882, 0xA8B3, ALetter),
     // Mc  [16] SAURASHTRA CONSONANT SIGN HAARU..SAURASHTRA VOWEL SIGN AU
-    ('\u{a8b4}', '\u{a8c3}', Extend),
+    (0xA8B4, 0xA8C3, Extend),
     // Mn   [2] SAURASHTRA SIGN VIRAMA..SAURASHTRA SIGN CANDRABINDU
-    ('\u{a8c4}', '\u{a8c5}', Extend),
+    (0xA8C4, 0xA8C5, Extend),
     // Nd  [10] SAURASHTRA DIGIT ZERO..SAURASHTRA DIGIT NINE
-    ('\u{a8d0}', '\u{a8d9}', Numeric),
+    (0xA8D0, 0xA8D9, Numeric),
     // Mn  [18] COMBINING DEVANAGARI DIGIT ZERO..COMBINING DEVANAGARI SIGN AVAGRAHA
-    ('\u{a8e0}', '\u{a8f1}', Extend),
+    (0xA8E0, 0xA8F1, Extend),
     // Lo   [6] DEVANAGARI SIGN SPACING CANDRABINDU..DEVANAGARI SIGN CANDRABINDU AVAGRAHA
-    ('\u{a8f2}', '\u{a8f7}', ALetter),
+    (0xA8F2, 0xA8F7, ALetter),
     // Lo       DEVANAGARI HEADSTROKE
-    ('\u{a8fb}', '\u{a8fb}', ALetter),
+    (0xA8FB, 0xA8FB, ALetter),
     // Lo   [2] DEVANAGARI JAIN OM..DEVANAGARI LETTER AY
-    ('\u{a8fd}', '\u{a8fe}', ALetter),
+    (0xA8FD, 0xA8FE, ALetter),
     // Mn       DEVANAGARI VOWEL SIGN AY
-    ('\u{a8ff}', '\u{a8ff}', Extend),
+    (0xA8FF, 0xA8FF, Extend),
     // Nd  [10] KAYAH LI DIGIT ZERO..KAYAH LI DIGIT NINE
-    ('\u{a900}', '\u{a909}', Numeric),
+    (0xA900, 0xA909, Numeric),
     // Lo  [28] KAYAH LI LETTER KA..KAYAH LI LETTER OO
-    ('\u{a90a}', '\u{a925}', ALetter),
+    (0xA90A, 0xA925, ALetter),
     // Mn   [8] KAYAH LI VOWEL UE..KAYAH LI TONE CALYA PLOPHU
-    ('\u{a926}', '\u{a92d}', Extend),
+    (0xA926, 0xA92D, Extend),
     // Lo  [23] REJANG LETTER KA..REJANG LETTER A
-    ('\u{a930}', '\u{a946}', ALetter),
+    (0xA930, 0xA946, ALetter),
     // Mn  [11] REJANG VOWEL SIGN I..REJANG CONSONANT SIGN R
-    ('\u{a947}', '\u{a951}', Extend),
+    (0xA947, 0xA951, Extend),
     // Mc   [2] REJANG CONSONANT SIGN H..REJANG VIRAMA
-    ('\u{a952}', '\u{a953}', Extend),
+    (0xA952, 0xA953, Extend),
     // Lo  [29] HANGUL CHOSEONG TIKEUT-MIEUM..HANGUL CHOSEONG SSANGYEORINHIEUH
-    ('\u{a960}', '\u{a97c}', ALetter),
+    (0xA960, 0xA97C, ALetter),
     // Mn   [3] JAVANESE SIGN PANYANGGA..JAVANESE SIGN LAYAR
-    ('\u{a980}', '\u{a982}', Extend),
+    (0xA980, 0xA982, Extend),
     // Mc       JAVANESE SIGN WIGNYAN
-    ('\u{a983}', '\u{a983}', Extend),
+    (0xA983, 0xA983, Extend),
     // Lo  [47] JAVANESE LETTER A..JAVANESE LETTER HA
-    ('\u{a984}', '\u{a9b2}', ALetter),
+    (0xA984, 0xA9B2, ALetter),
     // Mn       JAVANESE SIGN CECAK TELU
-    ('\u{a9b3}', '\u{a9b3}', Extend),
+    (0xA9B3, 0xA9B3, Extend),
     // Mc   [2] JAVANESE VOWEL SIGN TARUNG..JAVANESE VOWEL SIGN TOLONG
-    ('\u{a9b4}', '\u{a9b5}', Extend),
+    (0xA9B4, 0xA9B5, Extend),
     // Mn   [4] JAVANESE VOWEL SIGN WULU..JAVANESE VOWEL SIGN SUKU MENDUT
-    ('\u{a9b6}', '\u{a9b9}', Extend),
+    (0xA9B6, 0xA9B9, Extend),
     // Mc   [2] JAVANESE VOWEL SIGN TALING..JAVANESE VOWEL SIGN DIRGA MURE
-    ('\u{a9ba}', '\u{a9bb}', Extend),
+    (0xA9BA, 0xA9BB, Extend),
     // Mn   [2] JAVANESE VOWEL SIGN PEPET..JAVANESE CONSONANT SIGN KERET
-    ('\u{a9bc}', '\u{a9bd}', Extend),
+    (0xA9BC, 0xA9BD, Extend),
     // Mc   [3] JAVANESE CONSONANT SIGN PENGKAL..JAVANESE PANGKON
-    ('\u{a9be}', '\u{a9c0}', Extend),
+    (0xA9BE, 0xA9C0, Extend),
     // Lm       JAVANESE PANGRANGKEP
-    ('\u{a9cf}', '\u{a9cf}', ALetter),
+    (0xA9CF, 0xA9CF, ALetter),
     // Nd  [10] JAVANESE DIGIT ZERO..JAVANESE DIGIT NINE
-    ('\u{a9d0}', '\u{a9d9}', Numeric),
+    (0xA9D0, 0xA9D9, Numeric),
     // Mn       MYANMAR SIGN SHAN SAW
-    ('\u{a9e5}', '\u{a9e5}', Extend),
+    (0xA9E5, 0xA9E5, Extend),
     // Nd  [10] MYANMAR TAI LAING DIGIT ZERO..MYANMAR TAI LAING DIGIT NINE
-    ('\u{a9f0}', '\u{a9f9}', Numeric),
+    (0xA9F0, 0xA9F9, Numeric),
     // Lo  [41] CHAM LETTER A..CHAM LETTER HA
-    ('\u{aa00}', '\u{aa28}', ALetter),
+    (0xAA00, 0xAA28, ALetter),
     // Mn   [6] CHAM VOWEL SIGN AA..CHAM VOWEL SIGN OE
-    ('\u{aa29}', '\u{aa2e}', Extend),
+    (0xAA29, 0xAA2E, Extend),
     // Mc   [2] CHAM VOWEL SIGN O..CHAM VOWEL SIGN AI
-    ('\u{aa2f}', '\u{aa30}', Extend),
+    (0xAA2F, 0xAA30, Extend),
     // Mn   [2] CHAM VOWEL SIGN AU..CHAM VOWEL SIGN UE
-    ('\u{aa31}', '\u{aa32}', Extend),
+    (0xAA31, 0xAA32, Extend),
     // Mc   [2] CHAM CONSONANT SIGN YA..CHAM CONSONANT SIGN RA
-    ('\u{aa33}', '\u{aa34}', Extend),
+    (0xAA33, 0xAA34, Extend),
     // Mn   [2] CHAM CONSONANT SIGN LA..CHAM CONSONANT SIGN WA
-    ('\u{aa35}', '\u{aa36}', Extend),
+    (0xAA35, 0xAA36, Extend),
     // Lo   [3] CHAM LETTER FINAL K..CHAM LETTER FINAL NG
-    ('\u{aa40}', '\u{aa42}', ALetter),
+    (0xAA40, 0xAA42, ALetter),
     // Mn       CHAM CONSONANT SIGN FINAL NG
-    ('\u{aa43}', '\u{aa43}', Extend),
+    (0xAA43, 0xAA43, Extend),
     // Lo   [8] CHAM LETTER FINAL CH..CHAM LETTER FINAL SS
-    ('\u{aa44}', '\u{aa4b}', ALetter),
+    (0xAA44, 0xAA4B, ALetter),
     // Mn       CHAM CONSONANT SIGN FINAL M
-    ('\u{aa4c}', '\u{aa4c}', Extend),
+    (0xAA4C, 0xAA4C, Extend),
     // Mc       CHAM CONSONANT SIGN FINAL H
-    ('\u{aa4d}', '\u{aa4d}', Extend),
+    (0xAA4D, 0xAA4D, Extend),
     // Nd  [10] CHAM DIGIT ZERO..CHAM DIGIT NINE
-    ('\u{aa50}', '\u{aa59}', Numeric),
+    (0xAA50, 0xAA59, Numeric),
     // Mc       MYANMAR SIGN PAO KAREN TONE
-    ('\u{aa7b}', '\u{aa7b}', Extend),
+    (0xAA7B, 0xAA7B, Extend),
     // Mn       MYANMAR SIGN TAI LAING TONE-2
-    ('\u{aa7c}', '\u{aa7c}', Extend),
+    (0xAA7C, 0xAA7C, Extend),
     // Mc       MYANMAR SIGN TAI LAING TONE-5
-    ('\u{aa7d}', '\u{aa7d}', Extend),
+    (0xAA7D, 0xAA7D, Extend),
     // Mn       TAI VIET MAI KANG
-    ('\u{aab0}', '\u{aab0}', Extend),
+    (0xAAB0, 0xAAB0, Extend),
     // Mn   [3] TAI VIET VOWEL I..TAI VIET VOWEL U
-    ('\u{aab2}', '\u{aab4}', Extend),
+    (0xAAB2, 0xAAB4, Extend),
     // Mn   [2] TAI VIET MAI KHIT..TAI VIET VOWEL IA
-    ('\u{aab7}', '\u{aab8}', Extend),
+    (0xAAB7, 0xAAB8, Extend),
     // Mn   [2] TAI VIET VOWEL AM..TAI VIET TONE MAI EK
-    ('\u{aabe}', '\u{aabf}', Extend),
+    (0xAABE, 0xAABF, Extend),
     // Mn       TAI VIET TONE MAI THO
-    ('\u{aac1}', '\u{aac1}', Extend),
+    (0xAAC1, 0xAAC1, Extend),
     // Lo  [11] MEETEI MAYEK LETTER E..MEETEI MAYEK LETTER SSA
-    ('\u{aae0}', '\u{aaea}', ALetter),
+    (0xAAE0, 0xAAEA, ALetter),
     // Mc       MEETEI MAYEK VOWEL SIGN II
-    ('\u{aaeb}', '\u{aaeb}', Extend),
+    (0xAAEB, 0xAAEB, Extend),
     // Mn   [2] MEETEI MAYEK VOWEL SIGN UU..MEETEI MAYEK VOWEL SIGN AAI
-    ('\u{aaec}', '\u{aaed}', Extend),
+    (0xAAEC, 0xAAED, Extend),
     // Mc   [2] MEETEI MAYEK VOWEL SIGN AU..MEETEI MAYEK VOWEL SIGN AAU
-    ('\u{aaee}', '\u{aaef}', Extend),
+    (0xAAEE, 0xAAEF, Extend),
     // Lo       MEETEI MAYEK ANJI
-    ('\u{aaf2}', '\u{aaf2}', ALetter),
+    (0xAAF2, 0xAAF2, ALetter),
     // Lm   [2] MEETEI MAYEK SYLLABLE REPETITION MARK..MEETEI MAYEK WORD REPETITION MARK
-    ('\u{aaf3}', '\u{aaf4}', ALetter),
+    (0xAAF3, 0xAAF4, ALetter),
     // Mc       MEETEI MAYEK VOWEL SIGN VISARGA
-    ('\u{aaf5}', '\u{aaf5}', Extend),
+    (0xAAF5, 0xAAF5, Extend),
     // Mn       MEETEI MAYEK VIRAMA
-    ('\u{aaf6}', '\u{aaf6}', Extend),
+    (0xAAF6, 0xAAF6, Extend),
     // Lo   [6] ETHIOPIC SYLLABLE TTHU..ETHIOPIC SYLLABLE TTHO
-    ('\u{ab01}', '\u{ab06}', ALetter),
+    (0xAB01, 0xAB06, ALetter),
     // Lo   [6] ETHIOPIC SYLLABLE DDHU..ETHIOPIC SYLLABLE DDHO
-    ('\u{ab09}', '\u{ab0e}', ALetter),
+    (0xAB09, 0xAB0E, ALetter),
     // Lo   [6] ETHIOPIC SYLLABLE DZU..ETHIOPIC SYLLABLE DZO
-    ('\u{ab11}', '\u{ab16}', ALetter),
+    (0xAB11, 0xAB16, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE CCHHA..ETHIOPIC SYLLABLE CCHHO
-    ('\u{ab20}', '\u{ab26}', ALetter),
+    (0xAB20, 0xAB26, ALetter),
     // Lo   [7] ETHIOPIC SYLLABLE BBA..ETHIOPIC SYLLABLE BBO
-    ('\u{ab28}', '\u{ab2e}', ALetter),
+    (0xAB28, 0xAB2E, ALetter),
     // L&  [43] LATIN SMALL LETTER BARRED ALPHA..LATIN SMALL LETTER Y WITH SHORT RIGHT LEG
-    ('\u{ab30}', '\u{ab5a}', ALetter),
+    (0xAB30, 0xAB5A, ALetter),
     // Sk       MODIFIER BREVE WITH INVERTED BREVE
-    ('\u{ab5b}', '\u{ab5b}', ALetter),
+    (0xAB5B, 0xAB5B, ALetter),
     // Lm   [4] MODIFIER LETTER SMALL HENG..MODIFIER LETTER SMALL U WITH LEFT HOOK
-    ('\u{ab5c}', '\u{ab5f}', ALetter),
+    (0xAB5C, 0xAB5F, ALetter),
     // L&   [8] LATIN SMALL LETTER SAKHA YAT..LATIN SMALL LETTER TS DIGRAPH WITH RETROFLEX HOOK
-    ('\u{ab60}', '\u{ab67}', ALetter),
+    (0xAB60, 0xAB67, ALetter),
     // L&  [80] CHEROKEE SMALL LETTER A..CHEROKEE SMALL LETTER YA
-    ('\u{ab70}', '\u{abbf}', ALetter),
+    (0xAB70, 0xABBF, ALetter),
     // Lo  [35] MEETEI MAYEK LETTER KOK..MEETEI MAYEK LETTER I LONSUM
-    ('\u{abc0}', '\u{abe2}', ALetter),
+    (0xABC0, 0xABE2, ALetter),
     // Mc   [2] MEETEI MAYEK VOWEL SIGN ONAP..MEETEI MAYEK VOWEL SIGN INAP
-    ('\u{abe3}', '\u{abe4}', Extend),
+    (0xABE3, 0xABE4, Extend),
     // Mn       MEETEI MAYEK VOWEL SIGN ANAP
-    ('\u{abe5}', '\u{abe5}', Extend),
+    (0xABE5, 0xABE5, Extend),
     // Mc   [2] MEETEI MAYEK VOWEL SIGN YENAP..MEETEI MAYEK VOWEL SIGN SOUNAP
-    ('\u{abe6}', '\u{abe7}', Extend),
+    (0xABE6, 0xABE7, Extend),
     // Mn       MEETEI MAYEK VOWEL SIGN UNAP
-    ('\u{abe8}', '\u{abe8}', Extend),
+    (0xABE8, 0xABE8, Extend),
     // Mc   [2] MEETEI MAYEK VOWEL SIGN CHEINAP..MEETEI MAYEK VOWEL SIGN NUNG
-    ('\u{abe9}', '\u{abea}', Extend),
+    (0xABE9, 0xABEA, Extend),
     // Mc       MEETEI MAYEK LUM IYEK
-    ('\u{abec}', '\u{abec}', Extend),
+    (0xABEC, 0xABEC, Extend),
     // Mn       MEETEI MAYEK APUN IYEK
-    ('\u{abed}', '\u{abed}', Extend),
+    (0xABED, 0xABED, Extend),
     // Nd  [10] MEETEI MAYEK DIGIT ZERO..MEETEI MAYEK DIGIT NINE
-    ('\u{abf0}', '\u{abf9}', Numeric),
+    (0xABF0, 0xABF9, Numeric),
     // Lo [11172] HANGUL SYLLABLE GA..HANGUL SYLLABLE HIH
-    ('\u{ac00}', '\u{d7a3}', ALetter),
+    (0xAC00, 0xD7A3, ALetter),
     // Lo  [23] HANGUL JUNGSEONG O-YEO..HANGUL JUNGSEONG ARAEA-E
-    ('\u{d7b0}', '\u{d7c6}', ALetter),
+    (0xD7B0, 0xD7C6, ALetter),
     // Lo  [49] HANGUL JONGSEONG NIEUN-RIEUL..HANGUL JONGSEONG PHIEUPH-THIEUTH
-    ('\u{d7cb}', '\u{d7fb}', ALetter),
+    (0xD7CB, 0xD7FB, ALetter),
     // L&   [7] LATIN SMALL LIGATURE FF..LATIN SMALL LIGATURE ST
-    ('\u{fb00}', '\u{fb06}', ALetter),
+    (0xFB00, 0xFB06, ALetter),
     // L&   [5] ARMENIAN SMALL LIGATURE MEN NOW..ARMENIAN SMALL LIGATURE MEN XEH
-    ('\u{fb13}', '\u{fb17}', ALetter),
+    (0xFB13, 0xFB17, ALetter),
     // Lo       HEBREW LETTER YOD WITH HIRIQ
-    ('\u{fb1d}', '\u{fb1d}', Hebrew_Letter),
+    (0xFB1D, 0xFB1D, Hebrew_Letter),
     // Mn       HEBREW POINT JUDEO-SPANISH VARIKA
-    ('\u{fb1e}', '\u{fb1e}', Extend),
+    (0xFB1E, 0xFB1E, Extend),
     // Lo  [10] HEBREW LIGATURE YIDDISH YOD YOD PATAH..HEBREW LETTER WIDE TAV
-    ('\u{fb1f}', '\u{fb28}', Hebrew_Letter),
+    (0xFB1F, 0xFB28, Hebrew_Letter),
     // Lo  [13] HEBREW LETTER SHIN WITH SHIN DOT..HEBREW LETTER ZAYIN WITH DAGESH
-    ('\u{fb2a}', '\u{fb36}', Hebrew_Letter),
+    (0xFB2A, 0xFB36, Hebrew_Letter),
     // Lo   [5] HEBREW LETTER TET WITH DAGESH..HEBREW LETTER LAMED WITH DAGESH
-    ('\u{fb38}', '\u{fb3c}', Hebrew_Letter),
+    (0xFB38, 0xFB3C, Hebrew_Letter),
     // Lo       HEBREW LETTER MEM WITH DAGESH
-    ('\u{fb3e}', '\u{fb3e}', Hebrew_Letter),
+    (0xFB3E, 0xFB3E, Hebrew_Letter),
     // Lo   [2] HEBREW LETTER NUN WITH DAGESH..HEBREW LETTER SAMEKH WITH DAGESH
-    ('\u{fb40}', '\u{fb41}', Hebrew_Letter),
+    (0xFB40, 0xFB41, Hebrew_Letter),
     // Lo   [2] HEBREW LETTER FINAL PE WITH DAGESH..HEBREW LETTER PE WITH DAGESH
-    ('\u{fb43}', '\u{fb44}', Hebrew_Letter),
+    (0xFB43, 0xFB44, Hebrew_Letter),
     // Lo  [10] HEBREW LETTER TSADI WITH DAGESH..HEBREW LIGATURE ALEF LAMED
-    ('\u{fb46}', '\u{fb4f}', Hebrew_Letter),
+    (0xFB46, 0xFB4F, Hebrew_Letter),
     // Lo  [98] ARABIC LETTER ALEF WASLA ISOLATED FORM..ARABIC LETTER YEH BARREE WITH HAMZA ABOVE FINAL FORM
-    ('\u{fb50}', '\u{fbb1}', ALetter),
+    (0xFB50, 0xFBB1, ALetter),
     // Lo [363] ARABIC LETTER NG ISOLATED FORM..ARABIC LIGATURE ALEF WITH FATHATAN ISOLATED FORM
-    ('\u{fbd3}', '\u{fd3d}', ALetter),
+    (0xFBD3, 0xFD3D, ALetter),
     // Lo  [64] ARABIC LIGATURE TEH WITH JEEM WITH MEEM INITIAL FORM..ARABIC LIGATURE MEEM WITH KHAH WITH MEEM INITIAL FORM
-    ('\u{fd50}', '\u{fd8f}', ALetter),
+    (0xFD50, 0xFD8F, ALetter),
     // Lo  [54] ARABIC LIGATURE MEEM WITH JEEM WITH KHAH INITIAL FORM..ARABIC LIGATURE NOON WITH JEEM WITH YEH FINAL FORM
-    ('\u{fd92}', '\u{fdc7}', ALetter),
+    (0xFD92, 0xFDC7, ALetter),
     // Lo  [12] ARABIC LIGATURE SALLA USED AS KORANIC STOP SIGN ISOLATED FORM..ARABIC LIGATURE JALLAJALALOUHOU
-    ('\u{fdf0}', '\u{fdfb}', ALetter),
+    (0xFDF0, 0xFDFB, ALetter),
     // Mn  [16] VARIATION SELECTOR-1..VARIATION SELECTOR-16
-    ('\u{fe00}', '\u{fe0f}', Extend),
+    (0xFE00, 0xFE0F, Extend),
     // Po       PRESENTATION FORM FOR VERTICAL COMMA
-    ('\u{fe10}', '\u{fe10}', MidNum),
+    (0xFE10, 0xFE10, MidNum),
     // Po       PRESENTATION FORM FOR VERTICAL COLON
-    ('\u{fe13}', '\u{fe13}', MidLetter),
+    (0xFE13, 0xFE13, MidLetter),
     // Po       PRESENTATION FORM FOR VERTICAL SEMICOLON
-    ('\u{fe14}', '\u{fe14}', MidNum),
+    (0xFE14, 0xFE14, MidNum),
     // Mn  [16] COMBINING LIGATURE LEFT HALF..COMBINING CYRILLIC TITLO RIGHT HALF
-    ('\u{fe20}', '\u{fe2f}', Extend),
+    (0xFE20, 0xFE2F, Extend),
     // Pc   [2] PRESENTATION FORM FOR VERTICAL LOW LINE..PRESENTATION FORM FOR VERTICAL WAVY LOW LINE
-    ('\u{fe33}', '\u{fe34}', ExtendNumLet),
+    (0xFE33, 0xFE34, ExtendNumLet),
     // Pc   [3] DASHED LOW LINE..WAVY LOW LINE
-    ('\u{fe4d}', '\u{fe4f}', ExtendNumLet),
+    (0xFE4D, 0xFE4F, ExtendNumLet),
     // Po       SMALL COMMA
-    ('\u{fe50}', '\u{fe50}', MidNum),
+    (0xFE50, 0xFE50, MidNum),
     // Po       SMALL FULL STOP
-    ('\u{fe52}', '\u{fe52}', MidNumLet),
+    (0xFE52, 0xFE52, MidNumLet),
     // Po       SMALL SEMICOLON
-    ('\u{fe54}', '\u{fe54}', MidNum),
+    (0xFE54, 0xFE54, MidNum),
     // Po       SMALL COLON
-    ('\u{fe55}', '\u{fe55}', MidLetter),
+    (0xFE55, 0xFE55, MidLetter),
     // Lo   [5] ARABIC FATHATAN ISOLATED FORM..ARABIC KASRATAN ISOLATED FORM
-    ('\u{fe70}', '\u{fe74}', ALetter),
+    (0xFE70, 0xFE74, ALetter),
     // Lo [135] ARABIC FATHA ISOLATED FORM..ARABIC LIGATURE LAM WITH ALEF FINAL FORM
-    ('\u{fe76}', '\u{fefc}', ALetter),
+    (0xFE76, 0xFEFC, ALetter),
     // Cf       ZERO WIDTH NO-BREAK SPACE
-    ('\u{feff}', '\u{feff}', Format),
+    (0xFEFF, 0xFEFF, Format),
     // Po       FULLWIDTH APOSTROPHE
-    ('\u{ff07}', '\u{ff07}', MidNumLet),
+    (0xFF07, 0xFF07, MidNumLet),
     // Po       FULLWIDTH COMMA
-    ('\u{ff0c}', '\u{ff0c}', MidNum),
+    (0xFF0C, 0xFF0C, MidNum),
     // Po       FULLWIDTH FULL STOP
-    ('\u{ff0e}', '\u{ff0e}', MidNumLet),
+    (0xFF0E, 0xFF0E, MidNumLet),
     // Nd  [10] FULLWIDTH DIGIT ZERO..FULLWIDTH DIGIT NINE
-    ('\u{ff10}', '\u{ff19}', Numeric),
+    (0xFF10, 0xFF19, Numeric),
     // Po       FULLWIDTH COLON
-    ('\u{ff1a}', '\u{ff1a}', MidLetter),
+    (0xFF1A, 0xFF1A, MidLetter),
     // Po       FULLWIDTH SEMICOLON
-    ('\u{ff1b}', '\u{ff1b}', MidNum),
+    (0xFF1B, 0xFF1B, MidNum),
     // L&  [26] FULLWIDTH LATIN CAPITAL LETTER A..FULLWIDTH LATIN CAPITAL LETTER Z
-    ('\u{ff21}', '\u{ff3a}', ALetter),
+    (0xFF21, 0xFF3A, ALetter),
     // Pc       FULLWIDTH LOW LINE
-    ('\u{ff3f}', '\u{ff3f}', ExtendNumLet),
+    (0xFF3F, 0xFF3F, ExtendNumLet),
     // L&  [26] FULLWIDTH LATIN SMALL LETTER A..FULLWIDTH LATIN SMALL LETTER Z
-    ('\u{ff41}', '\u{ff5a}', ALetter),
+    (0xFF41, 0xFF5A, ALetter),
     // Lo  [10] HALFWIDTH KATAKANA LETTER WO..HALFWIDTH KATAKANA LETTER SMALL TU
-    ('\u{ff66}', '\u{ff6f}', Katakana),
+    (0xFF66, 0xFF6F, Katakana),
     // Lm       HALFWIDTH KATAKANA-HIRAGANA PROLONGED SOUND MARK
-    ('\u{ff70}', '\u{ff70}', Katakana),
+    (0xFF70, 0xFF70, Katakana),
     // Lo  [45] HALFWIDTH KATAKANA LETTER A..HALFWIDTH KATAKANA LETTER N
-    ('\u{ff71}', '\u{ff9d}', Katakana),
+    (0xFF71, 0xFF9D, Katakana),
     // Lm   [2] HALFWIDTH KATAKANA VOICED SOUND MARK..HALFWIDTH KATAKANA SEMI-VOICED SOUND MARK
-    ('\u{ff9e}', '\u{ff9f}', Extend),
+    (0xFF9E, 0xFF9F, Extend),
     // Lo  [31] HALFWIDTH HANGUL FILLER..HALFWIDTH HANGUL LETTER HIEUH
-    ('\u{ffa0}', '\u{ffbe}', ALetter),
+    (0xFFA0, 0xFFBE, ALetter),
     // Lo   [6] HALFWIDTH HANGUL LETTER A..HALFWIDTH HANGUL LETTER E
-    ('\u{ffc2}', '\u{ffc7}', ALetter),
+    (0xFFC2, 0xFFC7, ALetter),
     // Lo   [6] HALFWIDTH HANGUL LETTER YEO..HALFWIDTH HANGUL LETTER OE
-    ('\u{ffca}', '\u{ffcf}', ALetter),
+    (0xFFCA, 0xFFCF, ALetter),
     // Lo   [6] HALFWIDTH HANGUL LETTER YO..HALFWIDTH HANGUL LETTER YU
-    ('\u{ffd2}', '\u{ffd7}', ALetter),
+    (0xFFD2, 0xFFD7, ALetter),
     // Lo   [3] HALFWIDTH HANGUL LETTER EU..HALFWIDTH HANGUL LETTER I
-    ('\u{ffda}', '\u{ffdc}', ALetter),
+    (0xFFDA, 0xFFDC, ALetter),
     // Cf   [3] INTERLINEAR ANNOTATION ANCHOR..INTERLINEAR ANNOTATION TERMINATOR
-    ('\u{fff9}', '\u{fffb}', Format),
+    (0xFFF9, 0xFFFB, Format),
+];
+const PLANE0_LIMIT: char = '\u{10000}';
+static SUPPLEMENTARY_TABLE: LookupTable<char, Word_Break> = lookup_table![
     // Lo  [12] LINEAR B SYLLABLE B008 A..LINEAR B SYLLABLE B046 JE
     ('\u{10000}', '\u{1000b}', ALetter),
     // Lo  [26] LINEAR B SYLLABLE B036 JO..LINEAR B SYLLABLE B032 QO

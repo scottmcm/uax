@@ -25,12 +25,12 @@ impl<'a, K: Ord, V: Copy> LookupTable<'a, K, V> {
         let mut width = self.starts.len();
         let mut low = 0;
         while width > 1 {
-            let mid = low + width/2;
+            let mid = low + width / 2;
             let mid_element = unsafe { self.starts.get_unchecked(mid) };
             if mid_element <= key {
                 low = mid;
             }
-            width -= width/2;
+            width -= width / 2;
         }
         let end = unsafe { self.ends.get_unchecked(low) };
         if key <= end {
