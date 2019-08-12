@@ -79,7 +79,7 @@ fn main() {
     w!("    }}");
     w!("}}");
     w!();
-    w!("static ROW0_TABLE: LookupTable<u8, Word_Break> = lookup_table![");
+    w!("const ROW0_TABLE: LookupTable<u8, Word_Break> = lookup_table![");
     if properties.peek().unwrap().0 as u32 > 0 {
         let p = properties.peek().unwrap();
         w!("    // So every possible input is always found in the table");
@@ -93,7 +93,7 @@ fn main() {
     w!("];");
     let row0_limit = char::min('\u{100}', properties.peek().unwrap().0);
     w!("const ROW0_LIMIT: char = '{}';", row0_limit.escape_unicode());
-    w!("static PLANE0_TABLE: LookupTable<u16, Word_Break> = lookup_table![");
+    w!("const PLANE0_TABLE: LookupTable<u16, Word_Break> = lookup_table![");
     if properties.peek().unwrap().0 as u32 > 0x100 {
         let p = properties.peek().unwrap();
         w!("    // So every possible input is always found in the table");
@@ -107,7 +107,7 @@ fn main() {
     w!("];");
     let plane0_limit = char::min('\u{10000}', properties.peek().unwrap().0);
     w!("const PLANE0_LIMIT: char = '{}';", plane0_limit.escape_unicode());
-    w!("static SUPPLEMENTARY_TABLE: LookupTable<char, Word_Break> = lookup_table![");
+    w!("const SUPPLEMENTARY_TABLE: LookupTable<char, Word_Break> = lookup_table![");
     if properties.peek().unwrap().0 as u32 > 0x10000 {
         let p = properties.peek().unwrap();
         w!("    // So every possible input is always found in the table");

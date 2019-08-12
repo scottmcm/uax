@@ -38,7 +38,7 @@ impl From<char> for Word_Break {
     }
 }
 
-static ROW0_TABLE: LookupTable<u8, Word_Break> = lookup_table![
+const ROW0_TABLE: LookupTable<u8, Word_Break> = lookup_table![
     // So every possible input is always found in the table
     (0x00, 0x09, Other),
     // Cc       <control-000A>
@@ -87,7 +87,7 @@ static ROW0_TABLE: LookupTable<u8, Word_Break> = lookup_table![
     (0xD8, 0xF6, ALetter),
 ];
 const ROW0_LIMIT: char = '\u{f8}';
-static PLANE0_TABLE: LookupTable<u16, Word_Break> = lookup_table![
+const PLANE0_TABLE: LookupTable<u16, Word_Break> = lookup_table![
     // L& [195] LATIN SMALL LETTER O WITH STROKE..LATIN SMALL LETTER EZH WITH TAIL
     (0x00F8, 0x01BA, ALetter),
     // Lo       LATIN LETTER TWO WITH STROKE
@@ -1696,7 +1696,7 @@ static PLANE0_TABLE: LookupTable<u16, Word_Break> = lookup_table![
     (0xFFF9, 0xFFFB, Format),
 ];
 const PLANE0_LIMIT: char = '\u{10000}';
-static SUPPLEMENTARY_TABLE: LookupTable<char, Word_Break> = lookup_table![
+const SUPPLEMENTARY_TABLE: LookupTable<char, Word_Break> = lookup_table![
     // Lo  [12] LINEAR B SYLLABLE B008 A..LINEAR B SYLLABLE B046 JE
     ('\u{10000}', '\u{1000b}', ALetter),
     // Lo  [26] LINEAR B SYLLABLE B036 JO..LINEAR B SYLLABLE B032 QO

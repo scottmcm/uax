@@ -41,6 +41,9 @@ impl<'a, K: Ord, V: Copy> LookupTable<'a, K, V> {
     }
 }
 
+/// This uses rvalue-static promotion on the internal slices,
+/// which marks them as `one_only`, so the `LookupTable` itself
+/// can just be put in a `const` since its metadata is fine to duplicate.
 #[macro_export]
 macro_rules! lookup_table {
     ($($tuple:expr,)+) => {
