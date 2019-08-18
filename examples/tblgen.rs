@@ -67,7 +67,7 @@ fn generate_property(
         properties.push((start, end, value, comment));
     }
     properties.sort_by_key(|x| x.0);
-    let mut properties = properties.into_iter().peekable();
+    let mut properties = combine_adjacent(properties).into_iter().peekable();
 
     let mut values = values.into_iter().collect::<Vec<_>>();
     values.sort_by_cached_key(|x| UniCase::new(x.clone()));
@@ -105,6 +105,16 @@ fn generate_property(
     w!("    }}");
     w!("}}");
     w!();
+    w!("#[test]");
+    w!("fn validate_tables() {{");
+    w!("    use std::convert::TryInto;");
+    w!("    ROW0_TABLE.validate();");
+    w!("    if let Ok(x) = (ROW0_LIMIT as u32).try_into() {{ assert!(!ROW0_TABLE.contains(&x)); }}");
+    w!("    PLANE0_TABLE.validate();");
+    w!("    if let Ok(x) = (PLANE0_LIMIT as u32).try_into() {{ assert!(!PLANE0_TABLE.contains(&x)); }}");
+    w!("    SUPPLEMENTARY_TABLE.validate();");
+    w!("}}");
+    w!();
     w!("const ROW0_TABLE: LookupTable<u8, {}> = lookup_table![", type_name);
     if properties.peek().unwrap().0 as u32 > 0 {
         let p = properties.peek().unwrap();
@@ -113,7 +123,9 @@ fn generate_property(
     }
     while properties.peek().unwrap().1 as u32 <= 0xFF {
         let p = properties.next().unwrap();
-        w!("    // {}", p.3);
+        for comment in p.3 {
+            w!("    // {}", comment);
+        }
         w!("    ({:#04X}, {:#04X}, {}),", p.0 as u32, p.1 as u32, p.2);
     }
     w!("];");
@@ -127,7 +139,9 @@ fn generate_property(
     }
     while properties.peek().unwrap().1 as u32 <= 0xFFFF {
         let p = properties.next().unwrap();
-        w!("    // {}", p.3);
+        for comment in p.3 {
+            w!("    // {}", comment);
+        }
         w!("    ({:#06X}, {:#06X}, {}),", p.0 as u32, p.1 as u32, p.2);
     }
     w!("];");
@@ -140,7 +154,9 @@ fn generate_property(
         w!("    ({:#08X}, {:#08X}, {}),", 0x10000, p.0 as u32 - 1, fallback);
     }
     for p in properties {
-        w!("    // {}", p.3);
+        for comment in p.3 {
+            w!("    // {}", comment);
+        }
         w!("    ({:#08X}, {:#08X}, {}),",
             p.0 as u32, p.1 as u32, p.2);
     }
@@ -154,4 +170,23 @@ fn prev_char(c: char) -> char {
 fn parse_char(hex: &str) -> char {
     let x = u32::from_str_radix(hex, 16).unwrap();
     std::char::from_u32(x).unwrap()
+}
+
+fn combine_adjacent(raw_properties: Vec<(char, char, String, String)>)
+    -> Vec<(char, char, String, Vec<String>)>
+{
+    let mut properties = Vec::<(char, char, String, Vec<String>)>::with_capacity(raw_properties.len());
+    for p in raw_properties {
+        if !properties.is_empty() {
+            let prev = properties.last_mut().unwrap();
+            if p.2 == prev.2 && (prev.1 as u32)+1 == (p.0 as u32) {
+                prev.1 = p.1;
+                prev.3.push(p.3);
+                continue;
+            }
+        }
+
+        properties.push((p.0, p.1, p.2, vec![p.3]));
+    }
+    properties
 }

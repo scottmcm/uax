@@ -13,8 +13,22 @@ impl<'a, K, V> LookupTable<'a, K, V> {
 }
 
 impl<'a, K: Ord, V: Copy> LookupTable<'a, K, V> {
+    #[cfg(test)]
     #[inline]
-    pub fn get_or(&self, key: &K, fallback: V) -> V {
+    pub fn contains(&self, key: &K) -> bool {
+        self.get(key).is_some()
+    }
+
+    #[cfg(test)]
+    #[inline]
+    pub fn get(&self, key: &K) -> Option<V> {
+        self.get_or(key, None)
+    }
+
+    #[inline]
+    pub fn get_or<F>(&self, key: &K, fallback: F) -> F
+        where V: Into<F>
+    {
         assert!(self.starts.len() == self.ends.len());
         assert!(self.starts.len() == self.values.len());
 
@@ -34,9 +48,41 @@ impl<'a, K: Ord, V: Copy> LookupTable<'a, K, V> {
         }
         let end = unsafe { self.ends.get_unchecked(low) };
         if key <= end {
-            unsafe { *self.values.get_unchecked(low) }
+            let value = unsafe { *self.values.get_unchecked(low) };
+            value.into()
         } else {
             fallback
+        }
+    }
+}
+
+#[cfg(test)]
+impl<'a, K: Copy + Ord + std::fmt::Debug, V: Copy + Eq> LookupTable<'a, K, V>
+    where std::ops::Range<K>: Iterator
+{
+    pub fn validate(&self) {
+        assert!(self.starts.len() == self.ends.len());
+        assert!(self.starts.len() == self.values.len());
+
+        if self.starts.is_empty() { return }
+
+        let ranges = Iterator::zip(
+            self.starts.iter().copied(),
+            self.starts.iter().copied(),
+        ).map(|(a, b)| a..=b);
+        let mut pairs = ranges.zip(self.values.iter().copied());
+
+        let mut prev = pairs.next().unwrap();
+        assert!(prev.0.start() <= prev.0.end());
+        for this in pairs {
+            assert!(this.0.start() <= this.0.end());
+            assert!(prev.0.end() < this.0.start());
+
+            let r = (*prev.0.end())..(*this.0.start());
+            assert!(prev.1 != this.1 || r.clone().count() > 1,
+                "ranges should have been joined; {:?} are too close", r);
+
+            prev = this;
         }
     }
 }
@@ -82,5 +128,10 @@ mod tests {
         assert_eq!(TABLE.get_or(&6, 0), 0);
         assert_eq!(TABLE.get_or(&7, 0), 7);
         assert_eq!(TABLE.get_or(&8, 0), 0);
+    }
+
+    #[test]
+    fn can_validate() {
+        TABLE.validate();
     }
 }

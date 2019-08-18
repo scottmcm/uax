@@ -34,6 +34,16 @@ impl From<char> for Sentence_Break {
     }
 }
 
+#[test]
+fn validate_tables() {
+    use std::convert::TryInto;
+    ROW0_TABLE.validate();
+    if let Ok(x) = (ROW0_LIMIT as u32).try_into() { assert!(!ROW0_TABLE.contains(&x)); }
+    PLANE0_TABLE.validate();
+    if let Ok(x) = (PLANE0_LIMIT as u32).try_into() { assert!(!PLANE0_TABLE.contains(&x)); }
+    SUPPLEMENTARY_TABLE.validate();
+}
+
 const ROW0_TABLE: LookupTable<u8, Sentence_Break> = lookup_table![
     // So every possible input is always found in the table
     (0x00, 0x08, Other),
@@ -52,15 +62,12 @@ const ROW0_TABLE: LookupTable<u8, Sentence_Break> = lookup_table![
     // Po       QUOTATION MARK
     (0x22, 0x22, Close),
     // Po       APOSTROPHE
-    (0x27, 0x27, Close),
     // Ps       LEFT PARENTHESIS
-    (0x28, 0x28, Close),
     // Pe       RIGHT PARENTHESIS
-    (0x29, 0x29, Close),
+    (0x27, 0x29, Close),
     // Po       COMMA
-    (0x2C, 0x2C, SContinue),
     // Pd       HYPHEN-MINUS
-    (0x2D, 0x2D, SContinue),
+    (0x2C, 0x2D, SContinue),
     // Po       FULL STOP
     (0x2E, 0x2E, ATerm),
     // Nd  [10] DIGIT ZERO..DIGIT NINE
@@ -679,9 +686,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       LATIN LETTER GLOTTAL STOP
     (0x0294, 0x0294, OLetter),
     // L&  [27] LATIN LETTER PHARYNGEAL VOICED FRICATIVE..LATIN SMALL LETTER TURNED H WITH FISHHOOK AND TAIL
-    (0x0295, 0x02AF, Lower),
     // Lm   [9] MODIFIER LETTER SMALL H..MODIFIER LETTER SMALL Y
-    (0x02B0, 0x02B8, Lower),
+    (0x0295, 0x02B8, Lower),
     // Lm   [7] MODIFIER LETTER PRIME..MODIFIER LETTER LEFT HALF RING
     (0x02B9, 0x02BF, OLetter),
     // Lm   [2] MODIFIER LETTER GLOTTAL STOP..MODIFIER LETTER REVERSED GLOTTAL STOP
@@ -711,9 +717,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // L&       GREEK SMALL LETTER PAMPHYLIAN DIGAMMA
     (0x0377, 0x0377, Lower),
     // Lm       GREEK YPOGEGRAMMENI
-    (0x037A, 0x037A, Lower),
     // L&   [3] GREEK SMALL REVERSED LUNATE SIGMA SYMBOL..GREEK SMALL REVERSED DOTTED LUNATE SIGMA SYMBOL
-    (0x037B, 0x037D, Lower),
+    (0x037A, 0x037D, Lower),
     // L&       GREEK CAPITAL LETTER YOT
     (0x037F, 0x037F, Upper),
     // L&       GREEK CAPITAL LETTER ALPHA WITH TONOS
@@ -873,9 +878,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // L&       CYRILLIC SMALL LETTER KOPPA
     (0x0481, 0x0481, Lower),
     // Mn   [5] COMBINING CYRILLIC TITLO..COMBINING CYRILLIC POKRYTIE
-    (0x0483, 0x0487, Extend),
     // Me   [2] COMBINING CYRILLIC HUNDRED THOUSANDS SIGN..COMBINING CYRILLIC MILLIONS SIGN
-    (0x0488, 0x0489, Extend),
+    (0x0483, 0x0489, Extend),
     // L&       CYRILLIC CAPITAL LETTER SHORT I WITH TAIL
     (0x048A, 0x048A, Upper),
     // L&       CYRILLIC SMALL LETTER SHORT I WITH TAIL
@@ -1227,9 +1231,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [27] HEBREW LETTER ALEF..HEBREW LETTER TAV
     (0x05D0, 0x05EA, OLetter),
     // Lo   [4] HEBREW YOD TRIANGLE..HEBREW LIGATURE YIDDISH DOUBLE YOD
-    (0x05EF, 0x05F2, OLetter),
     // Po       HEBREW PUNCTUATION GERESH
-    (0x05F3, 0x05F3, OLetter),
+    (0x05EF, 0x05F3, OLetter),
     // Cf   [6] ARABIC NUMBER SIGN..ARABIC NUMBER MARK ABOVE
     (0x0600, 0x0605, Format),
     // Po   [2] ARABIC COMMA..ARABIC DATE SEPARATOR
@@ -1241,11 +1244,9 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Po   [2] ARABIC TRIPLE DOT PUNCTUATION MARK..ARABIC QUESTION MARK
     (0x061E, 0x061F, STerm),
     // Lo  [32] ARABIC LETTER KASHMIRI YEH..ARABIC LETTER FARSI YEH WITH THREE DOTS ABOVE
-    (0x0620, 0x063F, OLetter),
     // Lm       ARABIC TATWEEL
-    (0x0640, 0x0640, OLetter),
     // Lo  [10] ARABIC LETTER FEH..ARABIC LETTER YEH
-    (0x0641, 0x064A, OLetter),
+    (0x0620, 0x064A, OLetter),
     // Mn  [21] ARABIC FATHATAN..ARABIC WAVY HAMZA BELOW
     (0x064B, 0x065F, Extend),
     // Nd  [10] ARABIC-INDIC DIGIT ZERO..ARABIC-INDIC DIGIT NINE
@@ -1353,29 +1354,22 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Cf       ARABIC DISPUTED END OF AYAH
     (0x08E2, 0x08E2, Format),
     // Mn  [32] ARABIC TURNED DAMMA BELOW..DEVANAGARI SIGN ANUSVARA
-    (0x08E3, 0x0902, Extend),
     // Mc       DEVANAGARI SIGN VISARGA
-    (0x0903, 0x0903, Extend),
+    (0x08E3, 0x0903, Extend),
     // Lo  [54] DEVANAGARI LETTER SHORT A..DEVANAGARI LETTER HA
     (0x0904, 0x0939, OLetter),
     // Mn       DEVANAGARI VOWEL SIGN OE
-    (0x093A, 0x093A, Extend),
     // Mc       DEVANAGARI VOWEL SIGN OOE
-    (0x093B, 0x093B, Extend),
     // Mn       DEVANAGARI SIGN NUKTA
-    (0x093C, 0x093C, Extend),
+    (0x093A, 0x093C, Extend),
     // Lo       DEVANAGARI SIGN AVAGRAHA
     (0x093D, 0x093D, OLetter),
     // Mc   [3] DEVANAGARI VOWEL SIGN AA..DEVANAGARI VOWEL SIGN II
-    (0x093E, 0x0940, Extend),
     // Mn   [8] DEVANAGARI VOWEL SIGN U..DEVANAGARI VOWEL SIGN AI
-    (0x0941, 0x0948, Extend),
     // Mc   [4] DEVANAGARI VOWEL SIGN CANDRA O..DEVANAGARI VOWEL SIGN AU
-    (0x0949, 0x094C, Extend),
     // Mn       DEVANAGARI SIGN VIRAMA
-    (0x094D, 0x094D, Extend),
     // Mc   [2] DEVANAGARI VOWEL SIGN PRISHTHAMATRA E..DEVANAGARI VOWEL SIGN AW
-    (0x094E, 0x094F, Extend),
+    (0x093E, 0x094F, Extend),
     // Lo       DEVANAGARI OM
     (0x0950, 0x0950, OLetter),
     // Mn   [7] DEVANAGARI STRESS SIGN UDATTA..DEVANAGARI VOWEL SIGN UUE
@@ -1389,13 +1383,11 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Nd  [10] DEVANAGARI DIGIT ZERO..DEVANAGARI DIGIT NINE
     (0x0966, 0x096F, Numeric),
     // Lm       DEVANAGARI SIGN HIGH SPACING DOT
-    (0x0971, 0x0971, OLetter),
     // Lo  [15] DEVANAGARI LETTER CANDRA A..BENGALI ANJI
-    (0x0972, 0x0980, OLetter),
+    (0x0971, 0x0980, OLetter),
     // Mn       BENGALI SIGN CANDRABINDU
-    (0x0981, 0x0981, Extend),
     // Mc   [2] BENGALI SIGN ANUSVARA..BENGALI SIGN VISARGA
-    (0x0982, 0x0983, Extend),
+    (0x0981, 0x0983, Extend),
     // Lo   [8] BENGALI LETTER A..BENGALI LETTER VOCALIC L
     (0x0985, 0x098C, OLetter),
     // Lo   [2] BENGALI LETTER E..BENGALI LETTER AI
@@ -1413,15 +1405,13 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       BENGALI SIGN AVAGRAHA
     (0x09BD, 0x09BD, OLetter),
     // Mc   [3] BENGALI VOWEL SIGN AA..BENGALI VOWEL SIGN II
-    (0x09BE, 0x09C0, Extend),
     // Mn   [4] BENGALI VOWEL SIGN U..BENGALI VOWEL SIGN VOCALIC RR
-    (0x09C1, 0x09C4, Extend),
+    (0x09BE, 0x09C4, Extend),
     // Mc   [2] BENGALI VOWEL SIGN E..BENGALI VOWEL SIGN AI
     (0x09C7, 0x09C8, Extend),
     // Mc   [2] BENGALI VOWEL SIGN O..BENGALI VOWEL SIGN AU
-    (0x09CB, 0x09CC, Extend),
     // Mn       BENGALI SIGN VIRAMA
-    (0x09CD, 0x09CD, Extend),
+    (0x09CB, 0x09CD, Extend),
     // Lo       BENGALI LETTER KHANDA TA
     (0x09CE, 0x09CE, OLetter),
     // Mc       BENGALI AU LENGTH MARK
@@ -1441,9 +1431,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn       BENGALI SANDHI MARK
     (0x09FE, 0x09FE, Extend),
     // Mn   [2] GURMUKHI SIGN ADAK BINDI..GURMUKHI SIGN BINDI
-    (0x0A01, 0x0A02, Extend),
     // Mc       GURMUKHI SIGN VISARGA
-    (0x0A03, 0x0A03, Extend),
+    (0x0A01, 0x0A03, Extend),
     // Lo   [6] GURMUKHI LETTER A..GURMUKHI LETTER UU
     (0x0A05, 0x0A0A, OLetter),
     // Lo   [2] GURMUKHI LETTER EE..GURMUKHI LETTER AI
@@ -1461,9 +1450,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn       GURMUKHI SIGN NUKTA
     (0x0A3C, 0x0A3C, Extend),
     // Mc   [3] GURMUKHI VOWEL SIGN AA..GURMUKHI VOWEL SIGN II
-    (0x0A3E, 0x0A40, Extend),
     // Mn   [2] GURMUKHI VOWEL SIGN U..GURMUKHI VOWEL SIGN UU
-    (0x0A41, 0x0A42, Extend),
+    (0x0A3E, 0x0A42, Extend),
     // Mn   [2] GURMUKHI VOWEL SIGN EE..GURMUKHI VOWEL SIGN AI
     (0x0A47, 0x0A48, Extend),
     // Mn   [3] GURMUKHI VOWEL SIGN OO..GURMUKHI SIGN VIRAMA
@@ -1483,9 +1471,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn       GURMUKHI SIGN YAKASH
     (0x0A75, 0x0A75, Extend),
     // Mn   [2] GUJARATI SIGN CANDRABINDU..GUJARATI SIGN ANUSVARA
-    (0x0A81, 0x0A82, Extend),
     // Mc       GUJARATI SIGN VISARGA
-    (0x0A83, 0x0A83, Extend),
+    (0x0A81, 0x0A83, Extend),
     // Lo   [9] GUJARATI LETTER A..GUJARATI VOWEL CANDRA E
     (0x0A85, 0x0A8D, OLetter),
     // Lo   [3] GUJARATI LETTER E..GUJARATI VOWEL CANDRA O
@@ -1503,17 +1490,14 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       GUJARATI SIGN AVAGRAHA
     (0x0ABD, 0x0ABD, OLetter),
     // Mc   [3] GUJARATI VOWEL SIGN AA..GUJARATI VOWEL SIGN II
-    (0x0ABE, 0x0AC0, Extend),
     // Mn   [5] GUJARATI VOWEL SIGN U..GUJARATI VOWEL SIGN CANDRA E
-    (0x0AC1, 0x0AC5, Extend),
+    (0x0ABE, 0x0AC5, Extend),
     // Mn   [2] GUJARATI VOWEL SIGN E..GUJARATI VOWEL SIGN AI
-    (0x0AC7, 0x0AC8, Extend),
     // Mc       GUJARATI VOWEL SIGN CANDRA O
-    (0x0AC9, 0x0AC9, Extend),
+    (0x0AC7, 0x0AC9, Extend),
     // Mc   [2] GUJARATI VOWEL SIGN O..GUJARATI VOWEL SIGN AU
-    (0x0ACB, 0x0ACC, Extend),
     // Mn       GUJARATI SIGN VIRAMA
-    (0x0ACD, 0x0ACD, Extend),
+    (0x0ACB, 0x0ACD, Extend),
     // Lo       GUJARATI OM
     (0x0AD0, 0x0AD0, OLetter),
     // Lo   [2] GUJARATI LETTER VOCALIC RR..GUJARATI LETTER VOCALIC LL
@@ -1527,9 +1511,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn   [6] GUJARATI SIGN SUKUN..GUJARATI SIGN TWO-CIRCLE NUKTA ABOVE
     (0x0AFA, 0x0AFF, Extend),
     // Mn       ORIYA SIGN CANDRABINDU
-    (0x0B01, 0x0B01, Extend),
     // Mc   [2] ORIYA SIGN ANUSVARA..ORIYA SIGN VISARGA
-    (0x0B02, 0x0B03, Extend),
+    (0x0B01, 0x0B03, Extend),
     // Lo   [8] ORIYA LETTER A..ORIYA LETTER VOCALIC L
     (0x0B05, 0x0B0C, OLetter),
     // Lo   [2] ORIYA LETTER E..ORIYA LETTER AI
@@ -1547,23 +1530,18 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       ORIYA SIGN AVAGRAHA
     (0x0B3D, 0x0B3D, OLetter),
     // Mc       ORIYA VOWEL SIGN AA
-    (0x0B3E, 0x0B3E, Extend),
     // Mn       ORIYA VOWEL SIGN I
-    (0x0B3F, 0x0B3F, Extend),
     // Mc       ORIYA VOWEL SIGN II
-    (0x0B40, 0x0B40, Extend),
     // Mn   [4] ORIYA VOWEL SIGN U..ORIYA VOWEL SIGN VOCALIC RR
-    (0x0B41, 0x0B44, Extend),
+    (0x0B3E, 0x0B44, Extend),
     // Mc   [2] ORIYA VOWEL SIGN E..ORIYA VOWEL SIGN AI
     (0x0B47, 0x0B48, Extend),
     // Mc   [2] ORIYA VOWEL SIGN O..ORIYA VOWEL SIGN AU
-    (0x0B4B, 0x0B4C, Extend),
     // Mn       ORIYA SIGN VIRAMA
-    (0x0B4D, 0x0B4D, Extend),
+    (0x0B4B, 0x0B4D, Extend),
     // Mn       ORIYA AI LENGTH MARK
-    (0x0B56, 0x0B56, Extend),
     // Mc       ORIYA AU LENGTH MARK
-    (0x0B57, 0x0B57, Extend),
+    (0x0B56, 0x0B57, Extend),
     // Lo   [2] ORIYA LETTER RRA..ORIYA LETTER RHA
     (0x0B5C, 0x0B5D, OLetter),
     // Lo   [3] ORIYA LETTER YYA..ORIYA LETTER VOCALIC LL
@@ -1597,17 +1575,14 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [12] TAMIL LETTER MA..TAMIL LETTER HA
     (0x0BAE, 0x0BB9, OLetter),
     // Mc   [2] TAMIL VOWEL SIGN AA..TAMIL VOWEL SIGN I
-    (0x0BBE, 0x0BBF, Extend),
     // Mn       TAMIL VOWEL SIGN II
-    (0x0BC0, 0x0BC0, Extend),
     // Mc   [2] TAMIL VOWEL SIGN U..TAMIL VOWEL SIGN UU
-    (0x0BC1, 0x0BC2, Extend),
+    (0x0BBE, 0x0BC2, Extend),
     // Mc   [3] TAMIL VOWEL SIGN E..TAMIL VOWEL SIGN AI
     (0x0BC6, 0x0BC8, Extend),
     // Mc   [3] TAMIL VOWEL SIGN O..TAMIL VOWEL SIGN AU
-    (0x0BCA, 0x0BCC, Extend),
     // Mn       TAMIL SIGN VIRAMA
-    (0x0BCD, 0x0BCD, Extend),
+    (0x0BCA, 0x0BCD, Extend),
     // Lo       TAMIL OM
     (0x0BD0, 0x0BD0, OLetter),
     // Mc       TAMIL AU LENGTH MARK
@@ -1615,11 +1590,9 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Nd  [10] TAMIL DIGIT ZERO..TAMIL DIGIT NINE
     (0x0BE6, 0x0BEF, Numeric),
     // Mn       TELUGU SIGN COMBINING CANDRABINDU ABOVE
-    (0x0C00, 0x0C00, Extend),
     // Mc   [3] TELUGU SIGN CANDRABINDU..TELUGU SIGN VISARGA
-    (0x0C01, 0x0C03, Extend),
     // Mn       TELUGU SIGN COMBINING ANUSVARA ABOVE
-    (0x0C04, 0x0C04, Extend),
+    (0x0C00, 0x0C04, Extend),
     // Lo   [8] TELUGU LETTER A..TELUGU LETTER VOCALIC L
     (0x0C05, 0x0C0C, OLetter),
     // Lo   [3] TELUGU LETTER E..TELUGU LETTER AI
@@ -1631,9 +1604,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       TELUGU SIGN AVAGRAHA
     (0x0C3D, 0x0C3D, OLetter),
     // Mn   [3] TELUGU VOWEL SIGN AA..TELUGU VOWEL SIGN II
-    (0x0C3E, 0x0C40, Extend),
     // Mc   [4] TELUGU VOWEL SIGN U..TELUGU VOWEL SIGN VOCALIC RR
-    (0x0C41, 0x0C44, Extend),
+    (0x0C3E, 0x0C44, Extend),
     // Mn   [3] TELUGU VOWEL SIGN E..TELUGU VOWEL SIGN AI
     (0x0C46, 0x0C48, Extend),
     // Mn   [4] TELUGU VOWEL SIGN O..TELUGU SIGN VIRAMA
@@ -1651,9 +1623,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       KANNADA SIGN SPACING CANDRABINDU
     (0x0C80, 0x0C80, OLetter),
     // Mn       KANNADA SIGN CANDRABINDU
-    (0x0C81, 0x0C81, Extend),
     // Mc   [2] KANNADA SIGN ANUSVARA..KANNADA SIGN VISARGA
-    (0x0C82, 0x0C83, Extend),
+    (0x0C81, 0x0C83, Extend),
     // Lo   [8] KANNADA LETTER A..KANNADA LETTER VOCALIC L
     (0x0C85, 0x0C8C, OLetter),
     // Lo   [3] KANNADA LETTER E..KANNADA LETTER AI
@@ -1669,19 +1640,15 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       KANNADA SIGN AVAGRAHA
     (0x0CBD, 0x0CBD, OLetter),
     // Mc       KANNADA VOWEL SIGN AA
-    (0x0CBE, 0x0CBE, Extend),
     // Mn       KANNADA VOWEL SIGN I
-    (0x0CBF, 0x0CBF, Extend),
     // Mc   [5] KANNADA VOWEL SIGN II..KANNADA VOWEL SIGN VOCALIC RR
-    (0x0CC0, 0x0CC4, Extend),
+    (0x0CBE, 0x0CC4, Extend),
     // Mn       KANNADA VOWEL SIGN E
-    (0x0CC6, 0x0CC6, Extend),
     // Mc   [2] KANNADA VOWEL SIGN EE..KANNADA VOWEL SIGN AI
-    (0x0CC7, 0x0CC8, Extend),
+    (0x0CC6, 0x0CC8, Extend),
     // Mc   [2] KANNADA VOWEL SIGN O..KANNADA VOWEL SIGN OO
-    (0x0CCA, 0x0CCB, Extend),
     // Mn   [2] KANNADA VOWEL SIGN AU..KANNADA SIGN VIRAMA
-    (0x0CCC, 0x0CCD, Extend),
+    (0x0CCA, 0x0CCD, Extend),
     // Mc   [2] KANNADA LENGTH MARK..KANNADA AI LENGTH MARK
     (0x0CD5, 0x0CD6, Extend),
     // Lo       KANNADA LETTER FA
@@ -1695,9 +1662,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo   [2] KANNADA SIGN JIHVAMULIYA..KANNADA SIGN UPADHMANIYA
     (0x0CF1, 0x0CF2, OLetter),
     // Mn   [2] MALAYALAM SIGN COMBINING ANUSVARA ABOVE..MALAYALAM SIGN CANDRABINDU
-    (0x0D00, 0x0D01, Extend),
     // Mc   [2] MALAYALAM SIGN ANUSVARA..MALAYALAM SIGN VISARGA
-    (0x0D02, 0x0D03, Extend),
+    (0x0D00, 0x0D03, Extend),
     // Lo   [8] MALAYALAM LETTER A..MALAYALAM LETTER VOCALIC L
     (0x0D05, 0x0D0C, OLetter),
     // Lo   [3] MALAYALAM LETTER E..MALAYALAM LETTER AI
@@ -1709,15 +1675,13 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       MALAYALAM SIGN AVAGRAHA
     (0x0D3D, 0x0D3D, OLetter),
     // Mc   [3] MALAYALAM VOWEL SIGN AA..MALAYALAM VOWEL SIGN II
-    (0x0D3E, 0x0D40, Extend),
     // Mn   [4] MALAYALAM VOWEL SIGN U..MALAYALAM VOWEL SIGN VOCALIC RR
-    (0x0D41, 0x0D44, Extend),
+    (0x0D3E, 0x0D44, Extend),
     // Mc   [3] MALAYALAM VOWEL SIGN E..MALAYALAM VOWEL SIGN AI
     (0x0D46, 0x0D48, Extend),
     // Mc   [3] MALAYALAM VOWEL SIGN O..MALAYALAM VOWEL SIGN AU
-    (0x0D4A, 0x0D4C, Extend),
     // Mn       MALAYALAM SIGN VIRAMA
-    (0x0D4D, 0x0D4D, Extend),
+    (0x0D4A, 0x0D4D, Extend),
     // Lo       MALAYALAM LETTER DOT REPH
     (0x0D4E, 0x0D4E, OLetter),
     // Lo   [3] MALAYALAM LETTER CHILLU M..MALAYALAM LETTER CHILLU LLL
@@ -1747,9 +1711,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn       SINHALA SIGN AL-LAKUNA
     (0x0DCA, 0x0DCA, Extend),
     // Mc   [3] SINHALA VOWEL SIGN AELA-PILLA..SINHALA VOWEL SIGN DIGA AEDA-PILLA
-    (0x0DCF, 0x0DD1, Extend),
     // Mn   [3] SINHALA VOWEL SIGN KETTI IS-PILLA..SINHALA VOWEL SIGN KETTI PAA-PILLA
-    (0x0DD2, 0x0DD4, Extend),
+    (0x0DCF, 0x0DD4, Extend),
     // Mn       SINHALA VOWEL SIGN DIGA PAA-PILLA
     (0x0DD6, 0x0DD6, Extend),
     // Mc   [8] SINHALA VOWEL SIGN GAETTA-PILLA..SINHALA VOWEL SIGN GAYANUKITTA
@@ -1767,9 +1730,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn   [7] THAI CHARACTER SARA I..THAI CHARACTER PHINTHU
     (0x0E34, 0x0E3A, Extend),
     // Lo   [6] THAI CHARACTER SARA E..THAI CHARACTER LAKKHANGYAO
-    (0x0E40, 0x0E45, OLetter),
     // Lm       THAI CHARACTER MAIYAMOK
-    (0x0E46, 0x0E46, OLetter),
+    (0x0E40, 0x0E46, OLetter),
     // Mn   [8] THAI CHARACTER MAITAIKHU..THAI CHARACTER YAMAKKAN
     (0x0E47, 0x0E4E, Extend),
     // Nd  [10] THAI DIGIT ZERO..THAI DIGIT NINE
@@ -1817,13 +1779,10 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn       TIBETAN MARK TSA -PHRU
     (0x0F39, 0x0F39, Extend),
     // Ps       TIBETAN MARK GUG RTAGS GYON
-    (0x0F3A, 0x0F3A, Close),
     // Pe       TIBETAN MARK GUG RTAGS GYAS
-    (0x0F3B, 0x0F3B, Close),
     // Ps       TIBETAN MARK ANG KHANG GYON
-    (0x0F3C, 0x0F3C, Close),
     // Pe       TIBETAN MARK ANG KHANG GYAS
-    (0x0F3D, 0x0F3D, Close),
+    (0x0F3A, 0x0F3D, Close),
     // Mc   [2] TIBETAN SIGN YAR TSHES..TIBETAN SIGN MAR TSHES
     (0x0F3E, 0x0F3F, Extend),
     // Lo   [8] TIBETAN LETTER KA..TIBETAN LETTER JA
@@ -1831,11 +1790,9 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [36] TIBETAN LETTER NYA..TIBETAN LETTER RRA
     (0x0F49, 0x0F6C, OLetter),
     // Mn  [14] TIBETAN VOWEL SIGN AA..TIBETAN SIGN RJES SU NGA RO
-    (0x0F71, 0x0F7E, Extend),
     // Mc       TIBETAN SIGN RNAM BCAD
-    (0x0F7F, 0x0F7F, Extend),
     // Mn   [5] TIBETAN VOWEL SIGN REVERSED I..TIBETAN MARK HALANTA
-    (0x0F80, 0x0F84, Extend),
+    (0x0F71, 0x0F84, Extend),
     // Mn   [2] TIBETAN SIGN LCI RTAGS..TIBETAN SIGN YANG RTAGS
     (0x0F86, 0x0F87, Extend),
     // Lo   [5] TIBETAN SIGN LCE TSA CAN..TIBETAN SIGN INVERTED MCHU CAN
@@ -1849,21 +1806,14 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [43] MYANMAR LETTER KA..MYANMAR LETTER AU
     (0x1000, 0x102A, OLetter),
     // Mc   [2] MYANMAR VOWEL SIGN TALL AA..MYANMAR VOWEL SIGN AA
-    (0x102B, 0x102C, Extend),
     // Mn   [4] MYANMAR VOWEL SIGN I..MYANMAR VOWEL SIGN UU
-    (0x102D, 0x1030, Extend),
     // Mc       MYANMAR VOWEL SIGN E
-    (0x1031, 0x1031, Extend),
     // Mn   [6] MYANMAR VOWEL SIGN AI..MYANMAR SIGN DOT BELOW
-    (0x1032, 0x1037, Extend),
     // Mc       MYANMAR SIGN VISARGA
-    (0x1038, 0x1038, Extend),
     // Mn   [2] MYANMAR SIGN VIRAMA..MYANMAR SIGN ASAT
-    (0x1039, 0x103A, Extend),
     // Mc   [2] MYANMAR CONSONANT SIGN MEDIAL YA..MYANMAR CONSONANT SIGN MEDIAL RA
-    (0x103B, 0x103C, Extend),
     // Mn   [2] MYANMAR CONSONANT SIGN MEDIAL WA..MYANMAR CONSONANT SIGN MEDIAL HA
-    (0x103D, 0x103E, Extend),
+    (0x102B, 0x103E, Extend),
     // Lo       MYANMAR LETTER GREAT SA
     (0x103F, 0x103F, OLetter),
     // Nd  [10] MYANMAR DIGIT ZERO..MYANMAR DIGIT NINE
@@ -1873,9 +1823,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo   [6] MYANMAR LETTER SHA..MYANMAR LETTER VOCALIC LL
     (0x1050, 0x1055, OLetter),
     // Mc   [2] MYANMAR VOWEL SIGN VOCALIC R..MYANMAR VOWEL SIGN VOCALIC RR
-    (0x1056, 0x1057, Extend),
     // Mn   [2] MYANMAR VOWEL SIGN VOCALIC L..MYANMAR VOWEL SIGN VOCALIC LL
-    (0x1058, 0x1059, Extend),
+    (0x1056, 0x1059, Extend),
     // Lo   [4] MYANMAR LETTER MON NGA..MYANMAR LETTER MON BBE
     (0x105A, 0x105D, OLetter),
     // Mn   [3] MYANMAR CONSONANT SIGN MON MEDIAL NA..MYANMAR CONSONANT SIGN MON MEDIAL LA
@@ -1895,15 +1844,11 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [13] MYANMAR LETTER SHAN KA..MYANMAR LETTER SHAN HA
     (0x1075, 0x1081, OLetter),
     // Mn       MYANMAR CONSONANT SIGN SHAN MEDIAL WA
-    (0x1082, 0x1082, Extend),
     // Mc   [2] MYANMAR VOWEL SIGN SHAN AA..MYANMAR VOWEL SIGN SHAN E
-    (0x1083, 0x1084, Extend),
     // Mn   [2] MYANMAR VOWEL SIGN SHAN E ABOVE..MYANMAR VOWEL SIGN SHAN FINAL Y
-    (0x1085, 0x1086, Extend),
     // Mc   [6] MYANMAR SIGN SHAN TONE-2..MYANMAR SIGN SHAN COUNCIL TONE-3
-    (0x1087, 0x108C, Extend),
     // Mn       MYANMAR SIGN SHAN COUNCIL EMPHATIC TONE
-    (0x108D, 0x108D, Extend),
+    (0x1082, 0x108D, Extend),
     // Lo       MYANMAR LETTER RUMAI PALAUNG FA
     (0x108E, 0x108E, OLetter),
     // Mc       MYANMAR SIGN RUMAI PALAUNG TONE-5
@@ -1911,9 +1856,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Nd  [10] MYANMAR SHAN DIGIT ZERO..MYANMAR SHAN DIGIT NINE
     (0x1090, 0x1099, Numeric),
     // Mc   [3] MYANMAR SIGN KHAMTI TONE-1..MYANMAR VOWEL SIGN AITON A
-    (0x109A, 0x109C, Extend),
     // Mn       MYANMAR VOWEL SIGN AITON AI
-    (0x109D, 0x109D, Extend),
+    (0x109A, 0x109D, Extend),
     // L&  [38] GEORGIAN CAPITAL LETTER AN..GEORGIAN CAPITAL LETTER HOE
     (0x10A0, 0x10C5, Upper),
     // L&       GEORGIAN CAPITAL LETTER YN
@@ -1923,11 +1867,9 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // L&  [43] GEORGIAN LETTER AN..GEORGIAN LETTER AIN
     (0x10D0, 0x10FA, OLetter),
     // Lm       MODIFIER LETTER GEORGIAN NAR
-    (0x10FC, 0x10FC, OLetter),
     // L&   [3] GEORGIAN LETTER AEN..GEORGIAN LETTER LABIAL SIGN
-    (0x10FD, 0x10FF, OLetter),
     // Lo [329] HANGUL CHOSEONG KIYEOK..ETHIOPIC SYLLABLE QWA
-    (0x1100, 0x1248, OLetter),
+    (0x10FC, 0x1248, OLetter),
     // Lo   [4] ETHIOPIC SYLLABLE QWI..ETHIOPIC SYLLABLE QWE
     (0x124A, 0x124D, OLetter),
     // Lo   [7] ETHIOPIC SYLLABLE QHA..ETHIOPIC SYLLABLE QHO
@@ -1981,15 +1923,13 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [26] OGHAM LETTER BEITH..OGHAM LETTER PEITH
     (0x1681, 0x169A, OLetter),
     // Ps       OGHAM FEATHER MARK
-    (0x169B, 0x169B, Close),
     // Pe       OGHAM REVERSED FEATHER MARK
-    (0x169C, 0x169C, Close),
+    (0x169B, 0x169C, Close),
     // Lo  [75] RUNIC LETTER FEHU FEOH FE F..RUNIC LETTER X
     (0x16A0, 0x16EA, OLetter),
     // Nl   [3] RUNIC ARLAUG SYMBOL..RUNIC BELGTHOR SYMBOL
-    (0x16EE, 0x16F0, OLetter),
     // Lo   [8] RUNIC LETTER K..RUNIC LETTER FRANKS CASKET AESC
-    (0x16F1, 0x16F8, OLetter),
+    (0x16EE, 0x16F8, OLetter),
     // Lo  [13] TAGALOG LETTER A..TAGALOG LETTER YA
     (0x1700, 0x170C, OLetter),
     // Lo   [4] TAGALOG LETTER LA..TAGALOG LETTER HA
@@ -2015,19 +1955,13 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [52] KHMER LETTER KA..KHMER INDEPENDENT VOWEL QAU
     (0x1780, 0x17B3, OLetter),
     // Mn   [2] KHMER VOWEL INHERENT AQ..KHMER VOWEL INHERENT AA
-    (0x17B4, 0x17B5, Extend),
     // Mc       KHMER VOWEL SIGN AA
-    (0x17B6, 0x17B6, Extend),
     // Mn   [7] KHMER VOWEL SIGN I..KHMER VOWEL SIGN UA
-    (0x17B7, 0x17BD, Extend),
     // Mc   [8] KHMER VOWEL SIGN OE..KHMER VOWEL SIGN AU
-    (0x17BE, 0x17C5, Extend),
     // Mn       KHMER SIGN NIKAHIT
-    (0x17C6, 0x17C6, Extend),
     // Mc   [2] KHMER SIGN REAHMUK..KHMER SIGN YUUKALEAPINTU
-    (0x17C7, 0x17C8, Extend),
     // Mn  [11] KHMER SIGN MUUSIKATOAN..KHMER SIGN BATHAMASAT
-    (0x17C9, 0x17D3, Extend),
+    (0x17B4, 0x17D3, Extend),
     // Lm       KHMER SIGN LEK TOO
     (0x17D7, 0x17D7, OLetter),
     // Lo       KHMER SIGN AVAKRAHASANYA
@@ -2051,11 +1985,9 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Nd  [10] MONGOLIAN DIGIT ZERO..MONGOLIAN DIGIT NINE
     (0x1810, 0x1819, Numeric),
     // Lo  [35] MONGOLIAN LETTER A..MONGOLIAN LETTER CHI
-    (0x1820, 0x1842, OLetter),
     // Lm       MONGOLIAN LETTER TODO LONG VOWEL SIGN
-    (0x1843, 0x1843, OLetter),
     // Lo  [53] MONGOLIAN LETTER TODO E..MONGOLIAN LETTER CHA WITH TWO DOTS
-    (0x1844, 0x1878, OLetter),
+    (0x1820, 0x1878, OLetter),
     // Lo   [5] MONGOLIAN LETTER ALI GALI ANUSVARA ONE..MONGOLIAN LETTER ALI GALI INVERTED UBADAMA
     (0x1880, 0x1884, OLetter),
     // Mn   [2] MONGOLIAN LETTER ALI GALI BALUDA..MONGOLIAN LETTER ALI GALI THREE BALUDA
@@ -2071,21 +2003,15 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [31] LIMBU VOWEL-CARRIER LETTER..LIMBU LETTER TRA
     (0x1900, 0x191E, OLetter),
     // Mn   [3] LIMBU VOWEL SIGN A..LIMBU VOWEL SIGN U
-    (0x1920, 0x1922, Extend),
     // Mc   [4] LIMBU VOWEL SIGN EE..LIMBU VOWEL SIGN AU
-    (0x1923, 0x1926, Extend),
     // Mn   [2] LIMBU VOWEL SIGN E..LIMBU VOWEL SIGN O
-    (0x1927, 0x1928, Extend),
     // Mc   [3] LIMBU SUBJOINED LETTER YA..LIMBU SUBJOINED LETTER WA
-    (0x1929, 0x192B, Extend),
+    (0x1920, 0x192B, Extend),
     // Mc   [2] LIMBU SMALL LETTER KA..LIMBU SMALL LETTER NGA
-    (0x1930, 0x1931, Extend),
     // Mn       LIMBU SMALL LETTER ANUSVARA
-    (0x1932, 0x1932, Extend),
     // Mc   [6] LIMBU SMALL LETTER TA..LIMBU SMALL LETTER LA
-    (0x1933, 0x1938, Extend),
     // Mn   [3] LIMBU SIGN MUKPHRENG..LIMBU SIGN SA-I
-    (0x1939, 0x193B, Extend),
+    (0x1930, 0x193B, Extend),
     // Po   [2] LIMBU EXCLAMATION MARK..LIMBU QUESTION MARK
     (0x1944, 0x1945, STerm),
     // Nd  [10] LIMBU DIGIT ZERO..LIMBU DIGIT NINE
@@ -2103,35 +2029,24 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [23] BUGINESE LETTER KA..BUGINESE LETTER HA
     (0x1A00, 0x1A16, OLetter),
     // Mn   [2] BUGINESE VOWEL SIGN I..BUGINESE VOWEL SIGN U
-    (0x1A17, 0x1A18, Extend),
     // Mc   [2] BUGINESE VOWEL SIGN E..BUGINESE VOWEL SIGN O
-    (0x1A19, 0x1A1A, Extend),
     // Mn       BUGINESE VOWEL SIGN AE
-    (0x1A1B, 0x1A1B, Extend),
+    (0x1A17, 0x1A1B, Extend),
     // Lo  [53] TAI THAM LETTER HIGH KA..TAI THAM LETTER GREAT SA
     (0x1A20, 0x1A54, OLetter),
     // Mc       TAI THAM CONSONANT SIGN MEDIAL RA
-    (0x1A55, 0x1A55, Extend),
     // Mn       TAI THAM CONSONANT SIGN MEDIAL LA
-    (0x1A56, 0x1A56, Extend),
     // Mc       TAI THAM CONSONANT SIGN LA TANG LAI
-    (0x1A57, 0x1A57, Extend),
     // Mn   [7] TAI THAM SIGN MAI KANG LAI..TAI THAM CONSONANT SIGN SA
-    (0x1A58, 0x1A5E, Extend),
+    (0x1A55, 0x1A5E, Extend),
     // Mn       TAI THAM SIGN SAKOT
-    (0x1A60, 0x1A60, Extend),
     // Mc       TAI THAM VOWEL SIGN A
-    (0x1A61, 0x1A61, Extend),
     // Mn       TAI THAM VOWEL SIGN MAI SAT
-    (0x1A62, 0x1A62, Extend),
     // Mc   [2] TAI THAM VOWEL SIGN AA..TAI THAM VOWEL SIGN TALL AA
-    (0x1A63, 0x1A64, Extend),
     // Mn   [8] TAI THAM VOWEL SIGN I..TAI THAM VOWEL SIGN OA BELOW
-    (0x1A65, 0x1A6C, Extend),
     // Mc   [6] TAI THAM VOWEL SIGN OY..TAI THAM VOWEL SIGN THAM AI
-    (0x1A6D, 0x1A72, Extend),
     // Mn  [10] TAI THAM VOWEL SIGN OA ABOVE..TAI THAM SIGN KHUEN-LUE KARAN
-    (0x1A73, 0x1A7C, Extend),
+    (0x1A60, 0x1A7C, Extend),
     // Mn       TAI THAM COMBINING CRYPTOGRAMMIC DOT
     (0x1A7F, 0x1A7F, Extend),
     // Nd  [10] TAI THAM HORA DIGIT ZERO..TAI THAM HORA DIGIT NINE
@@ -2143,31 +2058,22 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Po   [4] TAI THAM SIGN KAAN..TAI THAM SIGN SATKAANKUU
     (0x1AA8, 0x1AAB, STerm),
     // Mn  [14] COMBINING DOUBLED CIRCUMFLEX ACCENT..COMBINING PARENTHESES BELOW
-    (0x1AB0, 0x1ABD, Extend),
     // Me       COMBINING PARENTHESES OVERLAY
-    (0x1ABE, 0x1ABE, Extend),
+    (0x1AB0, 0x1ABE, Extend),
     // Mn   [4] BALINESE SIGN ULU RICEM..BALINESE SIGN SURANG
-    (0x1B00, 0x1B03, Extend),
     // Mc       BALINESE SIGN BISAH
-    (0x1B04, 0x1B04, Extend),
+    (0x1B00, 0x1B04, Extend),
     // Lo  [47] BALINESE LETTER AKARA..BALINESE LETTER HA
     (0x1B05, 0x1B33, OLetter),
     // Mn       BALINESE SIGN REREKAN
-    (0x1B34, 0x1B34, Extend),
     // Mc       BALINESE VOWEL SIGN TEDUNG
-    (0x1B35, 0x1B35, Extend),
     // Mn   [5] BALINESE VOWEL SIGN ULU..BALINESE VOWEL SIGN RA REPA
-    (0x1B36, 0x1B3A, Extend),
     // Mc       BALINESE VOWEL SIGN RA REPA TEDUNG
-    (0x1B3B, 0x1B3B, Extend),
     // Mn       BALINESE VOWEL SIGN LA LENGA
-    (0x1B3C, 0x1B3C, Extend),
     // Mc   [5] BALINESE VOWEL SIGN LA LENGA TEDUNG..BALINESE VOWEL SIGN TALING REPA TEDUNG
-    (0x1B3D, 0x1B41, Extend),
     // Mn       BALINESE VOWEL SIGN PEPET
-    (0x1B42, 0x1B42, Extend),
     // Mc   [2] BALINESE VOWEL SIGN PEPET TEDUNG..BALINESE ADEG ADEG
-    (0x1B43, 0x1B44, Extend),
+    (0x1B34, 0x1B44, Extend),
     // Lo   [7] BALINESE LETTER KAF SASAK..BALINESE LETTER ASYURA SASAK
     (0x1B45, 0x1B4B, OLetter),
     // Nd  [10] BALINESE DIGIT ZERO..BALINESE DIGIT NINE
@@ -2179,23 +2085,17 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn   [9] BALINESE MUSICAL SYMBOL COMBINING TEGEH..BALINESE MUSICAL SYMBOL COMBINING GONG
     (0x1B6B, 0x1B73, Extend),
     // Mn   [2] SUNDANESE SIGN PANYECEK..SUNDANESE SIGN PANGLAYAR
-    (0x1B80, 0x1B81, Extend),
     // Mc       SUNDANESE SIGN PANGWISAD
-    (0x1B82, 0x1B82, Extend),
+    (0x1B80, 0x1B82, Extend),
     // Lo  [30] SUNDANESE LETTER A..SUNDANESE LETTER HA
     (0x1B83, 0x1BA0, OLetter),
     // Mc       SUNDANESE CONSONANT SIGN PAMINGKAL
-    (0x1BA1, 0x1BA1, Extend),
     // Mn   [4] SUNDANESE CONSONANT SIGN PANYAKRA..SUNDANESE VOWEL SIGN PANYUKU
-    (0x1BA2, 0x1BA5, Extend),
     // Mc   [2] SUNDANESE VOWEL SIGN PANAELAENG..SUNDANESE VOWEL SIGN PANOLONG
-    (0x1BA6, 0x1BA7, Extend),
     // Mn   [2] SUNDANESE VOWEL SIGN PAMEPET..SUNDANESE VOWEL SIGN PANEULEUNG
-    (0x1BA8, 0x1BA9, Extend),
     // Mc       SUNDANESE SIGN PAMAAEH
-    (0x1BAA, 0x1BAA, Extend),
     // Mn   [3] SUNDANESE SIGN VIRAMA..SUNDANESE CONSONANT SIGN PASANGAN WA
-    (0x1BAB, 0x1BAD, Extend),
+    (0x1BA1, 0x1BAD, Extend),
     // Lo   [2] SUNDANESE LETTER KHA..SUNDANESE LETTER SYA
     (0x1BAE, 0x1BAF, OLetter),
     // Nd  [10] SUNDANESE DIGIT ZERO..SUNDANESE DIGIT NINE
@@ -2203,31 +2103,21 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [44] SUNDANESE AVAGRAHA..BATAK LETTER U
     (0x1BBA, 0x1BE5, OLetter),
     // Mn       BATAK SIGN TOMPI
-    (0x1BE6, 0x1BE6, Extend),
     // Mc       BATAK VOWEL SIGN E
-    (0x1BE7, 0x1BE7, Extend),
     // Mn   [2] BATAK VOWEL SIGN PAKPAK E..BATAK VOWEL SIGN EE
-    (0x1BE8, 0x1BE9, Extend),
     // Mc   [3] BATAK VOWEL SIGN I..BATAK VOWEL SIGN O
-    (0x1BEA, 0x1BEC, Extend),
     // Mn       BATAK VOWEL SIGN KARO O
-    (0x1BED, 0x1BED, Extend),
     // Mc       BATAK VOWEL SIGN U
-    (0x1BEE, 0x1BEE, Extend),
     // Mn   [3] BATAK VOWEL SIGN U FOR SIMALUNGUN SA..BATAK CONSONANT SIGN H
-    (0x1BEF, 0x1BF1, Extend),
     // Mc   [2] BATAK PANGOLAT..BATAK PANONGONAN
-    (0x1BF2, 0x1BF3, Extend),
+    (0x1BE6, 0x1BF3, Extend),
     // Lo  [36] LEPCHA LETTER KA..LEPCHA LETTER A
     (0x1C00, 0x1C23, OLetter),
     // Mc   [8] LEPCHA SUBJOINED LETTER YA..LEPCHA VOWEL SIGN UU
-    (0x1C24, 0x1C2B, Extend),
     // Mn   [8] LEPCHA VOWEL SIGN E..LEPCHA CONSONANT SIGN T
-    (0x1C2C, 0x1C33, Extend),
     // Mc   [2] LEPCHA CONSONANT SIGN NYIN-DO..LEPCHA CONSONANT SIGN KANG
-    (0x1C34, 0x1C35, Extend),
     // Mn   [2] LEPCHA SIGN RAN..LEPCHA SIGN NUKTA
-    (0x1C36, 0x1C37, Extend),
+    (0x1C24, 0x1C37, Extend),
     // Po   [2] LEPCHA PUNCTUATION TA-ROL..LEPCHA PUNCTUATION NYET THYOOM TA-ROL
     (0x1C3B, 0x1C3C, STerm),
     // Nd  [10] LEPCHA DIGIT ZERO..LEPCHA DIGIT NINE
@@ -2237,9 +2127,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Nd  [10] OL CHIKI DIGIT ZERO..OL CHIKI DIGIT NINE
     (0x1C50, 0x1C59, Numeric),
     // Lo  [30] OL CHIKI LETTER LA..OL CHIKI LETTER OH
-    (0x1C5A, 0x1C77, OLetter),
     // Lm   [6] OL CHIKI MU TTUDDAG..OL CHIKI AHAD
-    (0x1C78, 0x1C7D, OLetter),
+    (0x1C5A, 0x1C7D, OLetter),
     // Po   [2] OL CHIKI PUNCTUATION MUCAAD..OL CHIKI PUNCTUATION DOUBLE MUCAAD
     (0x1C7E, 0x1C7F, STerm),
     // L&   [9] CYRILLIC SMALL LETTER ROUNDED VE..CYRILLIC SMALL LETTER UNBLENDED UK
@@ -2251,11 +2140,9 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn   [3] VEDIC TONE KARSHANA..VEDIC TONE PRENKHA
     (0x1CD0, 0x1CD2, Extend),
     // Mn  [13] VEDIC SIGN YAJURVEDIC MIDLINE SVARITA..VEDIC TONE RIGVEDIC KASHMIRI INDEPENDENT SVARITA
-    (0x1CD4, 0x1CE0, Extend),
     // Mc       VEDIC TONE ATHARVAVEDIC INDEPENDENT SVARITA
-    (0x1CE1, 0x1CE1, Extend),
     // Mn   [7] VEDIC SIGN VISARGA SVARITA..VEDIC SIGN VISARGA ANUDATTA WITH TAIL
-    (0x1CE2, 0x1CE8, Extend),
+    (0x1CD4, 0x1CE8, Extend),
     // Lo   [4] VEDIC SIGN ANUSVARA ANTARGOMUKHA..VEDIC SIGN ANUSVARA VAMAGOMUKHA WITH TAIL
     (0x1CE9, 0x1CEC, OLetter),
     // Mn       VEDIC SIGN TIRYAK
@@ -2267,23 +2154,17 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo   [2] VEDIC SIGN JIHVAMULIYA..VEDIC SIGN UPADHMANIYA
     (0x1CF5, 0x1CF6, OLetter),
     // Mc       VEDIC SIGN ATIKRAMA
-    (0x1CF7, 0x1CF7, Extend),
     // Mn   [2] VEDIC TONE RING ABOVE..VEDIC TONE DOUBLE RING ABOVE
-    (0x1CF8, 0x1CF9, Extend),
+    (0x1CF7, 0x1CF9, Extend),
     // Lo       VEDIC SIGN DOUBLE ANUSVARA ANTARGOMUKHA
     (0x1CFA, 0x1CFA, OLetter),
     // L&  [44] LATIN LETTER SMALL CAPITAL A..CYRILLIC LETTER SMALL CAPITAL EL
-    (0x1D00, 0x1D2B, Lower),
     // Lm  [63] MODIFIER LETTER CAPITAL A..GREEK SUBSCRIPT SMALL LETTER CHI
-    (0x1D2C, 0x1D6A, Lower),
     // L&  [13] LATIN SMALL LETTER UE..LATIN SMALL LETTER TURNED G
-    (0x1D6B, 0x1D77, Lower),
     // Lm       MODIFIER LETTER CYRILLIC EN
-    (0x1D78, 0x1D78, Lower),
     // L&  [34] LATIN SMALL LETTER INSULAR G..LATIN SMALL LETTER EZH WITH RETROFLEX HOOK
-    (0x1D79, 0x1D9A, Lower),
     // Lm  [37] MODIFIER LETTER SMALL TURNED ALPHA..MODIFIER LETTER SMALL THETA
-    (0x1D9B, 0x1DBF, Lower),
+    (0x1D00, 0x1DBF, Lower),
     // Mn  [58] COMBINING DOTTED GRAVE ACCENT..COMBINING WIDE INVERTED BRIDGE BELOW
     (0x1DC0, 0x1DF9, Extend),
     // Mn   [5] COMBINING DELETION MARK..COMBINING RIGHT ARROWHEAD AND DOWN ARROWHEAD BELOW
@@ -2871,39 +2752,30 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Pd   [2] EN DASH..EM DASH
     (0x2013, 0x2014, SContinue),
     // Pi       LEFT SINGLE QUOTATION MARK
-    (0x2018, 0x2018, Close),
     // Pf       RIGHT SINGLE QUOTATION MARK
-    (0x2019, 0x2019, Close),
     // Ps       SINGLE LOW-9 QUOTATION MARK
-    (0x201A, 0x201A, Close),
     // Pi   [2] SINGLE HIGH-REVERSED-9 QUOTATION MARK..LEFT DOUBLE QUOTATION MARK
-    (0x201B, 0x201C, Close),
     // Pf       RIGHT DOUBLE QUOTATION MARK
-    (0x201D, 0x201D, Close),
     // Ps       DOUBLE LOW-9 QUOTATION MARK
-    (0x201E, 0x201E, Close),
     // Pi       DOUBLE HIGH-REVERSED-9 QUOTATION MARK
-    (0x201F, 0x201F, Close),
+    (0x2018, 0x201F, Close),
     // Po       ONE DOT LEADER
     (0x2024, 0x2024, ATerm),
     // Zl       LINE SEPARATOR
-    (0x2028, 0x2028, Sep),
     // Zp       PARAGRAPH SEPARATOR
-    (0x2029, 0x2029, Sep),
+    (0x2028, 0x2029, Sep),
     // Cf   [5] LEFT-TO-RIGHT EMBEDDING..RIGHT-TO-LEFT OVERRIDE
     (0x202A, 0x202E, Format),
     // Zs       NARROW NO-BREAK SPACE
     (0x202F, 0x202F, Sp),
     // Pi       SINGLE LEFT-POINTING ANGLE QUOTATION MARK
-    (0x2039, 0x2039, Close),
     // Pf       SINGLE RIGHT-POINTING ANGLE QUOTATION MARK
-    (0x203A, 0x203A, Close),
+    (0x2039, 0x203A, Close),
     // Po   [2] DOUBLE EXCLAMATION MARK..INTERROBANG
     (0x203C, 0x203D, STerm),
     // Ps       LEFT SQUARE BRACKET WITH QUILL
-    (0x2045, 0x2045, Close),
     // Pe       RIGHT SQUARE BRACKET WITH QUILL
-    (0x2046, 0x2046, Close),
+    (0x2045, 0x2046, Close),
     // Po   [3] DOUBLE QUESTION MARK..EXCLAMATION QUESTION MARK
     (0x2047, 0x2049, STerm),
     // Zs       MEDIUM MATHEMATICAL SPACE
@@ -2915,27 +2787,21 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lm       SUPERSCRIPT LATIN SMALL LETTER I
     (0x2071, 0x2071, Lower),
     // Ps       SUPERSCRIPT LEFT PARENTHESIS
-    (0x207D, 0x207D, Close),
     // Pe       SUPERSCRIPT RIGHT PARENTHESIS
-    (0x207E, 0x207E, Close),
+    (0x207D, 0x207E, Close),
     // Lm       SUPERSCRIPT LATIN SMALL LETTER N
     (0x207F, 0x207F, Lower),
     // Ps       SUBSCRIPT LEFT PARENTHESIS
-    (0x208D, 0x208D, Close),
     // Pe       SUBSCRIPT RIGHT PARENTHESIS
-    (0x208E, 0x208E, Close),
+    (0x208D, 0x208E, Close),
     // Lm  [13] LATIN SUBSCRIPT SMALL LETTER A..LATIN SUBSCRIPT SMALL LETTER T
     (0x2090, 0x209C, Lower),
     // Mn  [13] COMBINING LEFT HARPOON ABOVE..COMBINING FOUR DOTS ABOVE
-    (0x20D0, 0x20DC, Extend),
     // Me   [4] COMBINING ENCLOSING CIRCLE..COMBINING ENCLOSING CIRCLE BACKSLASH
-    (0x20DD, 0x20E0, Extend),
     // Mn       COMBINING LEFT RIGHT ARROW ABOVE
-    (0x20E1, 0x20E1, Extend),
     // Me   [3] COMBINING ENCLOSING SCREEN..COMBINING ENCLOSING UPWARD POINTING TRIANGLE
-    (0x20E2, 0x20E4, Extend),
     // Mn  [12] COMBINING REVERSE SOLIDUS OVERLAY..COMBINING ASTERISK ABOVE
-    (0x20E5, 0x20F0, Extend),
+    (0x20D0, 0x20F0, Extend),
     // L&       DOUBLE-STRUCK CAPITAL C
     (0x2102, 0x2102, Upper),
     // L&       EULER CONSTANT
@@ -2995,17 +2861,13 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Nl   [4] ROMAN NUMERAL SIX LATE FORM..ROMAN NUMERAL ONE HUNDRED THOUSAND
     (0x2185, 0x2188, OLetter),
     // Ps       LEFT CEILING
-    (0x2308, 0x2308, Close),
     // Pe       RIGHT CEILING
-    (0x2309, 0x2309, Close),
     // Ps       LEFT FLOOR
-    (0x230A, 0x230A, Close),
     // Pe       RIGHT FLOOR
-    (0x230B, 0x230B, Close),
+    (0x2308, 0x230B, Close),
     // Ps       LEFT-POINTING ANGLE BRACKET
-    (0x2329, 0x2329, Close),
     // Pe       RIGHT-POINTING ANGLE BRACKET
-    (0x232A, 0x232A, Close),
+    (0x2329, 0x232A, Close),
     // So  [26] CIRCLED LATIN CAPITAL LETTER A..CIRCLED LATIN CAPITAL LETTER Z
     (0x24B6, 0x24CF, Upper),
     // So  [26] CIRCLED LATIN SMALL LETTER A..CIRCLED LATIN SMALL LETTER Z
@@ -3013,113 +2875,65 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // So   [6] HEAVY SINGLE TURNED COMMA QUOTATION MARK ORNAMENT..HEAVY LOW DOUBLE COMMA QUOTATION MARK ORNAMENT
     (0x275B, 0x2760, Close),
     // Ps       MEDIUM LEFT PARENTHESIS ORNAMENT
-    (0x2768, 0x2768, Close),
     // Pe       MEDIUM RIGHT PARENTHESIS ORNAMENT
-    (0x2769, 0x2769, Close),
     // Ps       MEDIUM FLATTENED LEFT PARENTHESIS ORNAMENT
-    (0x276A, 0x276A, Close),
     // Pe       MEDIUM FLATTENED RIGHT PARENTHESIS ORNAMENT
-    (0x276B, 0x276B, Close),
     // Ps       MEDIUM LEFT-POINTING ANGLE BRACKET ORNAMENT
-    (0x276C, 0x276C, Close),
     // Pe       MEDIUM RIGHT-POINTING ANGLE BRACKET ORNAMENT
-    (0x276D, 0x276D, Close),
     // Ps       HEAVY LEFT-POINTING ANGLE QUOTATION MARK ORNAMENT
-    (0x276E, 0x276E, Close),
     // Pe       HEAVY RIGHT-POINTING ANGLE QUOTATION MARK ORNAMENT
-    (0x276F, 0x276F, Close),
     // Ps       HEAVY LEFT-POINTING ANGLE BRACKET ORNAMENT
-    (0x2770, 0x2770, Close),
     // Pe       HEAVY RIGHT-POINTING ANGLE BRACKET ORNAMENT
-    (0x2771, 0x2771, Close),
     // Ps       LIGHT LEFT TORTOISE SHELL BRACKET ORNAMENT
-    (0x2772, 0x2772, Close),
     // Pe       LIGHT RIGHT TORTOISE SHELL BRACKET ORNAMENT
-    (0x2773, 0x2773, Close),
     // Ps       MEDIUM LEFT CURLY BRACKET ORNAMENT
-    (0x2774, 0x2774, Close),
     // Pe       MEDIUM RIGHT CURLY BRACKET ORNAMENT
-    (0x2775, 0x2775, Close),
+    (0x2768, 0x2775, Close),
     // Ps       LEFT S-SHAPED BAG DELIMITER
-    (0x27C5, 0x27C5, Close),
     // Pe       RIGHT S-SHAPED BAG DELIMITER
-    (0x27C6, 0x27C6, Close),
+    (0x27C5, 0x27C6, Close),
     // Ps       MATHEMATICAL LEFT WHITE SQUARE BRACKET
-    (0x27E6, 0x27E6, Close),
     // Pe       MATHEMATICAL RIGHT WHITE SQUARE BRACKET
-    (0x27E7, 0x27E7, Close),
     // Ps       MATHEMATICAL LEFT ANGLE BRACKET
-    (0x27E8, 0x27E8, Close),
     // Pe       MATHEMATICAL RIGHT ANGLE BRACKET
-    (0x27E9, 0x27E9, Close),
     // Ps       MATHEMATICAL LEFT DOUBLE ANGLE BRACKET
-    (0x27EA, 0x27EA, Close),
     // Pe       MATHEMATICAL RIGHT DOUBLE ANGLE BRACKET
-    (0x27EB, 0x27EB, Close),
     // Ps       MATHEMATICAL LEFT WHITE TORTOISE SHELL BRACKET
-    (0x27EC, 0x27EC, Close),
     // Pe       MATHEMATICAL RIGHT WHITE TORTOISE SHELL BRACKET
-    (0x27ED, 0x27ED, Close),
     // Ps       MATHEMATICAL LEFT FLATTENED PARENTHESIS
-    (0x27EE, 0x27EE, Close),
     // Pe       MATHEMATICAL RIGHT FLATTENED PARENTHESIS
-    (0x27EF, 0x27EF, Close),
+    (0x27E6, 0x27EF, Close),
     // Ps       LEFT WHITE CURLY BRACKET
-    (0x2983, 0x2983, Close),
     // Pe       RIGHT WHITE CURLY BRACKET
-    (0x2984, 0x2984, Close),
     // Ps       LEFT WHITE PARENTHESIS
-    (0x2985, 0x2985, Close),
     // Pe       RIGHT WHITE PARENTHESIS
-    (0x2986, 0x2986, Close),
     // Ps       Z NOTATION LEFT IMAGE BRACKET
-    (0x2987, 0x2987, Close),
     // Pe       Z NOTATION RIGHT IMAGE BRACKET
-    (0x2988, 0x2988, Close),
     // Ps       Z NOTATION LEFT BINDING BRACKET
-    (0x2989, 0x2989, Close),
     // Pe       Z NOTATION RIGHT BINDING BRACKET
-    (0x298A, 0x298A, Close),
     // Ps       LEFT SQUARE BRACKET WITH UNDERBAR
-    (0x298B, 0x298B, Close),
     // Pe       RIGHT SQUARE BRACKET WITH UNDERBAR
-    (0x298C, 0x298C, Close),
     // Ps       LEFT SQUARE BRACKET WITH TICK IN TOP CORNER
-    (0x298D, 0x298D, Close),
     // Pe       RIGHT SQUARE BRACKET WITH TICK IN BOTTOM CORNER
-    (0x298E, 0x298E, Close),
     // Ps       LEFT SQUARE BRACKET WITH TICK IN BOTTOM CORNER
-    (0x298F, 0x298F, Close),
     // Pe       RIGHT SQUARE BRACKET WITH TICK IN TOP CORNER
-    (0x2990, 0x2990, Close),
     // Ps       LEFT ANGLE BRACKET WITH DOT
-    (0x2991, 0x2991, Close),
     // Pe       RIGHT ANGLE BRACKET WITH DOT
-    (0x2992, 0x2992, Close),
     // Ps       LEFT ARC LESS-THAN BRACKET
-    (0x2993, 0x2993, Close),
     // Pe       RIGHT ARC GREATER-THAN BRACKET
-    (0x2994, 0x2994, Close),
     // Ps       DOUBLE LEFT ARC GREATER-THAN BRACKET
-    (0x2995, 0x2995, Close),
     // Pe       DOUBLE RIGHT ARC LESS-THAN BRACKET
-    (0x2996, 0x2996, Close),
     // Ps       LEFT BLACK TORTOISE SHELL BRACKET
-    (0x2997, 0x2997, Close),
     // Pe       RIGHT BLACK TORTOISE SHELL BRACKET
-    (0x2998, 0x2998, Close),
+    (0x2983, 0x2998, Close),
     // Ps       LEFT WIGGLY FENCE
-    (0x29D8, 0x29D8, Close),
     // Pe       RIGHT WIGGLY FENCE
-    (0x29D9, 0x29D9, Close),
     // Ps       LEFT DOUBLE WIGGLY FENCE
-    (0x29DA, 0x29DA, Close),
     // Pe       RIGHT DOUBLE WIGGLY FENCE
-    (0x29DB, 0x29DB, Close),
+    (0x29D8, 0x29DB, Close),
     // Ps       LEFT-POINTING CURVED ANGLE BRACKET
-    (0x29FC, 0x29FC, Close),
     // Pe       RIGHT-POINTING CURVED ANGLE BRACKET
-    (0x29FD, 0x29FD, Close),
+    (0x29FC, 0x29FD, Close),
     // L&  [47] GLAGOLITIC CAPITAL LETTER AZU..GLAGOLITIC CAPITAL LETTER LATINATE MYSLITE
     (0x2C00, 0x2C2E, Upper),
     // L&  [47] GLAGOLITIC SMALL LETTER AZU..GLAGOLITIC SMALL LETTER LATINATE MYSLITE
@@ -3155,9 +2969,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // L&       LATIN CAPITAL LETTER HALF H
     (0x2C75, 0x2C75, Upper),
     // L&   [6] LATIN SMALL LETTER HALF H..LATIN LETTER SMALL CAPITAL TURNED E
-    (0x2C76, 0x2C7B, Lower),
     // Lm   [2] LATIN SUBSCRIPT SMALL LETTER J..MODIFIER LETTER CAPITAL V
-    (0x2C7C, 0x2C7D, Lower),
+    (0x2C76, 0x2C7D, Lower),
     // L&   [3] LATIN CAPITAL LETTER S WITH SWASH TAIL..COPTIC CAPITAL LETTER ALFA
     (0x2C7E, 0x2C80, Upper),
     // L&       COPTIC SMALL LETTER ALFA
@@ -3405,51 +3218,31 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn  [32] COMBINING CYRILLIC LETTER BE..COMBINING CYRILLIC LETTER IOTIFIED BIG YUS
     (0x2DE0, 0x2DFF, Extend),
     // Po   [2] RIGHT ANGLE SUBSTITUTION MARKER..RIGHT ANGLE DOTTED SUBSTITUTION MARKER
-    (0x2E00, 0x2E01, Close),
     // Pi       LEFT SUBSTITUTION BRACKET
-    (0x2E02, 0x2E02, Close),
     // Pf       RIGHT SUBSTITUTION BRACKET
-    (0x2E03, 0x2E03, Close),
     // Pi       LEFT DOTTED SUBSTITUTION BRACKET
-    (0x2E04, 0x2E04, Close),
     // Pf       RIGHT DOTTED SUBSTITUTION BRACKET
-    (0x2E05, 0x2E05, Close),
     // Po   [3] RAISED INTERPOLATION MARKER..DOTTED TRANSPOSITION MARKER
-    (0x2E06, 0x2E08, Close),
     // Pi       LEFT TRANSPOSITION BRACKET
-    (0x2E09, 0x2E09, Close),
     // Pf       RIGHT TRANSPOSITION BRACKET
-    (0x2E0A, 0x2E0A, Close),
     // Po       RAISED SQUARE
-    (0x2E0B, 0x2E0B, Close),
     // Pi       LEFT RAISED OMISSION BRACKET
-    (0x2E0C, 0x2E0C, Close),
     // Pf       RIGHT RAISED OMISSION BRACKET
-    (0x2E0D, 0x2E0D, Close),
+    (0x2E00, 0x2E0D, Close),
     // Pi       LEFT LOW PARAPHRASE BRACKET
-    (0x2E1C, 0x2E1C, Close),
     // Pf       RIGHT LOW PARAPHRASE BRACKET
-    (0x2E1D, 0x2E1D, Close),
+    (0x2E1C, 0x2E1D, Close),
     // Pi       LEFT VERTICAL BAR WITH QUILL
-    (0x2E20, 0x2E20, Close),
     // Pf       RIGHT VERTICAL BAR WITH QUILL
-    (0x2E21, 0x2E21, Close),
     // Ps       TOP LEFT HALF BRACKET
-    (0x2E22, 0x2E22, Close),
     // Pe       TOP RIGHT HALF BRACKET
-    (0x2E23, 0x2E23, Close),
     // Ps       BOTTOM LEFT HALF BRACKET
-    (0x2E24, 0x2E24, Close),
     // Pe       BOTTOM RIGHT HALF BRACKET
-    (0x2E25, 0x2E25, Close),
     // Ps       LEFT SIDEWAYS U BRACKET
-    (0x2E26, 0x2E26, Close),
     // Pe       RIGHT SIDEWAYS U BRACKET
-    (0x2E27, 0x2E27, Close),
     // Ps       LEFT DOUBLE PARENTHESIS
-    (0x2E28, 0x2E28, Close),
     // Pe       RIGHT DOUBLE PARENTHESIS
-    (0x2E29, 0x2E29, Close),
+    (0x2E20, 0x2E29, Close),
     // Po       REVERSED QUESTION MARK
     (0x2E2E, 0x2E2E, STerm),
     // Lm       VERTICAL TILDE
@@ -3465,79 +3258,55 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Po       IDEOGRAPHIC FULL STOP
     (0x3002, 0x3002, STerm),
     // Lm       IDEOGRAPHIC ITERATION MARK
-    (0x3005, 0x3005, OLetter),
     // Lo       IDEOGRAPHIC CLOSING MARK
-    (0x3006, 0x3006, OLetter),
     // Nl       IDEOGRAPHIC NUMBER ZERO
-    (0x3007, 0x3007, OLetter),
+    (0x3005, 0x3007, OLetter),
     // Ps       LEFT ANGLE BRACKET
-    (0x3008, 0x3008, Close),
     // Pe       RIGHT ANGLE BRACKET
-    (0x3009, 0x3009, Close),
     // Ps       LEFT DOUBLE ANGLE BRACKET
-    (0x300A, 0x300A, Close),
     // Pe       RIGHT DOUBLE ANGLE BRACKET
-    (0x300B, 0x300B, Close),
     // Ps       LEFT CORNER BRACKET
-    (0x300C, 0x300C, Close),
     // Pe       RIGHT CORNER BRACKET
-    (0x300D, 0x300D, Close),
     // Ps       LEFT WHITE CORNER BRACKET
-    (0x300E, 0x300E, Close),
     // Pe       RIGHT WHITE CORNER BRACKET
-    (0x300F, 0x300F, Close),
     // Ps       LEFT BLACK LENTICULAR BRACKET
-    (0x3010, 0x3010, Close),
     // Pe       RIGHT BLACK LENTICULAR BRACKET
-    (0x3011, 0x3011, Close),
+    (0x3008, 0x3011, Close),
     // Ps       LEFT TORTOISE SHELL BRACKET
-    (0x3014, 0x3014, Close),
     // Pe       RIGHT TORTOISE SHELL BRACKET
-    (0x3015, 0x3015, Close),
     // Ps       LEFT WHITE LENTICULAR BRACKET
-    (0x3016, 0x3016, Close),
     // Pe       RIGHT WHITE LENTICULAR BRACKET
-    (0x3017, 0x3017, Close),
     // Ps       LEFT WHITE TORTOISE SHELL BRACKET
-    (0x3018, 0x3018, Close),
     // Pe       RIGHT WHITE TORTOISE SHELL BRACKET
-    (0x3019, 0x3019, Close),
     // Ps       LEFT WHITE SQUARE BRACKET
-    (0x301A, 0x301A, Close),
     // Pe       RIGHT WHITE SQUARE BRACKET
-    (0x301B, 0x301B, Close),
+    (0x3014, 0x301B, Close),
     // Ps       REVERSED DOUBLE PRIME QUOTATION MARK
-    (0x301D, 0x301D, Close),
     // Pe   [2] DOUBLE PRIME QUOTATION MARK..LOW DOUBLE PRIME QUOTATION MARK
-    (0x301E, 0x301F, Close),
+    (0x301D, 0x301F, Close),
     // Nl   [9] HANGZHOU NUMERAL ONE..HANGZHOU NUMERAL NINE
     (0x3021, 0x3029, OLetter),
     // Mn   [4] IDEOGRAPHIC LEVEL TONE MARK..IDEOGRAPHIC ENTERING TONE MARK
-    (0x302A, 0x302D, Extend),
     // Mc   [2] HANGUL SINGLE DOT TONE MARK..HANGUL DOUBLE DOT TONE MARK
-    (0x302E, 0x302F, Extend),
+    (0x302A, 0x302F, Extend),
     // Lm   [5] VERTICAL KANA REPEAT MARK..VERTICAL KANA REPEAT MARK LOWER HALF
     (0x3031, 0x3035, OLetter),
     // Nl   [3] HANGZHOU NUMERAL TEN..HANGZHOU NUMERAL THIRTY
-    (0x3038, 0x303A, OLetter),
     // Lm       VERTICAL IDEOGRAPHIC ITERATION MARK
-    (0x303B, 0x303B, OLetter),
     // Lo       MASU MARK
-    (0x303C, 0x303C, OLetter),
+    (0x3038, 0x303C, OLetter),
     // Lo  [86] HIRAGANA LETTER SMALL A..HIRAGANA LETTER SMALL KE
     (0x3041, 0x3096, OLetter),
     // Mn   [2] COMBINING KATAKANA-HIRAGANA VOICED SOUND MARK..COMBINING KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK
     (0x3099, 0x309A, Extend),
     // Lm   [2] HIRAGANA ITERATION MARK..HIRAGANA VOICED ITERATION MARK
-    (0x309D, 0x309E, OLetter),
     // Lo       HIRAGANA DIGRAPH YORI
-    (0x309F, 0x309F, OLetter),
+    (0x309D, 0x309F, OLetter),
     // Lo  [90] KATAKANA LETTER SMALL A..KATAKANA LETTER VO
     (0x30A1, 0x30FA, OLetter),
     // Lm   [3] KATAKANA-HIRAGANA PROLONGED SOUND MARK..KATAKANA VOICED ITERATION MARK
-    (0x30FC, 0x30FE, OLetter),
     // Lo       KATAKANA DIGRAPH KOTO
-    (0x30FF, 0x30FF, OLetter),
+    (0x30FC, 0x30FF, OLetter),
     // Lo  [43] BOPOMOFO LETTER B..BOPOMOFO LETTER NN
     (0x3105, 0x312F, OLetter),
     // Lo  [94] HANGUL LETTER KIYEOK..HANGUL LETTER ARAEAE
@@ -3551,21 +3320,17 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo [20976] CJK UNIFIED IDEOGRAPH-4E00..CJK UNIFIED IDEOGRAPH-9FEF
     (0x4E00, 0x9FEF, OLetter),
     // Lo  [21] YI SYLLABLE IT..YI SYLLABLE E
-    (0xA000, 0xA014, OLetter),
     // Lm       YI SYLLABLE WU
-    (0xA015, 0xA015, OLetter),
     // Lo [1143] YI SYLLABLE BIT..YI SYLLABLE YYR
-    (0xA016, 0xA48C, OLetter),
+    (0xA000, 0xA48C, OLetter),
     // Lo  [40] LISU LETTER BA..LISU LETTER OE
-    (0xA4D0, 0xA4F7, OLetter),
     // Lm   [6] LISU LETTER TONE MYA TI..LISU LETTER TONE MYA JEU
-    (0xA4F8, 0xA4FD, OLetter),
+    (0xA4D0, 0xA4FD, OLetter),
     // Po       LISU PUNCTUATION FULL STOP
     (0xA4FF, 0xA4FF, STerm),
     // Lo [268] VAI SYLLABLE EE..VAI SYLLABLE NG
-    (0xA500, 0xA60B, OLetter),
     // Lm       VAI SYLLABLE LENGTHENER
-    (0xA60C, 0xA60C, OLetter),
+    (0xA500, 0xA60C, OLetter),
     // Po   [2] VAI FULL STOP..VAI QUESTION MARK
     (0xA60E, 0xA60F, STerm),
     // Lo  [16] VAI SYLLABLE NDOLE FA..VAI SYMBOL JONG
@@ -3669,9 +3434,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       CYRILLIC LETTER MULTIOCULAR O
     (0xA66E, 0xA66E, OLetter),
     // Mn       COMBINING CYRILLIC VZMET
-    (0xA66F, 0xA66F, Extend),
     // Me   [3] COMBINING CYRILLIC TEN MILLIONS SIGN..COMBINING CYRILLIC THOUSAND MILLIONS SIGN
-    (0xA670, 0xA672, Extend),
+    (0xA66F, 0xA672, Extend),
     // Mn  [10] COMBINING CYRILLIC LETTER UKRAINIAN IE..COMBINING CYRILLIC PAYEROK
     (0xA674, 0xA67D, Extend),
     // Lm       CYRILLIC PAYEROK
@@ -3731,15 +3495,13 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // L&       CYRILLIC CAPITAL LETTER CROSSED O
     (0xA69A, 0xA69A, Upper),
     // L&       CYRILLIC SMALL LETTER CROSSED O
-    (0xA69B, 0xA69B, Lower),
     // Lm   [2] MODIFIER LETTER CYRILLIC HARD SIGN..MODIFIER LETTER CYRILLIC SOFT SIGN
-    (0xA69C, 0xA69D, Lower),
+    (0xA69B, 0xA69D, Lower),
     // Mn   [2] COMBINING CYRILLIC LETTER EF..COMBINING CYRILLIC LETTER IOTIFIED E
     (0xA69E, 0xA69F, Extend),
     // Lo  [70] BAMUM LETTER A..BAMUM LETTER KI
-    (0xA6A0, 0xA6E5, OLetter),
     // Nl  [10] BAMUM LETTER MO..BAMUM LETTER KOGHOM
-    (0xA6E6, 0xA6EF, OLetter),
+    (0xA6A0, 0xA6EF, OLetter),
     // Mn   [2] BAMUM COMBINING MARK KOQNDON..BAMUM COMBINING MARK TUKWENTIS
     (0xA6F0, 0xA6F1, Extend),
     // Po       BAMUM FULL STOP
@@ -3899,11 +3661,9 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // L&       LATIN CAPITAL LETTER CON
     (0xA76E, 0xA76E, Upper),
     // L&       LATIN SMALL LETTER CON
-    (0xA76F, 0xA76F, Lower),
     // Lm       MODIFIER LETTER US
-    (0xA770, 0xA770, Lower),
     // L&   [8] LATIN SMALL LETTER DUM..LATIN SMALL LETTER UM
-    (0xA771, 0xA778, Lower),
+    (0xA76F, 0xA778, Lower),
     // L&       LATIN CAPITAL LETTER INSULAR D
     (0xA779, 0xA779, Upper),
     // L&       LATIN SMALL LETTER INSULAR D
@@ -4029,9 +3789,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       LATIN EPIGRAPHIC LETTER SIDEWAYS I
     (0xA7F7, 0xA7F7, OLetter),
     // Lm   [2] MODIFIER LETTER CAPITAL H WITH STROKE..MODIFIER LETTER SMALL LIGATURE OE
-    (0xA7F8, 0xA7F9, Lower),
     // L&       LATIN LETTER SMALL CAPITAL TURNED M
-    (0xA7FA, 0xA7FA, Lower),
+    (0xA7F8, 0xA7FA, Lower),
     // Lo   [7] LATIN EPIGRAPHIC LETTER REVERSED F..SYLOTI NAGRI LETTER I
     (0xA7FB, 0xA801, OLetter),
     // Mn       SYLOTI NAGRI SIGN DVISVARA
@@ -4047,11 +3806,9 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [23] SYLOTI NAGRI LETTER CO..SYLOTI NAGRI LETTER HO
     (0xA80C, 0xA822, OLetter),
     // Mc   [2] SYLOTI NAGRI VOWEL SIGN A..SYLOTI NAGRI VOWEL SIGN I
-    (0xA823, 0xA824, Extend),
     // Mn   [2] SYLOTI NAGRI VOWEL SIGN U..SYLOTI NAGRI VOWEL SIGN E
-    (0xA825, 0xA826, Extend),
     // Mc       SYLOTI NAGRI VOWEL SIGN OO
-    (0xA827, 0xA827, Extend),
+    (0xA823, 0xA827, Extend),
     // Lo  [52] PHAGS-PA LETTER KA..PHAGS-PA LETTER CANDRABINDU
     (0xA840, 0xA873, OLetter),
     // Po   [2] PHAGS-PA MARK SHAD..PHAGS-PA MARK DOUBLE SHAD
@@ -4061,9 +3818,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [50] SAURASHTRA LETTER A..SAURASHTRA LETTER LLA
     (0xA882, 0xA8B3, OLetter),
     // Mc  [16] SAURASHTRA CONSONANT SIGN HAARU..SAURASHTRA VOWEL SIGN AU
-    (0xA8B4, 0xA8C3, Extend),
     // Mn   [2] SAURASHTRA SIGN VIRAMA..SAURASHTRA SIGN CANDRABINDU
-    (0xA8C4, 0xA8C5, Extend),
+    (0xA8B4, 0xA8C5, Extend),
     // Po   [2] SAURASHTRA DANDA..SAURASHTRA DOUBLE DANDA
     (0xA8CE, 0xA8CF, STerm),
     // Nd  [10] SAURASHTRA DIGIT ZERO..SAURASHTRA DIGIT NINE
@@ -4089,29 +3845,22 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [23] REJANG LETTER KA..REJANG LETTER A
     (0xA930, 0xA946, OLetter),
     // Mn  [11] REJANG VOWEL SIGN I..REJANG CONSONANT SIGN R
-    (0xA947, 0xA951, Extend),
     // Mc   [2] REJANG CONSONANT SIGN H..REJANG VIRAMA
-    (0xA952, 0xA953, Extend),
+    (0xA947, 0xA953, Extend),
     // Lo  [29] HANGUL CHOSEONG TIKEUT-MIEUM..HANGUL CHOSEONG SSANGYEORINHIEUH
     (0xA960, 0xA97C, OLetter),
     // Mn   [3] JAVANESE SIGN PANYANGGA..JAVANESE SIGN LAYAR
-    (0xA980, 0xA982, Extend),
     // Mc       JAVANESE SIGN WIGNYAN
-    (0xA983, 0xA983, Extend),
+    (0xA980, 0xA983, Extend),
     // Lo  [47] JAVANESE LETTER A..JAVANESE LETTER HA
     (0xA984, 0xA9B2, OLetter),
     // Mn       JAVANESE SIGN CECAK TELU
-    (0xA9B3, 0xA9B3, Extend),
     // Mc   [2] JAVANESE VOWEL SIGN TARUNG..JAVANESE VOWEL SIGN TOLONG
-    (0xA9B4, 0xA9B5, Extend),
     // Mn   [4] JAVANESE VOWEL SIGN WULU..JAVANESE VOWEL SIGN SUKU MENDUT
-    (0xA9B6, 0xA9B9, Extend),
     // Mc   [2] JAVANESE VOWEL SIGN TALING..JAVANESE VOWEL SIGN DIRGA MURE
-    (0xA9BA, 0xA9BB, Extend),
     // Mn   [2] JAVANESE VOWEL SIGN PEPET..JAVANESE CONSONANT SIGN KERET
-    (0xA9BC, 0xA9BD, Extend),
     // Mc   [3] JAVANESE CONSONANT SIGN PENGKAL..JAVANESE PANGKON
-    (0xA9BE, 0xA9C0, Extend),
+    (0xA9B3, 0xA9C0, Extend),
     // Po   [2] JAVANESE PADA LINGSA..JAVANESE PADA LUNGSI
     (0xA9C8, 0xA9C9, STerm),
     // Lm       JAVANESE PANGRANGKEP
@@ -4123,9 +3872,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Mn       MYANMAR SIGN SHAN SAW
     (0xA9E5, 0xA9E5, Extend),
     // Lm       MYANMAR MODIFIER LETTER SHAN REDUPLICATION
-    (0xA9E6, 0xA9E6, OLetter),
     // Lo   [9] MYANMAR LETTER TAI LAING NYA..MYANMAR LETTER TAI LAING NNA
-    (0xA9E7, 0xA9EF, OLetter),
+    (0xA9E6, 0xA9EF, OLetter),
     // Nd  [10] MYANMAR TAI LAING DIGIT ZERO..MYANMAR TAI LAING DIGIT NINE
     (0xA9F0, 0xA9F9, Numeric),
     // Lo   [5] MYANMAR LETTER TAI LAING LLA..MYANMAR LETTER TAI LAING BHA
@@ -4133,15 +3881,11 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo  [41] CHAM LETTER A..CHAM LETTER HA
     (0xAA00, 0xAA28, OLetter),
     // Mn   [6] CHAM VOWEL SIGN AA..CHAM VOWEL SIGN OE
-    (0xAA29, 0xAA2E, Extend),
     // Mc   [2] CHAM VOWEL SIGN O..CHAM VOWEL SIGN AI
-    (0xAA2F, 0xAA30, Extend),
     // Mn   [2] CHAM VOWEL SIGN AU..CHAM VOWEL SIGN UE
-    (0xAA31, 0xAA32, Extend),
     // Mc   [2] CHAM CONSONANT SIGN YA..CHAM CONSONANT SIGN RA
-    (0xAA33, 0xAA34, Extend),
     // Mn   [2] CHAM CONSONANT SIGN LA..CHAM CONSONANT SIGN WA
-    (0xAA35, 0xAA36, Extend),
+    (0xAA29, 0xAA36, Extend),
     // Lo   [3] CHAM LETTER FINAL K..CHAM LETTER FINAL NG
     (0xAA40, 0xAA42, OLetter),
     // Mn       CHAM CONSONANT SIGN FINAL NG
@@ -4149,27 +3893,22 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo   [8] CHAM LETTER FINAL CH..CHAM LETTER FINAL SS
     (0xAA44, 0xAA4B, OLetter),
     // Mn       CHAM CONSONANT SIGN FINAL M
-    (0xAA4C, 0xAA4C, Extend),
     // Mc       CHAM CONSONANT SIGN FINAL H
-    (0xAA4D, 0xAA4D, Extend),
+    (0xAA4C, 0xAA4D, Extend),
     // Nd  [10] CHAM DIGIT ZERO..CHAM DIGIT NINE
     (0xAA50, 0xAA59, Numeric),
     // Po   [3] CHAM PUNCTUATION DANDA..CHAM PUNCTUATION TRIPLE DANDA
     (0xAA5D, 0xAA5F, STerm),
     // Lo  [16] MYANMAR LETTER KHAMTI GA..MYANMAR LETTER KHAMTI FA
-    (0xAA60, 0xAA6F, OLetter),
     // Lm       MYANMAR MODIFIER LETTER KHAMTI REDUPLICATION
-    (0xAA70, 0xAA70, OLetter),
     // Lo   [6] MYANMAR LETTER KHAMTI XA..MYANMAR LOGOGRAM KHAMTI HM
-    (0xAA71, 0xAA76, OLetter),
+    (0xAA60, 0xAA76, OLetter),
     // Lo       MYANMAR LETTER AITON RA
     (0xAA7A, 0xAA7A, OLetter),
     // Mc       MYANMAR SIGN PAO KAREN TONE
-    (0xAA7B, 0xAA7B, Extend),
     // Mn       MYANMAR SIGN TAI LAING TONE-2
-    (0xAA7C, 0xAA7C, Extend),
     // Mc       MYANMAR SIGN TAI LAING TONE-5
-    (0xAA7D, 0xAA7D, Extend),
+    (0xAA7B, 0xAA7D, Extend),
     // Lo  [50] MYANMAR LETTER SHWE PALAUNG CHA..TAI VIET LETTER HIGH O
     (0xAA7E, 0xAAAF, OLetter),
     // Mn       TAI VIET MAI KANG
@@ -4193,27 +3932,22 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo       TAI VIET TONE MAI SONG
     (0xAAC2, 0xAAC2, OLetter),
     // Lo   [2] TAI VIET SYMBOL KON..TAI VIET SYMBOL NUENG
-    (0xAADB, 0xAADC, OLetter),
     // Lm       TAI VIET SYMBOL SAM
-    (0xAADD, 0xAADD, OLetter),
+    (0xAADB, 0xAADD, OLetter),
     // Lo  [11] MEETEI MAYEK LETTER E..MEETEI MAYEK LETTER SSA
     (0xAAE0, 0xAAEA, OLetter),
     // Mc       MEETEI MAYEK VOWEL SIGN II
-    (0xAAEB, 0xAAEB, Extend),
     // Mn   [2] MEETEI MAYEK VOWEL SIGN UU..MEETEI MAYEK VOWEL SIGN AAI
-    (0xAAEC, 0xAAED, Extend),
     // Mc   [2] MEETEI MAYEK VOWEL SIGN AU..MEETEI MAYEK VOWEL SIGN AAU
-    (0xAAEE, 0xAAEF, Extend),
+    (0xAAEB, 0xAAEF, Extend),
     // Po   [2] MEETEI MAYEK CHEIKHAN..MEETEI MAYEK AHANG KHUDAM
     (0xAAF0, 0xAAF1, STerm),
     // Lo       MEETEI MAYEK ANJI
-    (0xAAF2, 0xAAF2, OLetter),
     // Lm   [2] MEETEI MAYEK SYLLABLE REPETITION MARK..MEETEI MAYEK WORD REPETITION MARK
-    (0xAAF3, 0xAAF4, OLetter),
+    (0xAAF2, 0xAAF4, OLetter),
     // Mc       MEETEI MAYEK VOWEL SIGN VISARGA
-    (0xAAF5, 0xAAF5, Extend),
     // Mn       MEETEI MAYEK VIRAMA
-    (0xAAF6, 0xAAF6, Extend),
+    (0xAAF5, 0xAAF6, Extend),
     // Lo   [6] ETHIOPIC SYLLABLE TTHU..ETHIOPIC SYLLABLE TTHO
     (0xAB01, 0xAB06, OLetter),
     // Lo   [6] ETHIOPIC SYLLABLE DDHU..ETHIOPIC SYLLABLE DDHO
@@ -4227,29 +3961,23 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // L&  [43] LATIN SMALL LETTER BARRED ALPHA..LATIN SMALL LETTER Y WITH SHORT RIGHT LEG
     (0xAB30, 0xAB5A, Lower),
     // Lm   [4] MODIFIER LETTER SMALL HENG..MODIFIER LETTER SMALL U WITH LEFT HOOK
-    (0xAB5C, 0xAB5F, Lower),
     // L&   [8] LATIN SMALL LETTER SAKHA YAT..LATIN SMALL LETTER TS DIGRAPH WITH RETROFLEX HOOK
-    (0xAB60, 0xAB67, Lower),
+    (0xAB5C, 0xAB67, Lower),
     // L&  [80] CHEROKEE SMALL LETTER A..CHEROKEE SMALL LETTER YA
     (0xAB70, 0xABBF, Lower),
     // Lo  [35] MEETEI MAYEK LETTER KOK..MEETEI MAYEK LETTER I LONSUM
     (0xABC0, 0xABE2, OLetter),
     // Mc   [2] MEETEI MAYEK VOWEL SIGN ONAP..MEETEI MAYEK VOWEL SIGN INAP
-    (0xABE3, 0xABE4, Extend),
     // Mn       MEETEI MAYEK VOWEL SIGN ANAP
-    (0xABE5, 0xABE5, Extend),
     // Mc   [2] MEETEI MAYEK VOWEL SIGN YENAP..MEETEI MAYEK VOWEL SIGN SOUNAP
-    (0xABE6, 0xABE7, Extend),
     // Mn       MEETEI MAYEK VOWEL SIGN UNAP
-    (0xABE8, 0xABE8, Extend),
     // Mc   [2] MEETEI MAYEK VOWEL SIGN CHEINAP..MEETEI MAYEK VOWEL SIGN NUNG
-    (0xABE9, 0xABEA, Extend),
+    (0xABE3, 0xABEA, Extend),
     // Po       MEETEI MAYEK CHEIKHEI
     (0xABEB, 0xABEB, STerm),
     // Mc       MEETEI MAYEK LUM IYEK
-    (0xABEC, 0xABEC, Extend),
     // Mn       MEETEI MAYEK APUN IYEK
-    (0xABED, 0xABED, Extend),
+    (0xABEC, 0xABED, Extend),
     // Nd  [10] MEETEI MAYEK DIGIT ZERO..MEETEI MAYEK DIGIT NINE
     (0xABF0, 0xABF9, Numeric),
     // Lo [11172] HANGUL SYLLABLE GA..HANGUL SYLLABLE HIH
@@ -4287,9 +4015,8 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Lo [363] ARABIC LETTER NG ISOLATED FORM..ARABIC LIGATURE ALEF WITH FATHATAN ISOLATED FORM
     (0xFBD3, 0xFD3D, OLetter),
     // Pe       ORNATE LEFT PARENTHESIS
-    (0xFD3E, 0xFD3E, Close),
     // Ps       ORNATE RIGHT PARENTHESIS
-    (0xFD3F, 0xFD3F, Close),
+    (0xFD3E, 0xFD3F, Close),
     // Lo  [64] ARABIC LIGATURE TEH WITH JEEM WITH MEEM INITIAL FORM..ARABIC LIGATURE MEEM WITH KHAH WITH MEEM INITIAL FORM
     (0xFD50, 0xFD8F, OLetter),
     // Lo  [54] ARABIC LIGATURE MEEM WITH JEEM WITH KHAH INITIAL FORM..ARABIC LIGATURE NOON WITH JEEM WITH YEH FINAL FORM
@@ -4303,49 +4030,32 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Po       PRESENTATION FORM FOR VERTICAL COLON
     (0xFE13, 0xFE13, SContinue),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT WHITE LENTICULAR BRACKET
-    (0xFE17, 0xFE17, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT WHITE LENTICULAR BRAKCET
-    (0xFE18, 0xFE18, Close),
+    (0xFE17, 0xFE18, Close),
     // Mn  [16] COMBINING LIGATURE LEFT HALF..COMBINING CYRILLIC TITLO RIGHT HALF
     (0xFE20, 0xFE2F, Extend),
     // Pd   [2] PRESENTATION FORM FOR VERTICAL EM DASH..PRESENTATION FORM FOR VERTICAL EN DASH
     (0xFE31, 0xFE32, SContinue),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT PARENTHESIS
-    (0xFE35, 0xFE35, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT PARENTHESIS
-    (0xFE36, 0xFE36, Close),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT CURLY BRACKET
-    (0xFE37, 0xFE37, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT CURLY BRACKET
-    (0xFE38, 0xFE38, Close),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT TORTOISE SHELL BRACKET
-    (0xFE39, 0xFE39, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT TORTOISE SHELL BRACKET
-    (0xFE3A, 0xFE3A, Close),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT BLACK LENTICULAR BRACKET
-    (0xFE3B, 0xFE3B, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT BLACK LENTICULAR BRACKET
-    (0xFE3C, 0xFE3C, Close),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT DOUBLE ANGLE BRACKET
-    (0xFE3D, 0xFE3D, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT DOUBLE ANGLE BRACKET
-    (0xFE3E, 0xFE3E, Close),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT ANGLE BRACKET
-    (0xFE3F, 0xFE3F, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT ANGLE BRACKET
-    (0xFE40, 0xFE40, Close),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT CORNER BRACKET
-    (0xFE41, 0xFE41, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT CORNER BRACKET
-    (0xFE42, 0xFE42, Close),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT WHITE CORNER BRACKET
-    (0xFE43, 0xFE43, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT WHITE CORNER BRACKET
-    (0xFE44, 0xFE44, Close),
+    (0xFE35, 0xFE44, Close),
     // Ps       PRESENTATION FORM FOR VERTICAL LEFT SQUARE BRACKET
-    (0xFE47, 0xFE47, Close),
     // Pe       PRESENTATION FORM FOR VERTICAL RIGHT SQUARE BRACKET
-    (0xFE48, 0xFE48, Close),
+    (0xFE47, 0xFE48, Close),
     // Po   [2] SMALL COMMA..SMALL IDEOGRAPHIC COMMA
     (0xFE50, 0xFE51, SContinue),
     // Po       SMALL FULL STOP
@@ -4357,17 +4067,12 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Pd       SMALL EM DASH
     (0xFE58, 0xFE58, SContinue),
     // Ps       SMALL LEFT PARENTHESIS
-    (0xFE59, 0xFE59, Close),
     // Pe       SMALL RIGHT PARENTHESIS
-    (0xFE5A, 0xFE5A, Close),
     // Ps       SMALL LEFT CURLY BRACKET
-    (0xFE5B, 0xFE5B, Close),
     // Pe       SMALL RIGHT CURLY BRACKET
-    (0xFE5C, 0xFE5C, Close),
     // Ps       SMALL LEFT TORTOISE SHELL BRACKET
-    (0xFE5D, 0xFE5D, Close),
     // Pe       SMALL RIGHT TORTOISE SHELL BRACKET
-    (0xFE5E, 0xFE5E, Close),
+    (0xFE59, 0xFE5E, Close),
     // Pd       SMALL HYPHEN-MINUS
     (0xFE63, 0xFE63, SContinue),
     // Lo   [5] ARABIC FATHATAN ISOLATED FORM..ARABIC KASRATAN ISOLATED FORM
@@ -4379,13 +4084,11 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Po       FULLWIDTH EXCLAMATION MARK
     (0xFF01, 0xFF01, STerm),
     // Ps       FULLWIDTH LEFT PARENTHESIS
-    (0xFF08, 0xFF08, Close),
     // Pe       FULLWIDTH RIGHT PARENTHESIS
-    (0xFF09, 0xFF09, Close),
+    (0xFF08, 0xFF09, Close),
     // Po       FULLWIDTH COMMA
-    (0xFF0C, 0xFF0C, SContinue),
     // Pd       FULLWIDTH HYPHEN-MINUS
-    (0xFF0D, 0xFF0D, SContinue),
+    (0xFF0C, 0xFF0D, SContinue),
     // Po       FULLWIDTH FULL STOP
     (0xFF0E, 0xFF0E, ATerm),
     // Nd  [10] FULLWIDTH DIGIT ZERO..FULLWIDTH DIGIT NINE
@@ -4407,23 +4110,19 @@ const PLANE0_TABLE: LookupTable<u16, Sentence_Break> = lookup_table![
     // Pe       FULLWIDTH RIGHT CURLY BRACKET
     (0xFF5D, 0xFF5D, Close),
     // Ps       FULLWIDTH LEFT WHITE PARENTHESIS
-    (0xFF5F, 0xFF5F, Close),
     // Pe       FULLWIDTH RIGHT WHITE PARENTHESIS
-    (0xFF60, 0xFF60, Close),
+    (0xFF5F, 0xFF60, Close),
     // Po       HALFWIDTH IDEOGRAPHIC FULL STOP
     (0xFF61, 0xFF61, STerm),
     // Ps       HALFWIDTH LEFT CORNER BRACKET
-    (0xFF62, 0xFF62, Close),
     // Pe       HALFWIDTH RIGHT CORNER BRACKET
-    (0xFF63, 0xFF63, Close),
+    (0xFF62, 0xFF63, Close),
     // Po       HALFWIDTH IDEOGRAPHIC COMMA
     (0xFF64, 0xFF64, SContinue),
     // Lo  [10] HALFWIDTH KATAKANA LETTER WO..HALFWIDTH KATAKANA LETTER SMALL TU
-    (0xFF66, 0xFF6F, OLetter),
     // Lm       HALFWIDTH KATAKANA-HIRAGANA PROLONGED SOUND MARK
-    (0xFF70, 0xFF70, OLetter),
     // Lo  [45] HALFWIDTH KATAKANA LETTER A..HALFWIDTH KATAKANA LETTER N
-    (0xFF71, 0xFF9D, OLetter),
+    (0xFF66, 0xFF9D, OLetter),
     // Lm   [2] HALFWIDTH KATAKANA VOICED SOUND MARK..HALFWIDTH KATAKANA SEMI-VOICED SOUND MARK
     (0xFF9E, 0xFF9F, Extend),
     // Lo  [31] HALFWIDTH HANGUL FILLER..HALFWIDTH HANGUL LETTER HIEUH
@@ -4468,13 +4167,10 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [32] OLD ITALIC LETTER A..OLD ITALIC LETTER ESS
     (0x010300, 0x01031F, OLetter),
     // Lo  [20] OLD ITALIC LETTER YE..GOTHIC LETTER PAIRTHRA
-    (0x01032D, 0x010340, OLetter),
     // Nl       GOTHIC LETTER NINETY
-    (0x010341, 0x010341, OLetter),
     // Lo   [8] GOTHIC LETTER RAIDA..GOTHIC LETTER OTHAL
-    (0x010342, 0x010349, OLetter),
     // Nl       GOTHIC LETTER NINE HUNDRED
-    (0x01034A, 0x01034A, OLetter),
+    (0x01032D, 0x01034A, OLetter),
     // Lo  [38] OLD PERMIC LETTER AN..OLD PERMIC LETTER IA
     (0x010350, 0x010375, OLetter),
     // Mn   [5] COMBINING OLD PERMIC LETTER AN..COMBINING OLD PERMIC LETTER SII
@@ -4600,11 +4296,9 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [23] ELYMAIC LETTER ALEPH..ELYMAIC LIGATURE ZAYIN-YODH
     (0x010FE0, 0x010FF6, OLetter),
     // Mc       BRAHMI SIGN CANDRABINDU
-    (0x011000, 0x011000, Extend),
     // Mn       BRAHMI SIGN ANUSVARA
-    (0x011001, 0x011001, Extend),
     // Mc       BRAHMI SIGN VISARGA
-    (0x011002, 0x011002, Extend),
+    (0x011000, 0x011002, Extend),
     // Lo  [53] BRAHMI SIGN JIHVAMULIYA..BRAHMI LETTER OLD TAMIL NNNA
     (0x011003, 0x011037, OLetter),
     // Mn  [15] BRAHMI VOWEL SIGN AA..BRAHMI VIRAMA
@@ -4614,19 +4308,15 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Nd  [10] BRAHMI DIGIT ZERO..BRAHMI DIGIT NINE
     (0x011066, 0x01106F, Numeric),
     // Mn   [3] BRAHMI NUMBER JOINER..KAITHI SIGN ANUSVARA
-    (0x01107F, 0x011081, Extend),
     // Mc       KAITHI SIGN VISARGA
-    (0x011082, 0x011082, Extend),
+    (0x01107F, 0x011082, Extend),
     // Lo  [45] KAITHI LETTER A..KAITHI LETTER HA
     (0x011083, 0x0110AF, OLetter),
     // Mc   [3] KAITHI VOWEL SIGN AA..KAITHI VOWEL SIGN II
-    (0x0110B0, 0x0110B2, Extend),
     // Mn   [4] KAITHI VOWEL SIGN U..KAITHI VOWEL SIGN AI
-    (0x0110B3, 0x0110B6, Extend),
     // Mc   [2] KAITHI VOWEL SIGN O..KAITHI VOWEL SIGN AU
-    (0x0110B7, 0x0110B8, Extend),
     // Mn   [2] KAITHI SIGN VIRAMA..KAITHI SIGN NUKTA
-    (0x0110B9, 0x0110BA, Extend),
+    (0x0110B0, 0x0110BA, Extend),
     // Cf       KAITHI NUMBER SIGN
     (0x0110BD, 0x0110BD, Format),
     // Po   [4] KAITHI SECTION MARK..KAITHI DOUBLE DANDA
@@ -4642,11 +4332,9 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [36] CHAKMA LETTER AA..CHAKMA LETTER HAA
     (0x011103, 0x011126, OLetter),
     // Mn   [5] CHAKMA VOWEL SIGN A..CHAKMA VOWEL SIGN UU
-    (0x011127, 0x01112B, Extend),
     // Mc       CHAKMA VOWEL SIGN E
-    (0x01112C, 0x01112C, Extend),
     // Mn   [8] CHAKMA VOWEL SIGN AI..CHAKMA MAAYYAA
-    (0x01112D, 0x011134, Extend),
+    (0x011127, 0x011134, Extend),
     // Nd  [10] CHAKMA DIGIT ZERO..CHAKMA DIGIT NINE
     (0x011136, 0x01113F, Numeric),
     // Po   [3] CHAKMA DANDA..CHAKMA QUESTION MARK
@@ -4662,17 +4350,14 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo       MAHAJANI LIGATURE SHRI
     (0x011176, 0x011176, OLetter),
     // Mn   [2] SHARADA SIGN CANDRABINDU..SHARADA SIGN ANUSVARA
-    (0x011180, 0x011181, Extend),
     // Mc       SHARADA SIGN VISARGA
-    (0x011182, 0x011182, Extend),
+    (0x011180, 0x011182, Extend),
     // Lo  [48] SHARADA LETTER A..SHARADA LETTER HA
     (0x011183, 0x0111B2, OLetter),
     // Mc   [3] SHARADA VOWEL SIGN AA..SHARADA VOWEL SIGN II
-    (0x0111B3, 0x0111B5, Extend),
     // Mn   [9] SHARADA VOWEL SIGN U..SHARADA VOWEL SIGN O
-    (0x0111B6, 0x0111BE, Extend),
     // Mc   [2] SHARADA VOWEL SIGN AU..SHARADA SIGN VIRAMA
-    (0x0111BF, 0x0111C0, Extend),
+    (0x0111B3, 0x0111C0, Extend),
     // Lo   [4] SHARADA SIGN AVAGRAHA..SHARADA OM
     (0x0111C1, 0x0111C4, OLetter),
     // Po   [2] SHARADA DANDA..SHARADA DOUBLE DANDA
@@ -4694,17 +4379,12 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [25] KHOJKI LETTER NYA..KHOJKI LETTER LLA
     (0x011213, 0x01122B, OLetter),
     // Mc   [3] KHOJKI VOWEL SIGN AA..KHOJKI VOWEL SIGN II
-    (0x01122C, 0x01122E, Extend),
     // Mn   [3] KHOJKI VOWEL SIGN U..KHOJKI VOWEL SIGN AI
-    (0x01122F, 0x011231, Extend),
     // Mc   [2] KHOJKI VOWEL SIGN O..KHOJKI VOWEL SIGN AU
-    (0x011232, 0x011233, Extend),
     // Mn       KHOJKI SIGN ANUSVARA
-    (0x011234, 0x011234, Extend),
     // Mc       KHOJKI SIGN VIRAMA
-    (0x011235, 0x011235, Extend),
     // Mn   [2] KHOJKI SIGN NUKTA..KHOJKI SIGN SHADDA
-    (0x011236, 0x011237, Extend),
+    (0x01122C, 0x011237, Extend),
     // Po   [2] KHOJKI DANDA..KHOJKI DOUBLE DANDA
     (0x011238, 0x011239, STerm),
     // Po   [2] KHOJKI SECTION MARK..KHOJKI DOUBLE SECTION MARK
@@ -4726,17 +4406,14 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [47] KHUDAWADI LETTER A..KHUDAWADI LETTER HA
     (0x0112B0, 0x0112DE, OLetter),
     // Mn       KHUDAWADI SIGN ANUSVARA
-    (0x0112DF, 0x0112DF, Extend),
     // Mc   [3] KHUDAWADI VOWEL SIGN AA..KHUDAWADI VOWEL SIGN II
-    (0x0112E0, 0x0112E2, Extend),
     // Mn   [8] KHUDAWADI VOWEL SIGN U..KHUDAWADI SIGN VIRAMA
-    (0x0112E3, 0x0112EA, Extend),
+    (0x0112DF, 0x0112EA, Extend),
     // Nd  [10] KHUDAWADI DIGIT ZERO..KHUDAWADI DIGIT NINE
     (0x0112F0, 0x0112F9, Numeric),
     // Mn   [2] GRANTHA SIGN COMBINING ANUSVARA ABOVE..GRANTHA SIGN CANDRABINDU
-    (0x011300, 0x011301, Extend),
     // Mc   [2] GRANTHA SIGN ANUSVARA..GRANTHA SIGN VISARGA
-    (0x011302, 0x011303, Extend),
+    (0x011300, 0x011303, Extend),
     // Lo   [8] GRANTHA LETTER A..GRANTHA LETTER VOCALIC L
     (0x011305, 0x01130C, OLetter),
     // Lo   [2] GRANTHA LETTER EE..GRANTHA LETTER AI
@@ -4754,11 +4431,9 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo       GRANTHA SIGN AVAGRAHA
     (0x01133D, 0x01133D, OLetter),
     // Mc   [2] GRANTHA VOWEL SIGN AA..GRANTHA VOWEL SIGN I
-    (0x01133E, 0x01133F, Extend),
     // Mn       GRANTHA VOWEL SIGN II
-    (0x011340, 0x011340, Extend),
     // Mc   [4] GRANTHA VOWEL SIGN U..GRANTHA VOWEL SIGN VOCALIC RR
-    (0x011341, 0x011344, Extend),
+    (0x01133E, 0x011344, Extend),
     // Mc   [2] GRANTHA VOWEL SIGN EE..GRANTHA VOWEL SIGN AI
     (0x011347, 0x011348, Extend),
     // Mc   [3] GRANTHA VOWEL SIGN OO..GRANTHA SIGN VIRAMA
@@ -4778,17 +4453,12 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [53] NEWA LETTER A..NEWA LETTER HA
     (0x011400, 0x011434, OLetter),
     // Mc   [3] NEWA VOWEL SIGN AA..NEWA VOWEL SIGN II
-    (0x011435, 0x011437, Extend),
     // Mn   [8] NEWA VOWEL SIGN U..NEWA VOWEL SIGN AI
-    (0x011438, 0x01143F, Extend),
     // Mc   [2] NEWA VOWEL SIGN O..NEWA VOWEL SIGN AU
-    (0x011440, 0x011441, Extend),
     // Mn   [3] NEWA SIGN VIRAMA..NEWA SIGN ANUSVARA
-    (0x011442, 0x011444, Extend),
     // Mc       NEWA SIGN VISARGA
-    (0x011445, 0x011445, Extend),
     // Mn       NEWA SIGN NUKTA
-    (0x011446, 0x011446, Extend),
+    (0x011435, 0x011446, Extend),
     // Lo   [4] NEWA SIGN AVAGRAHA..NEWA SIDDHI
     (0x011447, 0x01144A, OLetter),
     // Po   [2] NEWA DANDA..NEWA DOUBLE DANDA
@@ -4802,21 +4472,14 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [48] TIRHUTA ANJI..TIRHUTA LETTER HA
     (0x011480, 0x0114AF, OLetter),
     // Mc   [3] TIRHUTA VOWEL SIGN AA..TIRHUTA VOWEL SIGN II
-    (0x0114B0, 0x0114B2, Extend),
     // Mn   [6] TIRHUTA VOWEL SIGN U..TIRHUTA VOWEL SIGN VOCALIC LL
-    (0x0114B3, 0x0114B8, Extend),
     // Mc       TIRHUTA VOWEL SIGN E
-    (0x0114B9, 0x0114B9, Extend),
     // Mn       TIRHUTA VOWEL SIGN SHORT E
-    (0x0114BA, 0x0114BA, Extend),
     // Mc   [4] TIRHUTA VOWEL SIGN AI..TIRHUTA VOWEL SIGN AU
-    (0x0114BB, 0x0114BE, Extend),
     // Mn   [2] TIRHUTA SIGN CANDRABINDU..TIRHUTA SIGN ANUSVARA
-    (0x0114BF, 0x0114C0, Extend),
     // Mc       TIRHUTA SIGN VISARGA
-    (0x0114C1, 0x0114C1, Extend),
     // Mn   [2] TIRHUTA SIGN VIRAMA..TIRHUTA SIGN NUKTA
-    (0x0114C2, 0x0114C3, Extend),
+    (0x0114B0, 0x0114C3, Extend),
     // Lo   [2] TIRHUTA SIGN AVAGRAHA..TIRHUTA GVANG
     (0x0114C4, 0x0114C5, OLetter),
     // Lo       TIRHUTA OM
@@ -4826,17 +4489,13 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [47] SIDDHAM LETTER A..SIDDHAM LETTER HA
     (0x011580, 0x0115AE, OLetter),
     // Mc   [3] SIDDHAM VOWEL SIGN AA..SIDDHAM VOWEL SIGN II
-    (0x0115AF, 0x0115B1, Extend),
     // Mn   [4] SIDDHAM VOWEL SIGN U..SIDDHAM VOWEL SIGN VOCALIC RR
-    (0x0115B2, 0x0115B5, Extend),
+    (0x0115AF, 0x0115B5, Extend),
     // Mc   [4] SIDDHAM VOWEL SIGN E..SIDDHAM VOWEL SIGN AU
-    (0x0115B8, 0x0115BB, Extend),
     // Mn   [2] SIDDHAM SIGN CANDRABINDU..SIDDHAM SIGN ANUSVARA
-    (0x0115BC, 0x0115BD, Extend),
     // Mc       SIDDHAM SIGN VISARGA
-    (0x0115BE, 0x0115BE, Extend),
     // Mn   [2] SIDDHAM SIGN VIRAMA..SIDDHAM SIGN NUKTA
-    (0x0115BF, 0x0115C0, Extend),
+    (0x0115B8, 0x0115C0, Extend),
     // Po   [2] SIDDHAM DANDA..SIDDHAM DOUBLE DANDA
     (0x0115C2, 0x0115C3, STerm),
     // Po  [15] SIDDHAM END OF TEXT MARK..SIDDHAM SECTION MARK WITH CIRCLES AND FOUR ENCLOSURES
@@ -4848,17 +4507,12 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [48] MODI LETTER A..MODI LETTER LLA
     (0x011600, 0x01162F, OLetter),
     // Mc   [3] MODI VOWEL SIGN AA..MODI VOWEL SIGN II
-    (0x011630, 0x011632, Extend),
     // Mn   [8] MODI VOWEL SIGN U..MODI VOWEL SIGN AI
-    (0x011633, 0x01163A, Extend),
     // Mc   [2] MODI VOWEL SIGN O..MODI VOWEL SIGN AU
-    (0x01163B, 0x01163C, Extend),
     // Mn       MODI SIGN ANUSVARA
-    (0x01163D, 0x01163D, Extend),
     // Mc       MODI SIGN VISARGA
-    (0x01163E, 0x01163E, Extend),
     // Mn   [2] MODI SIGN VIRAMA..MODI SIGN ARDHACANDRA
-    (0x01163F, 0x011640, Extend),
+    (0x011630, 0x011640, Extend),
     // Po   [2] MODI DANDA..MODI DOUBLE DANDA
     (0x011641, 0x011642, STerm),
     // Lo       MODI SIGN HUVA
@@ -4868,19 +4522,13 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [43] TAKRI LETTER A..TAKRI LETTER RRA
     (0x011680, 0x0116AA, OLetter),
     // Mn       TAKRI SIGN ANUSVARA
-    (0x0116AB, 0x0116AB, Extend),
     // Mc       TAKRI SIGN VISARGA
-    (0x0116AC, 0x0116AC, Extend),
     // Mn       TAKRI VOWEL SIGN AA
-    (0x0116AD, 0x0116AD, Extend),
     // Mc   [2] TAKRI VOWEL SIGN I..TAKRI VOWEL SIGN II
-    (0x0116AE, 0x0116AF, Extend),
     // Mn   [6] TAKRI VOWEL SIGN U..TAKRI VOWEL SIGN AU
-    (0x0116B0, 0x0116B5, Extend),
     // Mc       TAKRI SIGN VIRAMA
-    (0x0116B6, 0x0116B6, Extend),
     // Mn       TAKRI SIGN NUKTA
-    (0x0116B7, 0x0116B7, Extend),
+    (0x0116AB, 0x0116B7, Extend),
     // Lo       TAKRI LETTER ARCHAIC KHA
     (0x0116B8, 0x0116B8, OLetter),
     // Nd  [10] TAKRI DIGIT ZERO..TAKRI DIGIT NINE
@@ -4888,15 +4536,11 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [27] AHOM LETTER KA..AHOM LETTER ALTERNATE BA
     (0x011700, 0x01171A, OLetter),
     // Mn   [3] AHOM CONSONANT SIGN MEDIAL LA..AHOM CONSONANT SIGN MEDIAL LIGATING RA
-    (0x01171D, 0x01171F, Extend),
     // Mc   [2] AHOM VOWEL SIGN A..AHOM VOWEL SIGN AA
-    (0x011720, 0x011721, Extend),
     // Mn   [4] AHOM VOWEL SIGN I..AHOM VOWEL SIGN UU
-    (0x011722, 0x011725, Extend),
     // Mc       AHOM VOWEL SIGN E
-    (0x011726, 0x011726, Extend),
     // Mn   [5] AHOM VOWEL SIGN AW..AHOM SIGN KILLER
-    (0x011727, 0x01172B, Extend),
+    (0x01171D, 0x01172B, Extend),
     // Nd  [10] AHOM DIGIT ZERO..AHOM DIGIT NINE
     (0x011730, 0x011739, Numeric),
     // Po   [3] AHOM SIGN SMALL SECTION..AHOM SIGN RULAI
@@ -4904,13 +4548,10 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [44] DOGRA LETTER A..DOGRA LETTER RRA
     (0x011800, 0x01182B, OLetter),
     // Mc   [3] DOGRA VOWEL SIGN AA..DOGRA VOWEL SIGN II
-    (0x01182C, 0x01182E, Extend),
     // Mn   [9] DOGRA VOWEL SIGN U..DOGRA SIGN ANUSVARA
-    (0x01182F, 0x011837, Extend),
     // Mc       DOGRA SIGN VISARGA
-    (0x011838, 0x011838, Extend),
     // Mn   [2] DOGRA SIGN VIRAMA..DOGRA SIGN NUKTA
-    (0x011839, 0x01183A, Extend),
+    (0x01182C, 0x01183A, Extend),
     // L&  [32] WARANG CITI CAPITAL LETTER NGAA..WARANG CITI CAPITAL LETTER VIYO
     (0x0118A0, 0x0118BF, Upper),
     // L&  [32] WARANG CITI SMALL LETTER NGAA..WARANG CITI SMALL LETTER VIYO
@@ -4924,15 +4565,12 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [39] NANDINAGARI LETTER E..NANDINAGARI LETTER RRA
     (0x0119AA, 0x0119D0, OLetter),
     // Mc   [3] NANDINAGARI VOWEL SIGN AA..NANDINAGARI VOWEL SIGN II
-    (0x0119D1, 0x0119D3, Extend),
     // Mn   [4] NANDINAGARI VOWEL SIGN U..NANDINAGARI VOWEL SIGN VOCALIC RR
-    (0x0119D4, 0x0119D7, Extend),
+    (0x0119D1, 0x0119D7, Extend),
     // Mn   [2] NANDINAGARI VOWEL SIGN E..NANDINAGARI VOWEL SIGN AI
-    (0x0119DA, 0x0119DB, Extend),
     // Mc   [4] NANDINAGARI VOWEL SIGN O..NANDINAGARI SIGN VISARGA
-    (0x0119DC, 0x0119DF, Extend),
     // Mn       NANDINAGARI SIGN VIRAMA
-    (0x0119E0, 0x0119E0, Extend),
+    (0x0119DA, 0x0119E0, Extend),
     // Lo       NANDINAGARI SIGN AVAGRAHA
     (0x0119E1, 0x0119E1, OLetter),
     // Lo       NANDINAGARI HEADSTROKE
@@ -4946,9 +4584,8 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [40] ZANABAZAR SQUARE LETTER KA..ZANABAZAR SQUARE LETTER KSSA
     (0x011A0B, 0x011A32, OLetter),
     // Mn   [6] ZANABAZAR SQUARE FINAL CONSONANT MARK..ZANABAZAR SQUARE SIGN ANUSVARA
-    (0x011A33, 0x011A38, Extend),
     // Mc       ZANABAZAR SQUARE SIGN VISARGA
-    (0x011A39, 0x011A39, Extend),
+    (0x011A33, 0x011A39, Extend),
     // Lo       ZANABAZAR SQUARE CLUSTER-INITIAL LETTER RA
     (0x011A3A, 0x011A3A, OLetter),
     // Mn   [4] ZANABAZAR SQUARE CLUSTER-FINAL LETTER YA..ZANABAZAR SQUARE CLUSTER-FINAL LETTER VA
@@ -4960,19 +4597,15 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo       SOYOMBO LETTER A
     (0x011A50, 0x011A50, OLetter),
     // Mn   [6] SOYOMBO VOWEL SIGN I..SOYOMBO VOWEL SIGN OE
-    (0x011A51, 0x011A56, Extend),
     // Mc   [2] SOYOMBO VOWEL SIGN AI..SOYOMBO VOWEL SIGN AU
-    (0x011A57, 0x011A58, Extend),
     // Mn   [3] SOYOMBO VOWEL SIGN VOCALIC R..SOYOMBO VOWEL LENGTH MARK
-    (0x011A59, 0x011A5B, Extend),
+    (0x011A51, 0x011A5B, Extend),
     // Lo  [46] SOYOMBO LETTER KA..SOYOMBO CLUSTER-INITIAL LETTER SA
     (0x011A5C, 0x011A89, OLetter),
     // Mn  [13] SOYOMBO FINAL CONSONANT SIGN G..SOYOMBO SIGN ANUSVARA
-    (0x011A8A, 0x011A96, Extend),
     // Mc       SOYOMBO SIGN VISARGA
-    (0x011A97, 0x011A97, Extend),
     // Mn   [2] SOYOMBO GEMINATION MARK..SOYOMBO SUBJOINER
-    (0x011A98, 0x011A99, Extend),
+    (0x011A8A, 0x011A99, Extend),
     // Po   [2] SOYOMBO MARK SHAD..SOYOMBO MARK DOUBLE SHAD
     (0x011A9B, 0x011A9C, STerm),
     // Lo       SOYOMBO MARK PLUTA
@@ -4984,15 +4617,12 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [37] BHAIKSUKI LETTER E..BHAIKSUKI LETTER HA
     (0x011C0A, 0x011C2E, OLetter),
     // Mc       BHAIKSUKI VOWEL SIGN AA
-    (0x011C2F, 0x011C2F, Extend),
     // Mn   [7] BHAIKSUKI VOWEL SIGN I..BHAIKSUKI VOWEL SIGN VOCALIC L
-    (0x011C30, 0x011C36, Extend),
+    (0x011C2F, 0x011C36, Extend),
     // Mn   [6] BHAIKSUKI VOWEL SIGN E..BHAIKSUKI SIGN ANUSVARA
-    (0x011C38, 0x011C3D, Extend),
     // Mc       BHAIKSUKI SIGN VISARGA
-    (0x011C3E, 0x011C3E, Extend),
     // Mn       BHAIKSUKI SIGN VIRAMA
-    (0x011C3F, 0x011C3F, Extend),
+    (0x011C38, 0x011C3F, Extend),
     // Lo       BHAIKSUKI SIGN AVAGRAHA
     (0x011C40, 0x011C40, OLetter),
     // Po   [2] BHAIKSUKI DANDA..BHAIKSUKI DOUBLE DANDA
@@ -5004,17 +4634,12 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Mn  [22] MARCHEN SUBJOINED LETTER KA..MARCHEN SUBJOINED LETTER ZA
     (0x011C92, 0x011CA7, Extend),
     // Mc       MARCHEN SUBJOINED LETTER YA
-    (0x011CA9, 0x011CA9, Extend),
     // Mn   [7] MARCHEN SUBJOINED LETTER RA..MARCHEN VOWEL SIGN AA
-    (0x011CAA, 0x011CB0, Extend),
     // Mc       MARCHEN VOWEL SIGN I
-    (0x011CB1, 0x011CB1, Extend),
     // Mn   [2] MARCHEN VOWEL SIGN U..MARCHEN VOWEL SIGN E
-    (0x011CB2, 0x011CB3, Extend),
     // Mc       MARCHEN VOWEL SIGN O
-    (0x011CB4, 0x011CB4, Extend),
     // Mn   [2] MARCHEN SIGN ANUSVARA..MARCHEN SIGN CANDRABINDU
-    (0x011CB5, 0x011CB6, Extend),
+    (0x011CA9, 0x011CB6, Extend),
     // Lo   [7] MASARAM GONDI LETTER A..MASARAM GONDI LETTER E
     (0x011D00, 0x011D06, OLetter),
     // Lo   [2] MASARAM GONDI LETTER AI..MASARAM GONDI LETTER O
@@ -5046,13 +4671,10 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Mn   [2] GUNJALA GONDI VOWEL SIGN EE..GUNJALA GONDI VOWEL SIGN AI
     (0x011D90, 0x011D91, Extend),
     // Mc   [2] GUNJALA GONDI VOWEL SIGN OO..GUNJALA GONDI VOWEL SIGN AU
-    (0x011D93, 0x011D94, Extend),
     // Mn       GUNJALA GONDI SIGN ANUSVARA
-    (0x011D95, 0x011D95, Extend),
     // Mc       GUNJALA GONDI SIGN VISARGA
-    (0x011D96, 0x011D96, Extend),
     // Mn       GUNJALA GONDI VIRAMA
-    (0x011D97, 0x011D97, Extend),
+    (0x011D93, 0x011D97, Extend),
     // Lo       GUNJALA GONDI OM
     (0x011D98, 0x011D98, OLetter),
     // Nd  [10] GUNJALA GONDI DIGIT ZERO..GUNJALA GONDI DIGIT NINE
@@ -5060,9 +4682,8 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Lo  [19] MAKASAR LETTER KA..MAKASAR ANGKA
     (0x011EE0, 0x011EF2, OLetter),
     // Mn   [2] MAKASAR VOWEL SIGN I..MAKASAR VOWEL SIGN U
-    (0x011EF3, 0x011EF4, Extend),
     // Mc   [2] MAKASAR VOWEL SIGN E..MAKASAR VOWEL SIGN O
-    (0x011EF5, 0x011EF6, Extend),
+    (0x011EF3, 0x011EF6, Extend),
     // Po   [2] MAKASAR PASSIMBANG..MAKASAR END OF SECTION
     (0x011EF7, 0x011EF8, STerm),
     // Lo [922] CUNEIFORM SIGN A..CUNEIFORM SIGN U U
@@ -5156,9 +4777,8 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Sentence_Break> = lookup_table![
     // Cf   [4] SHORTHAND FORMAT LETTER OVERLAP..SHORTHAND FORMAT UP STEP
     (0x01BCA0, 0x01BCA3, Format),
     // Mc   [2] MUSICAL SYMBOL COMBINING STEM..MUSICAL SYMBOL COMBINING SPRECHGESANG STEM
-    (0x01D165, 0x01D166, Extend),
     // Mn   [3] MUSICAL SYMBOL COMBINING TREMOLO-1..MUSICAL SYMBOL COMBINING TREMOLO-3
-    (0x01D167, 0x01D169, Extend),
+    (0x01D165, 0x01D169, Extend),
     // Mc   [6] MUSICAL SYMBOL COMBINING AUGMENTATION DOT..MUSICAL SYMBOL COMBINING FLAG-5
     (0x01D16D, 0x01D172, Extend),
     // Cf   [8] MUSICAL SYMBOL BEGIN BEAM..MUSICAL SYMBOL END PHRASE

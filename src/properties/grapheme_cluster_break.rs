@@ -33,6 +33,16 @@ impl From<char> for Grapheme_Cluster_Break {
     }
 }
 
+#[test]
+fn validate_tables() {
+    use std::convert::TryInto;
+    ROW0_TABLE.validate();
+    if let Ok(x) = (ROW0_LIMIT as u32).try_into() { assert!(!ROW0_TABLE.contains(&x)); }
+    PLANE0_TABLE.validate();
+    if let Ok(x) = (PLANE0_LIMIT as u32).try_into() { assert!(!PLANE0_TABLE.contains(&x)); }
+    SUPPLEMENTARY_TABLE.validate();
+}
+
 const ROW0_TABLE: LookupTable<u8, Grapheme_Cluster_Break> = lookup_table![
     // Cc  [10] <control-0000>..<control-0009>
     (0x00, 0x09, Control),
@@ -56,9 +66,8 @@ const PLANE0_TABLE: LookupTable<u16, Grapheme_Cluster_Break> = lookup_table![
     // Mn [112] COMBINING GRAVE ACCENT..COMBINING LATIN SMALL LETTER X
     (0x0300, 0x036F, Extend),
     // Mn   [5] COMBINING CYRILLIC TITLO..COMBINING CYRILLIC POKRYTIE
-    (0x0483, 0x0487, Extend),
     // Me   [2] COMBINING CYRILLIC HUNDRED THOUSANDS SIGN..COMBINING CYRILLIC MILLIONS SIGN
-    (0x0488, 0x0489, Extend),
+    (0x0483, 0x0489, Extend),
     // Mn  [45] HEBREW ACCENT ETNAHTA..HEBREW POINT METEG
     (0x0591, 0x05BD, Extend),
     // Mn       HEBREW POINT RAFE
@@ -212,9 +221,8 @@ const PLANE0_TABLE: LookupTable<u16, Grapheme_Cluster_Break> = lookup_table![
     // Mn       ORIYA SIGN NUKTA
     (0x0B3C, 0x0B3C, Extend),
     // Mc       ORIYA VOWEL SIGN AA
-    (0x0B3E, 0x0B3E, Extend),
     // Mn       ORIYA VOWEL SIGN I
-    (0x0B3F, 0x0B3F, Extend),
+    (0x0B3E, 0x0B3F, Extend),
     // Mc       ORIYA VOWEL SIGN II
     (0x0B40, 0x0B40, SpacingMark),
     // Mn   [4] ORIYA VOWEL SIGN U..ORIYA VOWEL SIGN VOCALIC RR
@@ -226,9 +234,8 @@ const PLANE0_TABLE: LookupTable<u16, Grapheme_Cluster_Break> = lookup_table![
     // Mn       ORIYA SIGN VIRAMA
     (0x0B4D, 0x0B4D, Extend),
     // Mn       ORIYA AI LENGTH MARK
-    (0x0B56, 0x0B56, Extend),
     // Mc       ORIYA AU LENGTH MARK
-    (0x0B57, 0x0B57, Extend),
+    (0x0B56, 0x0B57, Extend),
     // Mn   [2] ORIYA VOWEL SIGN VOCALIC L..ORIYA VOWEL SIGN VOCALIC LL
     (0x0B62, 0x0B63, Extend),
     // Mn       TAMIL SIGN ANUSVARA
@@ -490,19 +497,16 @@ const PLANE0_TABLE: LookupTable<u16, Grapheme_Cluster_Break> = lookup_table![
     // Mn       TAI THAM COMBINING CRYPTOGRAMMIC DOT
     (0x1A7F, 0x1A7F, Extend),
     // Mn  [14] COMBINING DOUBLED CIRCUMFLEX ACCENT..COMBINING PARENTHESES BELOW
-    (0x1AB0, 0x1ABD, Extend),
     // Me       COMBINING PARENTHESES OVERLAY
-    (0x1ABE, 0x1ABE, Extend),
+    (0x1AB0, 0x1ABE, Extend),
     // Mn   [4] BALINESE SIGN ULU RICEM..BALINESE SIGN SURANG
     (0x1B00, 0x1B03, Extend),
     // Mc       BALINESE SIGN BISAH
     (0x1B04, 0x1B04, SpacingMark),
     // Mn       BALINESE SIGN REREKAN
-    (0x1B34, 0x1B34, Extend),
     // Mc       BALINESE VOWEL SIGN TEDUNG
-    (0x1B35, 0x1B35, Extend),
     // Mn   [5] BALINESE VOWEL SIGN ULU..BALINESE VOWEL SIGN RA REPA
-    (0x1B36, 0x1B3A, Extend),
+    (0x1B34, 0x1B3A, Extend),
     // Mc       BALINESE VOWEL SIGN RA REPA TEDUNG
     (0x1B3B, 0x1B3B, SpacingMark),
     // Mn       BALINESE VOWEL SIGN LA LENGA
@@ -584,27 +588,19 @@ const PLANE0_TABLE: LookupTable<u16, Grapheme_Cluster_Break> = lookup_table![
     // Cf   [2] LEFT-TO-RIGHT MARK..RIGHT-TO-LEFT MARK
     (0x200E, 0x200F, Control),
     // Zl       LINE SEPARATOR
-    (0x2028, 0x2028, Control),
     // Zp       PARAGRAPH SEPARATOR
-    (0x2029, 0x2029, Control),
     // Cf   [5] LEFT-TO-RIGHT EMBEDDING..RIGHT-TO-LEFT OVERRIDE
-    (0x202A, 0x202E, Control),
+    (0x2028, 0x202E, Control),
     // Cf   [5] WORD JOINER..INVISIBLE PLUS
-    (0x2060, 0x2064, Control),
     // Cn       <reserved-2065>
-    (0x2065, 0x2065, Control),
     // Cf  [10] LEFT-TO-RIGHT ISOLATE..NOMINAL DIGIT SHAPES
-    (0x2066, 0x206F, Control),
+    (0x2060, 0x206F, Control),
     // Mn  [13] COMBINING LEFT HARPOON ABOVE..COMBINING FOUR DOTS ABOVE
-    (0x20D0, 0x20DC, Extend),
     // Me   [4] COMBINING ENCLOSING CIRCLE..COMBINING ENCLOSING CIRCLE BACKSLASH
-    (0x20DD, 0x20E0, Extend),
     // Mn       COMBINING LEFT RIGHT ARROW ABOVE
-    (0x20E1, 0x20E1, Extend),
     // Me   [3] COMBINING ENCLOSING SCREEN..COMBINING ENCLOSING UPWARD POINTING TRIANGLE
-    (0x20E2, 0x20E4, Extend),
     // Mn  [12] COMBINING REVERSE SOLIDUS OVERLAY..COMBINING ASTERISK ABOVE
-    (0x20E5, 0x20F0, Extend),
+    (0x20D0, 0x20F0, Extend),
     // Mn   [3] COPTIC COMBINING NI ABOVE..COPTIC COMBINING SPIRITUS LENIS
     (0x2CEF, 0x2CF1, Extend),
     // Mn       TIFINAGH CONSONANT JOINER
@@ -612,15 +608,13 @@ const PLANE0_TABLE: LookupTable<u16, Grapheme_Cluster_Break> = lookup_table![
     // Mn  [32] COMBINING CYRILLIC LETTER BE..COMBINING CYRILLIC LETTER IOTIFIED BIG YUS
     (0x2DE0, 0x2DFF, Extend),
     // Mn   [4] IDEOGRAPHIC LEVEL TONE MARK..IDEOGRAPHIC ENTERING TONE MARK
-    (0x302A, 0x302D, Extend),
     // Mc   [2] HANGUL SINGLE DOT TONE MARK..HANGUL DOUBLE DOT TONE MARK
-    (0x302E, 0x302F, Extend),
+    (0x302A, 0x302F, Extend),
     // Mn   [2] COMBINING KATAKANA-HIRAGANA VOICED SOUND MARK..COMBINING KATAKANA-HIRAGANA SEMI-VOICED SOUND MARK
     (0x3099, 0x309A, Extend),
     // Mn       COMBINING CYRILLIC VZMET
-    (0xA66F, 0xA66F, Extend),
     // Me   [3] COMBINING CYRILLIC TEN MILLIONS SIGN..COMBINING CYRILLIC THOUSAND MILLIONS SIGN
-    (0xA670, 0xA672, Extend),
+    (0xA66F, 0xA672, Extend),
     // Mn  [10] COMBINING CYRILLIC LETTER UKRAINIAN IE..COMBINING CYRILLIC PAYEROK
     (0xA674, 0xA67D, Extend),
     // Mn   [2] COMBINING CYRILLIC LETTER EF..COMBINING CYRILLIC LETTER IOTIFIED E
@@ -2338,9 +2332,8 @@ const PLANE0_TABLE: LookupTable<u16, Grapheme_Cluster_Break> = lookup_table![
     // Lm   [2] HALFWIDTH KATAKANA VOICED SOUND MARK..HALFWIDTH KATAKANA SEMI-VOICED SOUND MARK
     (0xFF9E, 0xFF9F, Extend),
     // Cn   [9] <reserved-FFF0>..<reserved-FFF8>
-    (0xFFF0, 0xFFF8, Control),
     // Cf   [3] INTERLINEAR ANNOTATION ANCHOR..INTERLINEAR ANNOTATION TERMINATOR
-    (0xFFF9, 0xFFFB, Control),
+    (0xFFF0, 0xFFFB, Control),
 ];
 const PLANE0_LIMIT: char = '\u{10000}';
 const SUPPLEMENTARY_TABLE: LookupTable<u32, Grapheme_Cluster_Break> = lookup_table![
@@ -2721,11 +2714,9 @@ const SUPPLEMENTARY_TABLE: LookupTable<u32, Grapheme_Cluster_Break> = lookup_tab
     // Sk   [5] EMOJI MODIFIER FITZPATRICK TYPE-1-2..EMOJI MODIFIER FITZPATRICK TYPE-6
     (0x01F3FB, 0x01F3FF, Extend),
     // Cn       <reserved-E0000>
-    (0x0E0000, 0x0E0000, Control),
     // Cf       LANGUAGE TAG
-    (0x0E0001, 0x0E0001, Control),
     // Cn  [30] <reserved-E0002>..<reserved-E001F>
-    (0x0E0002, 0x0E001F, Control),
+    (0x0E0000, 0x0E001F, Control),
     // Cf  [96] TAG SPACE..CANCEL TAG
     (0x0E0020, 0x0E007F, Extend),
     // Cn [128] <reserved-E0080>..<reserved-E00FF>
