@@ -1,23 +1,6 @@
 use crate::lookup_table::LookupTable;
 
-#[allow(non_camel_case_types)] // Whatever unicode says, we use
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum Grapheme_Cluster_Break {
-    Other,
-    Control,
-    CR,
-    Extend,
-    L,
-    LF,
-    LV,
-    LVT,
-    Prepend,
-    Regional_Indicator,
-    SpacingMark,
-    T,
-    V,
-    ZWJ,
-}
+use crate::properties::Grapheme_Cluster_Break;
 use Grapheme_Cluster_Break::*;
 
 impl From<char> for Grapheme_Cluster_Break {

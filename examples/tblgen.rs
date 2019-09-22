@@ -7,22 +7,20 @@ use std::io::Write;
 use regex::Regex;
 use unicase::UniCase;
 
-// Eytzinger
-
 fn main() {
-    generate_property(
+    generate_property_table(
         "Grapheme_Cluster_Break",
         include_str!("../data/GraphemeBreakProperty.txt"),
         "Other",
         "src/property_tables/grapheme_cluster_break.rs",
     );
-    generate_property(
+    generate_property_table(
         "Word_Break",
         include_str!("../data/WordBreakProperty.txt"),
         "Other",
         "src/property_tables/word_break.rs",
     );
-    generate_property(
+    generate_property_table(
         "Sentence_Break",
         include_str!("../data/SentenceBreakProperty.txt"),
         "Other",
@@ -30,7 +28,7 @@ fn main() {
     );
 }
 
-fn generate_property(
+fn generate_property_table(
     type_name: &str,
     property_definition: &str,
     fallback: &str,
@@ -82,14 +80,7 @@ fn generate_property(
 
     w!("use crate::lookup_table::LookupTable;");
     w!();
-    w!("#[allow(non_camel_case_types)] // Whatever unicode says, we use");
-    w!("#[derive(Debug, Copy, Clone, Eq, PartialEq)]");
-    w!("pub enum {} {{", type_name);
-    w!("    {},", fallback);
-    for v in values {
-        w!("    {},", v);
-    }
-    w!("}}");
+    w!("use crate::properties::{};", type_name);
     w!("use {}::*;", type_name);
     w!();
     w!("impl From<char> for {} {{", type_name);

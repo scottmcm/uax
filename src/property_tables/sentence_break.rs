@@ -1,24 +1,6 @@
 use crate::lookup_table::LookupTable;
 
-#[allow(non_camel_case_types)] // Whatever unicode says, we use
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum Sentence_Break {
-    Other,
-    ATerm,
-    Close,
-    CR,
-    Extend,
-    Format,
-    LF,
-    Lower,
-    Numeric,
-    OLetter,
-    SContinue,
-    Sep,
-    Sp,
-    STerm,
-    Upper,
-}
+use crate::properties::Sentence_Break;
 use Sentence_Break::*;
 
 impl From<char> for Sentence_Break {

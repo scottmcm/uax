@@ -7,7 +7,7 @@ pub mod properties;
 mod lookup_table;
 mod property_tables;
 
-use property_tables::{Grapheme_Cluster_Break, Word_Break, Sentence_Break};
+use properties::{Grapheme_Cluster_Break, Word_Break, Sentence_Break};
 
 pub fn demo_grapheme_cluster_break(c: char) -> usize {
     Grapheme_Cluster_Break::from(c) as usize

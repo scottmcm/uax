@@ -1,28 +1,6 @@
 use crate::lookup_table::LookupTable;
 
-#[allow(non_camel_case_types)] // Whatever unicode says, we use
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-pub enum Word_Break {
-    Other,
-    ALetter,
-    CR,
-    Double_Quote,
-    Extend,
-    ExtendNumLet,
-    Format,
-    Hebrew_Letter,
-    Katakana,
-    LF,
-    MidLetter,
-    MidNum,
-    MidNumLet,
-    Newline,
-    Numeric,
-    Regional_Indicator,
-    Single_Quote,
-    WSegSpace,
-    ZWJ,
-}
+use crate::properties::Word_Break;
 use Word_Break::*;
 
 impl From<char> for Word_Break {
