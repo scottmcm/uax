@@ -1,10 +1,13 @@
 #![cfg_attr(test, allow(dead_code))]
+#![cfg_attr(not(test), no_std)]
+
+pub mod properties;
 
 #[macro_use]
 mod lookup_table;
-mod properties;
+mod property_tables;
 
-use properties::{Grapheme_Cluster_Break, Word_Break, Sentence_Break};
+use property_tables::{Grapheme_Cluster_Break, Word_Break, Sentence_Break};
 
 pub fn demo_grapheme_cluster_break(c: char) -> usize {
     Grapheme_Cluster_Break::from(c) as usize
