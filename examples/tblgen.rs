@@ -14,19 +14,19 @@ fn main() {
         "Grapheme_Cluster_Break",
         include_str!("../data/GraphemeBreakProperty.txt"),
         "Other",
-        "src/properties/grapheme_cluster_break.rs",
+        "src/property_tables/grapheme_cluster_break.rs",
     );
     generate_property(
         "Word_Break",
         include_str!("../data/WordBreakProperty.txt"),
         "Other",
-        "src/properties/word_break.rs",
+        "src/property_tables/word_break.rs",
     );
     generate_property(
         "Sentence_Break",
         include_str!("../data/SentenceBreakProperty.txt"),
         "Other",
-        "src/properties/sentence_break.rs",
+        "src/property_tables/sentence_break.rs",
     );
 }
 
