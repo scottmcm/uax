@@ -33,6 +33,13 @@ fn main() {
         "Unknown",
         "src/property_tables/script.rs",
     );
+
+    generate_property_table(
+        "Block",
+        include_str!("../data/Blocks.txt"),
+        "No_Block",
+        "src/property_tables/block.rs",
+    );
 }
 
 fn generate_property_table(
@@ -50,25 +57,27 @@ fn generate_property_table(
             \.\.
             (?P<end>[[:xdigit:]]{4,6})
         )?
-        \s+
+        \s*
         ;
-        \s+
+        \s*
         (?P<value>\w+)
-        \s+
-        \#
-        \s+
-        (?P<comment>.+)
+        (?:
+            \s*
+            \#
+            \s*
+            (?P<comment>.+)
+        )?
     "#).unwrap();
     for x in property_definition.lines() {
         if x == "" || x.starts_with("#") { continue }
         let captures = re.captures(x).unwrap_or_else(|| panic!("{}", x));
-        let start = parse_char(&captures["start"]);
+        let start = parse_hex(&captures["start"]);
         let end = captures.name("end")
-            .map(|x| parse_char(x.as_str()))
+            .map(|x| parse_hex(x.as_str()))
             .unwrap_or(start);
         let value = captures["value"].to_owned();
         values.insert(value.clone());
-        let comment = captures["comment"].to_owned();
+        let comment = captures.name("comment").map(|x| x.as_str().to_owned()).unwrap_or(String::new());
         properties.push((start, end, value, comment));
     }
     properties.sort_by_key(|x| x.0);
@@ -127,8 +136,8 @@ fn generate_property_table(
         w!("    ({:#04X}, {:#04X}, {}),", p.0 as u32, p.1 as u32, p.2);
     }
     w!("];");
-    let row0_limit = char::min('\u{100}', properties.peek().unwrap().0);
-    w!("const ROW0_LIMIT: char = '{}';", row0_limit.escape_unicode());
+    let row0_limit = u32::min(0x100, properties.peek().unwrap().0);
+    w!("const ROW0_LIMIT: char = '\\u{{{:x}}}';", row0_limit);
     w!("const PLANE0_TABLE: LookupTable<u16, {}> = lookup_table![", type_name);
     if properties.peek().unwrap().0 as u32 > 0x100 {
         let p = properties.peek().unwrap();
@@ -143,8 +152,8 @@ fn generate_property_table(
         w!("    ({:#06X}, {:#06X}, {}),", p.0 as u32, p.1 as u32, p.2);
     }
     w!("];");
-    let plane0_limit = char::min('\u{10000}', properties.peek().unwrap().0);
-    w!("const PLANE0_LIMIT: char = '{}';", plane0_limit.escape_unicode());
+    let plane0_limit = u32::min(0x10000, properties.peek().unwrap().0);
+    w!("const PLANE0_LIMIT: char = '\\u{{{:x}}}';", plane0_limit);
     w!("const SUPPLEMENTARY_TABLE: LookupTable<u32, {}> = lookup_table![", type_name);
     if properties.peek().unwrap().0 as u32 > 0x10000 {
         let p = properties.peek().unwrap();
@@ -165,15 +174,14 @@ fn prev_char(c: char) -> char {
     std::char::from_u32(c as u32 - 1).unwrap()
 }
 
-fn parse_char(hex: &str) -> char {
-    let x = u32::from_str_radix(hex, 16).unwrap();
-    std::char::from_u32(x).unwrap()
+fn parse_hex(hex: &str) -> u32 {
+    u32::from_str_radix(hex, 16).unwrap()
 }
 
-fn combine_adjacent(raw_properties: Vec<(char, char, String, String)>)
-    -> Vec<(char, char, String, Vec<String>)>
+fn combine_adjacent(raw_properties: Vec<(u32, u32, String, String)>)
+    -> Vec<(u32, u32, String, Vec<String>)>
 {
-    let mut properties = Vec::<(char, char, String, Vec<String>)>::with_capacity(raw_properties.len());
+    let mut properties = Vec::<(u32, u32, String, Vec<String>)>::with_capacity(raw_properties.len());
     for p in raw_properties {
         if !properties.is_empty() {
             let prev = properties.last_mut().unwrap();
@@ -185,6 +193,9 @@ fn combine_adjacent(raw_properties: Vec<(char, char, String, String)>)
         }
 
         properties.push((p.0, p.1, p.2, vec![p.3]));
+    }
+    for p in &mut properties {
+        p.3.retain(|x| !x.is_empty());
     }
     properties
 }
