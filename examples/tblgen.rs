@@ -1,11 +1,9 @@
 #![allow(dead_code)]
 
-use std::collections::HashSet;
 use std::fs::File;
 use std::io::Write;
 
 use regex::Regex;
-use unicase::UniCase;
 
 fn main() {
     generate_property_table(
@@ -62,7 +60,6 @@ fn generate_property_table(
     file_path: &str,
 ) {
     let mut properties = Vec::new();
-    let mut values = HashSet::new();
 
     let re = Regex::new(r#"(?x)
         (?P<start>[[:xdigit:]]{4,6})
@@ -89,15 +86,11 @@ fn generate_property_table(
             .map(|x| parse_hex(x.as_str()))
             .unwrap_or(start);
         let value = captures["value"].to_owned();
-        values.insert(value.clone());
         let comment = captures.name("comment").map(|x| x.as_str().to_owned()).unwrap_or(String::new());
         properties.push((start, end, value, comment));
     }
     properties.sort_by_key(|x| x.0);
     let mut properties = combine_adjacent(properties).into_iter().peekable();
-
-    let mut values = values.into_iter().collect::<Vec<_>>();
-    values.sort_by_cached_key(|x| UniCase::new(x.clone()));
 
     let mut f = File::create(file_path).unwrap();
     macro_rules! w {

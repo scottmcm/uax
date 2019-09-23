@@ -10,4 +10,3 @@ license = "OSL-3.0 AND Unicode-DFS-2016"
 
 [dev-dependencies]
 regex = "1"
-unicase = "2"
