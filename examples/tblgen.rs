@@ -5,6 +5,9 @@ use std::io::Write;
 
 use regex::Regex;
 
+mod shared;
+use shared::range_map::RangeMap;
+
 fn main() {
     generate_property_table(
         "Grapheme_Cluster_Break",
@@ -59,7 +62,7 @@ fn generate_property_table(
     fallback: &str,
     file_path: &str,
 ) {
-    let mut properties = Vec::new();
+    let mut properties = RangeMap::<u32, String, String>::new(fallback.to_owned());
 
     let re = Regex::new(r#"(?x)
         (?P<start>[[:xdigit:]]{4,6})
@@ -86,11 +89,10 @@ fn generate_property_table(
             .map(|x| parse_hex(x.as_str()))
             .unwrap_or(start);
         let value = captures["value"].to_owned();
-        let comment = captures.name("comment").map(|x| x.as_str().to_owned()).unwrap_or(String::new());
-        properties.push((start, end, value, comment));
+        let comment = captures.name("comment").map(|x| x.as_str().to_owned());
+        properties.set(start..(end + 1), value, comment);
     }
-    properties.sort_by_key(|x| x.0);
-    let mut properties = combine_adjacent(properties).into_iter().peekable();
+    let mut properties = properties.iter().peekable();
 
     let mut f = File::create(file_path).unwrap();
     macro_rules! w {
@@ -129,49 +131,48 @@ fn generate_property_table(
     w!("}}");
     w!();
     w!("const ROW0_TABLE: LookupTable<u8, {}> = lookup_table![", type_name);
-    if properties.peek().unwrap().0 > 0 {
+    if properties.peek().unwrap().0.start > &0 {
         let p = properties.peek().unwrap();
         w!("    // So every possible input is always found in the table");
-        w!("    ({:#04X}, {:#04X}, {}),", 0, u32::min(p.0 - 1, 0xFF), fallback);
+        w!("    ({:#04X}, {:#04X}, {}),", 0, u32::min(p.0.start - 1, 0xFF), fallback);
     }
-    while properties.peek().unwrap().1 <= 0xFF {
+    while properties.peek().unwrap().0.end <= &0x100 {
         let p = properties.next().unwrap();
-        for comment in p.3 {
+        for comment in p.2 {
             w!("    // {}", comment);
         }
-        w!("    ({:#04X}, {:#04X}, {}),", p.0, p.1, p.2);
+        w!("    ({:#04X}, {:#04X}, {}),", p.0.start, p.0.end-1, p.1);
     }
     w!("];");
-    let row0_limit = u32::min(0x100, properties.peek().unwrap().0);
+    let row0_limit = u32::min(0x100, *properties.peek().unwrap().0.start);
     w!("const ROW0_LIMIT: char = '\\u{{{:x}}}';", row0_limit);
     w!("const PLANE0_TABLE: LookupTable<u16, {}> = lookup_table![", type_name);
-    if properties.peek().unwrap().0 > 0x100 {
+    if properties.peek().unwrap().0.start > &0x100 {
         let p = properties.peek().unwrap();
         w!("    // So every possible input is always found in the table");
-        w!("    ({:#06X}, {:#06X}, {}),", 0x100, u32::min(p.0 - 1, 0xFFFF), fallback);
+        w!("    ({:#06X}, {:#06X}, {}),", 0x100, u32::min(p.0.start - 1, 0xFFFF), fallback);
     }
-    while properties.peek().unwrap().1 <= 0xFFFF {
+    while properties.peek().unwrap().0.end <= &0x10000 {
         let p = properties.next().unwrap();
-        for comment in p.3 {
+        for comment in p.2 {
             w!("    // {}", comment);
         }
-        w!("    ({:#06X}, {:#06X}, {}),", p.0, p.1, p.2);
+        w!("    ({:#06X}, {:#06X}, {}),", p.0.start, p.0.end-1, p.1);
     }
     w!("];");
-    let plane0_limit = u32::min(0x10000, properties.peek().unwrap().0);
+    let plane0_limit = u32::min(0x10000, *properties.peek().unwrap().0.start);
     w!("const PLANE0_LIMIT: char = '\\u{{{:x}}}';", plane0_limit);
     w!("const SUPPLEMENTARY_TABLE: LookupTable<u32, {}> = lookup_table![", type_name);
-    if properties.peek().unwrap().0 > 0x10000 {
+    if properties.peek().unwrap().0.start > &0x10000 {
         let p = properties.peek().unwrap();
         w!("    // So every possible input is always found in the table");
-        w!("    ({:#08X}, {:#08X}, {}),", 0x10000, p.0 - 1, fallback);
+        w!("    ({:#08X}, {:#08X}, {}),", 0x10000, p.0.start - 1, fallback);
     }
     for p in properties {
-        for comment in p.3 {
+        for comment in p.2 {
             w!("    // {}", comment);
         }
-        w!("    ({:#08X}, {:#08X}, {}),",
-            p.0, p.1, p.2);
+        w!("    ({:#08X}, {:#08X}, {}),", p.0.start, p.0.end-1, p.1);
     }
     w!("];");
 }
@@ -182,26 +183,4 @@ fn prev_char(c: char) -> char {
 
 fn parse_hex(hex: &str) -> u32 {
     u32::from_str_radix(hex, 16).unwrap()
-}
-
-fn combine_adjacent(raw_properties: Vec<(u32, u32, String, String)>)
-    -> Vec<(u32, u32, String, Vec<String>)>
-{
-    let mut properties = Vec::<(u32, u32, String, Vec<String>)>::with_capacity(raw_properties.len());
-    for p in raw_properties {
-        if !properties.is_empty() {
-            let prev = properties.last_mut().unwrap();
-            if p.2 == prev.2 && prev.1 + 1 == p.0 {
-                prev.1 = p.1;
-                prev.3.push(p.3);
-                continue;
-            }
-        }
-
-        properties.push((p.0, p.1, p.2, vec![p.3]));
-    }
-    for p in &mut properties {
-        p.3.retain(|x| !x.is_empty());
-    }
-    properties
 }
