@@ -47,6 +47,12 @@ fn main() {
         "NA",
         "src/property_tables/indic_positional_category.rs",
     );
+    generate_property_table(
+        "Indic_Syllabic_Category",
+        include_str!("../data/IndicSyllabicCategory.txt"),
+        "Other",
+        "src/property_tables/indic_syllabic_category.rs",
+    );
 }
 
 fn generate_property_table(
