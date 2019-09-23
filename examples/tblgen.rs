@@ -26,6 +26,13 @@ fn main() {
         "Other",
         "src/property_tables/sentence_break.rs",
     );
+
+    generate_property_table(
+        "Script",
+        include_str!("../data/Scripts.txt"),
+        "Unknown",
+        "src/property_tables/script.rs",
+    );
 }
 
 fn generate_property_table(
