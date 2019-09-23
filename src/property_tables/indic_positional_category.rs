@@ -1,0 +1,1211 @@
+use crate::lookup_table::LookupTable;
+
+use crate::properties::Indic_Positional_Category;
+use Indic_Positional_Category::*;
+
+impl From<char> for Indic_Positional_Category {
+    #[inline]
+    fn from(c: char) -> Self {
+        if c < ROW0_LIMIT {
+            return ROW0_TABLE.get_or(&(c as u8), NA);
+        }
+        if c < PLANE0_LIMIT {
+            return PLANE0_TABLE.get_or(&(c as u16), NA);
+        }
+        return SUPPLEMENTARY_TABLE.get_or(&(c as u32), NA);
+    }
+}
+
+#[test]
+fn validate_tables() {
+    use std::convert::TryInto;
+    ROW0_TABLE.validate();
+    if let Ok(x) = (ROW0_LIMIT as u32).try_into() { assert!(!ROW0_TABLE.contains(&x)); }
+    PLANE0_TABLE.validate();
+    if let Ok(x) = (PLANE0_LIMIT as u32).try_into() { assert!(!PLANE0_TABLE.contains(&x)); }
+    SUPPLEMENTARY_TABLE.validate();
+}
+
+const ROW0_TABLE: LookupTable<u8, Indic_Positional_Category> = lookup_table![
+    // So every possible input is always found in the table
+    (0x00, 0xFF, NA),
+];
+const ROW0_LIMIT: char = '\u{100}';
+const PLANE0_TABLE: LookupTable<u16, Indic_Positional_Category> = lookup_table![
+    // So every possible input is always found in the table
+    (0x0100, 0x08FF, NA),
+    // Mn   [3] DEVANAGARI SIGN INVERTED CANDRABINDU..DEVANAGARI SIGN ANUSVARA
+    (0x0900, 0x0902, Top),
+    // Mc       DEVANAGARI SIGN VISARGA
+    (0x0903, 0x0903, Right),
+    // Mn       DEVANAGARI VOWEL SIGN OE
+    (0x093A, 0x093A, Top),
+    // Mc       DEVANAGARI VOWEL SIGN OOE
+    (0x093B, 0x093B, Right),
+    // Mn       DEVANAGARI SIGN NUKTA
+    (0x093C, 0x093C, Bottom),
+    // Mc       DEVANAGARI VOWEL SIGN AA
+    (0x093E, 0x093E, Right),
+    // Mc       DEVANAGARI VOWEL SIGN I
+    (0x093F, 0x093F, Left),
+    // Mc       DEVANAGARI VOWEL SIGN II
+    (0x0940, 0x0940, Right),
+    // Mn   [4] DEVANAGARI VOWEL SIGN U..DEVANAGARI VOWEL SIGN VOCALIC RR
+    (0x0941, 0x0944, Bottom),
+    // Mn   [4] DEVANAGARI VOWEL SIGN CANDRA E..DEVANAGARI VOWEL SIGN AI
+    (0x0945, 0x0948, Top),
+    // Mc   [4] DEVANAGARI VOWEL SIGN CANDRA O..DEVANAGARI VOWEL SIGN AU
+    (0x0949, 0x094C, Right),
+    // Mn       DEVANAGARI SIGN VIRAMA
+    (0x094D, 0x094D, Bottom),
+    // Mc       DEVANAGARI VOWEL SIGN PRISHTHAMATRA E
+    (0x094E, 0x094E, Left),
+    // Mc       DEVANAGARI VOWEL SIGN AW
+    (0x094F, 0x094F, Right),
+    // Mn       DEVANAGARI STRESS SIGN UDATTA
+    (0x0951, 0x0951, Top),
+    // Mn       DEVANAGARI STRESS SIGN ANUDATTA
+    (0x0952, 0x0952, Bottom),
+    // Mn   [3] DEVANAGARI GRAVE ACCENT..DEVANAGARI VOWEL SIGN CANDRA LONG E
+    (0x0953, 0x0955, Top),
+    // Mn   [2] DEVANAGARI VOWEL SIGN UE..DEVANAGARI VOWEL SIGN UUE
+    (0x0956, 0x0957, Bottom),
+    // Mn   [2] DEVANAGARI VOWEL SIGN VOCALIC L..DEVANAGARI VOWEL SIGN VOCALIC LL
+    (0x0962, 0x0963, Bottom),
+    // Mn       BENGALI SIGN CANDRABINDU
+    (0x0981, 0x0981, Top),
+    // Mc   [2] BENGALI SIGN ANUSVARA..BENGALI SIGN VISARGA
+    (0x0982, 0x0983, Right),
+    // Mn       BENGALI SIGN NUKTA
+    (0x09BC, 0x09BC, Bottom),
+    // Mc       BENGALI VOWEL SIGN AA
+    (0x09BE, 0x09BE, Right),
+    // Mc       BENGALI VOWEL SIGN I
+    (0x09BF, 0x09BF, Left),
+    // Mc       BENGALI VOWEL SIGN II
+    (0x09C0, 0x09C0, Right),
+    // Mn   [4] BENGALI VOWEL SIGN U..BENGALI VOWEL SIGN VOCALIC RR
+    (0x09C1, 0x09C4, Bottom),
+    // Mc   [2] BENGALI VOWEL SIGN E..BENGALI VOWEL SIGN AI
+    (0x09C7, 0x09C8, Left),
+    // Mc   [2] BENGALI VOWEL SIGN O..BENGALI VOWEL SIGN AU
+    (0x09CB, 0x09CC, Left_And_Right),
+    // Mn       BENGALI SIGN VIRAMA
+    (0x09CD, 0x09CD, Bottom),
+    // Mc       BENGALI AU LENGTH MARK
+    (0x09D7, 0x09D7, Right),
+    // Mn   [2] BENGALI VOWEL SIGN VOCALIC L..BENGALI VOWEL SIGN VOCALIC LL
+    (0x09E2, 0x09E3, Bottom),
+    // Mn       BENGALI SANDHI MARK
+    (0x09FE, 0x09FE, Top),
+    // Mn   [2] GURMUKHI SIGN ADAK BINDI..GURMUKHI SIGN BINDI
+    (0x0A01, 0x0A02, Top),
+    // Mc       GURMUKHI SIGN VISARGA
+    (0x0A03, 0x0A03, Right),
+    // Mn       GURMUKHI SIGN NUKTA
+    (0x0A3C, 0x0A3C, Bottom),
+    // Mc       GURMUKHI VOWEL SIGN AA
+    (0x0A3E, 0x0A3E, Right),
+    // Mc       GURMUKHI VOWEL SIGN I
+    (0x0A3F, 0x0A3F, Left),
+    // Mc       GURMUKHI VOWEL SIGN II
+    (0x0A40, 0x0A40, Right),
+    // Mn   [2] GURMUKHI VOWEL SIGN U..GURMUKHI VOWEL SIGN UU
+    (0x0A41, 0x0A42, Bottom),
+    // Mn   [2] GURMUKHI VOWEL SIGN EE..GURMUKHI VOWEL SIGN AI
+    (0x0A47, 0x0A48, Top),
+    // Mn   [2] GURMUKHI VOWEL SIGN OO..GURMUKHI VOWEL SIGN AU
+    (0x0A4B, 0x0A4C, Top),
+    // Mn       GURMUKHI SIGN VIRAMA
+    (0x0A4D, 0x0A4D, Bottom),
+    // Mn       GURMUKHI SIGN UDAAT
+    (0x0A51, 0x0A51, Bottom),
+    // Mn   [2] GURMUKHI TIPPI..GURMUKHI ADDAK
+    (0x0A70, 0x0A71, Top),
+    // Mn       GURMUKHI SIGN YAKASH
+    (0x0A75, 0x0A75, Bottom),
+    // Mn   [2] GUJARATI SIGN CANDRABINDU..GUJARATI SIGN ANUSVARA
+    (0x0A81, 0x0A82, Top),
+    // Mc       GUJARATI SIGN VISARGA
+    (0x0A83, 0x0A83, Right),
+    // Mn       GUJARATI SIGN NUKTA
+    (0x0ABC, 0x0ABC, Bottom),
+    // Mc       GUJARATI VOWEL SIGN AA
+    (0x0ABE, 0x0ABE, Right),
+    // Mc       GUJARATI VOWEL SIGN I
+    (0x0ABF, 0x0ABF, Left),
+    // Mc       GUJARATI VOWEL SIGN II
+    (0x0AC0, 0x0AC0, Right),
+    // Mn   [4] GUJARATI VOWEL SIGN U..GUJARATI VOWEL SIGN VOCALIC RR
+    (0x0AC1, 0x0AC4, Bottom),
+    // Mn       GUJARATI VOWEL SIGN CANDRA E
+    (0x0AC5, 0x0AC5, Top),
+    // Mn   [2] GUJARATI VOWEL SIGN E..GUJARATI VOWEL SIGN AI
+    (0x0AC7, 0x0AC8, Top),
+    // Mc       GUJARATI VOWEL SIGN CANDRA O
+    (0x0AC9, 0x0AC9, Top_And_Right),
+    // Mc   [2] GUJARATI VOWEL SIGN O..GUJARATI VOWEL SIGN AU
+    (0x0ACB, 0x0ACC, Right),
+    // Mn       GUJARATI SIGN VIRAMA
+    (0x0ACD, 0x0ACD, Bottom),
+    // Mn   [2] GUJARATI VOWEL SIGN VOCALIC L..GUJARATI VOWEL SIGN VOCALIC LL
+    (0x0AE2, 0x0AE3, Bottom),
+    // Mn   [6] GUJARATI SIGN SUKUN..GUJARATI SIGN TWO-CIRCLE NUKTA ABOVE
+    (0x0AFA, 0x0AFF, Top),
+    // Mn       ORIYA SIGN CANDRABINDU
+    (0x0B01, 0x0B01, Top),
+    // Mc   [2] ORIYA SIGN ANUSVARA..ORIYA SIGN VISARGA
+    (0x0B02, 0x0B03, Right),
+    // Mn       ORIYA SIGN NUKTA
+    (0x0B3C, 0x0B3C, Bottom),
+    // Mc       ORIYA VOWEL SIGN AA
+    (0x0B3E, 0x0B3E, Right),
+    // Mn       ORIYA VOWEL SIGN I
+    (0x0B3F, 0x0B3F, Top),
+    // Mc       ORIYA VOWEL SIGN II
+    (0x0B40, 0x0B40, Right),
+    // Mn   [4] ORIYA VOWEL SIGN U..ORIYA VOWEL SIGN VOCALIC RR
+    (0x0B41, 0x0B44, Bottom),
+    // Mc       ORIYA VOWEL SIGN E
+    (0x0B47, 0x0B47, Left),
+    // Mc       ORIYA VOWEL SIGN AI
+    (0x0B48, 0x0B48, Top_And_Left),
+    // Mc       ORIYA VOWEL SIGN O
+    (0x0B4B, 0x0B4B, Left_And_Right),
+    // Mc       ORIYA VOWEL SIGN AU
+    (0x0B4C, 0x0B4C, Top_And_Left_And_Right),
+    // Mn       ORIYA SIGN VIRAMA
+    (0x0B4D, 0x0B4D, Bottom),
+    // Mn       ORIYA AI LENGTH MARK
+    (0x0B56, 0x0B56, Top),
+    // Mc       ORIYA AU LENGTH MARK
+    (0x0B57, 0x0B57, Top_And_Right),
+    // Mn   [2] ORIYA VOWEL SIGN VOCALIC L..ORIYA VOWEL SIGN VOCALIC LL
+    (0x0B62, 0x0B63, Bottom),
+    // Mn       TAMIL SIGN ANUSVARA
+    (0x0B82, 0x0B82, Top),
+    // Mc   [2] TAMIL VOWEL SIGN AA..TAMIL VOWEL SIGN I
+    (0x0BBE, 0x0BBF, Right),
+    // Mn       TAMIL VOWEL SIGN II
+    (0x0BC0, 0x0BC0, Top),
+    // Mc   [2] TAMIL VOWEL SIGN U..TAMIL VOWEL SIGN UU
+    (0x0BC1, 0x0BC2, Right),
+    // Mc   [3] TAMIL VOWEL SIGN E..TAMIL VOWEL SIGN AI
+    (0x0BC6, 0x0BC8, Left),
+    // Mc   [3] TAMIL VOWEL SIGN O..TAMIL VOWEL SIGN AU
+    (0x0BCA, 0x0BCC, Left_And_Right),
+    // Mn       TAMIL SIGN VIRAMA
+    (0x0BCD, 0x0BCD, Top),
+    // Mc       TAMIL AU LENGTH MARK
+    (0x0BD7, 0x0BD7, Right),
+    // Mn       TELUGU SIGN COMBINING CANDRABINDU ABOVE
+    (0x0C00, 0x0C00, Top),
+    // Mc   [3] TELUGU SIGN CANDRABINDU..TELUGU SIGN VISARGA
+    (0x0C01, 0x0C03, Right),
+    // Mn       TELUGU SIGN COMBINING ANUSVARA ABOVE
+    (0x0C04, 0x0C04, Top),
+    // Mn   [3] TELUGU VOWEL SIGN AA..TELUGU VOWEL SIGN II
+    (0x0C3E, 0x0C40, Top),
+    // Mc   [4] TELUGU VOWEL SIGN U..TELUGU VOWEL SIGN VOCALIC RR
+    (0x0C41, 0x0C44, Right),
+    // Mn   [2] TELUGU VOWEL SIGN E..TELUGU VOWEL SIGN EE
+    (0x0C46, 0x0C47, Top),
+    // Mn       TELUGU VOWEL SIGN AI
+    (0x0C48, 0x0C48, Top_And_Bottom),
+    // Mn   [4] TELUGU VOWEL SIGN O..TELUGU SIGN VIRAMA
+    (0x0C4A, 0x0C4D, Top),
+    // Mn       TELUGU LENGTH MARK
+    (0x0C55, 0x0C55, Top),
+    // Mn       TELUGU AI LENGTH MARK
+    (0x0C56, 0x0C56, Bottom),
+    // Mn   [2] TELUGU VOWEL SIGN VOCALIC L..TELUGU VOWEL SIGN VOCALIC LL
+    (0x0C62, 0x0C63, Bottom),
+    // Mn       KANNADA SIGN CANDRABINDU
+    (0x0C81, 0x0C81, Top),
+    // Mc   [2] KANNADA SIGN ANUSVARA..KANNADA SIGN VISARGA
+    (0x0C82, 0x0C83, Right),
+    // Mn       KANNADA SIGN NUKTA
+    (0x0CBC, 0x0CBC, Bottom),
+    // Mc       KANNADA VOWEL SIGN AA
+    (0x0CBE, 0x0CBE, Right),
+    // Mn       KANNADA VOWEL SIGN I
+    (0x0CBF, 0x0CBF, Top),
+    // Mc       KANNADA VOWEL SIGN II
+    (0x0CC0, 0x0CC0, Top_And_Right),
+    // Mc   [4] KANNADA VOWEL SIGN U..KANNADA VOWEL SIGN VOCALIC RR
+    (0x0CC1, 0x0CC4, Right),
+    // Mn       KANNADA VOWEL SIGN E
+    (0x0CC6, 0x0CC6, Top),
+    // Mc   [2] KANNADA VOWEL SIGN EE..KANNADA VOWEL SIGN AI
+    (0x0CC7, 0x0CC8, Top_And_Right),
+    // Mc   [2] KANNADA VOWEL SIGN O..KANNADA VOWEL SIGN OO
+    (0x0CCA, 0x0CCB, Top_And_Right),
+    // Mn   [2] KANNADA VOWEL SIGN AU..KANNADA SIGN VIRAMA
+    (0x0CCC, 0x0CCD, Top),
+    // Mc   [2] KANNADA LENGTH MARK..KANNADA AI LENGTH MARK
+    (0x0CD5, 0x0CD6, Right),
+    // Mn   [2] KANNADA VOWEL SIGN VOCALIC L..KANNADA VOWEL SIGN VOCALIC LL
+    (0x0CE2, 0x0CE3, Bottom),
+    // Mn   [2] MALAYALAM SIGN COMBINING ANUSVARA ABOVE..MALAYALAM SIGN CANDRABINDU
+    (0x0D00, 0x0D01, Top),
+    // Mc   [2] MALAYALAM SIGN ANUSVARA..MALAYALAM SIGN VISARGA
+    (0x0D02, 0x0D03, Right),
+    // Mn   [2] MALAYALAM SIGN VERTICAL BAR VIRAMA..MALAYALAM SIGN CIRCULAR VIRAMA
+    (0x0D3B, 0x0D3C, Top),
+    // Mc   [3] MALAYALAM VOWEL SIGN AA..MALAYALAM VOWEL SIGN II
+    // Mn   [2] MALAYALAM VOWEL SIGN U..MALAYALAM VOWEL SIGN UU
+    (0x0D3E, 0x0D42, Right),
+    // Mn   [2] MALAYALAM VOWEL SIGN VOCALIC R..MALAYALAM VOWEL SIGN VOCALIC RR
+    (0x0D43, 0x0D44, Bottom),
+    // Mc   [3] MALAYALAM VOWEL SIGN E..MALAYALAM VOWEL SIGN AI
+    (0x0D46, 0x0D48, Left),
+    // Mc   [3] MALAYALAM VOWEL SIGN O..MALAYALAM VOWEL SIGN AU
+    (0x0D4A, 0x0D4C, Left_And_Right),
+    // Mn       MALAYALAM SIGN VIRAMA
+    (0x0D4D, 0x0D4D, Top),
+    // Mc       MALAYALAM AU LENGTH MARK
+    (0x0D57, 0x0D57, Right),
+    // Mn   [2] MALAYALAM VOWEL SIGN VOCALIC L..MALAYALAM VOWEL SIGN VOCALIC LL
+    (0x0D62, 0x0D63, Bottom),
+    // Mc   [2] SINHALA SIGN ANUSVARAYA..SINHALA SIGN VISARGAYA
+    (0x0D82, 0x0D83, Right),
+    // Mn       SINHALA SIGN AL-LAKUNA
+    (0x0DCA, 0x0DCA, Top),
+    // Mc   [3] SINHALA VOWEL SIGN AELA-PILLA..SINHALA VOWEL SIGN DIGA AEDA-PILLA
+    (0x0DCF, 0x0DD1, Right),
+    // Mn   [2] SINHALA VOWEL SIGN KETTI IS-PILLA..SINHALA VOWEL SIGN DIGA IS-PILLA
+    (0x0DD2, 0x0DD3, Top),
+    // Mn       SINHALA VOWEL SIGN KETTI PAA-PILLA
+    (0x0DD4, 0x0DD4, Bottom),
+    // Mn       SINHALA VOWEL SIGN DIGA PAA-PILLA
+    (0x0DD6, 0x0DD6, Bottom),
+    // Mc       SINHALA VOWEL SIGN GAETTA-PILLA
+    (0x0DD8, 0x0DD8, Right),
+    // Mc       SINHALA VOWEL SIGN KOMBUVA
+    (0x0DD9, 0x0DD9, Left),
+    // Mc       SINHALA VOWEL SIGN DIGA KOMBUVA
+    (0x0DDA, 0x0DDA, Top_And_Left),
+    // Mc       SINHALA VOWEL SIGN KOMBU DEKA
+    (0x0DDB, 0x0DDB, Left),
+    // Mc       SINHALA VOWEL SIGN KOMBUVA HAA AELA-PILLA
+    (0x0DDC, 0x0DDC, Left_And_Right),
+    // Mc       SINHALA VOWEL SIGN KOMBUVA HAA DIGA AELA-PILLA
+    (0x0DDD, 0x0DDD, Top_And_Left_And_Right),
+    // Mc       SINHALA VOWEL SIGN KOMBUVA HAA GAYANUKITTA
+    (0x0DDE, 0x0DDE, Left_And_Right),
+    // Mc       SINHALA VOWEL SIGN GAYANUKITTA
+    (0x0DDF, 0x0DDF, Right),
+    // Mc   [2] SINHALA VOWEL SIGN DIGA GAETTA-PILLA..SINHALA VOWEL SIGN DIGA GAYANUKITTA
+    (0x0DF2, 0x0DF3, Right),
+    // Lo       THAI CHARACTER SARA A
+    (0x0E30, 0x0E30, Right),
+    // Mn       THAI CHARACTER MAI HAN-AKAT
+    (0x0E31, 0x0E31, Top),
+    // Lo   [2] THAI CHARACTER SARA AA..THAI CHARACTER SARA AM
+    (0x0E32, 0x0E33, Right),
+    // Mn   [4] THAI CHARACTER SARA I..THAI CHARACTER SARA UEE
+    (0x0E34, 0x0E37, Top),
+    // Mn   [3] THAI CHARACTER SARA U..THAI CHARACTER PHINTHU
+    (0x0E38, 0x0E3A, Bottom),
+    // Lo   [5] THAI CHARACTER SARA E..THAI CHARACTER SARA AI MAIMALAI
+    (0x0E40, 0x0E44, Visual_Order_Left),
+    // Lo       THAI CHARACTER LAKKHANGYAO
+    (0x0E45, 0x0E45, Right),
+    // Mn   [8] THAI CHARACTER MAITAIKHU..THAI CHARACTER YAMAKKAN
+    (0x0E47, 0x0E4E, Top),
+    // Lo       LAO VOWEL SIGN A
+    (0x0EB0, 0x0EB0, Right),
+    // Mn       LAO VOWEL SIGN MAI KAN
+    (0x0EB1, 0x0EB1, Top),
+    // Lo   [2] LAO VOWEL SIGN AA..LAO VOWEL SIGN AM
+    (0x0EB2, 0x0EB3, Right),
+    // Mn   [4] LAO VOWEL SIGN I..LAO VOWEL SIGN YY
+    (0x0EB4, 0x0EB7, Top),
+    // Mn   [3] LAO VOWEL SIGN U..LAO SIGN PALI VIRAMA
+    (0x0EB8, 0x0EBA, Bottom),
+    // Mn       LAO VOWEL SIGN MAI KON
+    (0x0EBB, 0x0EBB, Top),
+    // Mn       LAO SEMIVOWEL SIGN LO
+    (0x0EBC, 0x0EBC, Bottom),
+    // Lo   [5] LAO VOWEL SIGN E..LAO VOWEL SIGN AI
+    (0x0EC0, 0x0EC4, Visual_Order_Left),
+    // Mn   [6] LAO TONE MAI EK..LAO NIGGAHITA
+    (0x0EC8, 0x0ECD, Top),
+    // Mn   [2] TIBETAN ASTROLOGICAL SIGN -KHYUD PA..TIBETAN ASTROLOGICAL SIGN SDONG TSHUGS
+    (0x0F18, 0x0F19, Bottom),
+    // Mn       TIBETAN MARK NGAS BZUNG NYI ZLA
+    (0x0F35, 0x0F35, Bottom),
+    // Mn       TIBETAN MARK NGAS BZUNG SGOR RTAGS
+    (0x0F37, 0x0F37, Bottom),
+    // Mn       TIBETAN MARK TSA -PHRU
+    (0x0F39, 0x0F39, Top),
+    // Mc       TIBETAN SIGN YAR TSHES
+    (0x0F3E, 0x0F3E, Right),
+    // Mc       TIBETAN SIGN MAR TSHES
+    (0x0F3F, 0x0F3F, Left),
+    // Mn       TIBETAN VOWEL SIGN AA
+    (0x0F71, 0x0F71, Bottom),
+    // Mn       TIBETAN VOWEL SIGN I
+    (0x0F72, 0x0F72, Top),
+    // Mn       TIBETAN VOWEL SIGN II
+    (0x0F73, 0x0F73, Top_And_Bottom),
+    // Mn   [2] TIBETAN VOWEL SIGN U..TIBETAN VOWEL SIGN UU
+    (0x0F74, 0x0F75, Bottom),
+    // Mn   [4] TIBETAN VOWEL SIGN VOCALIC R..TIBETAN VOWEL SIGN VOCALIC LL
+    (0x0F76, 0x0F79, Top_And_Bottom),
+    // Mn   [5] TIBETAN VOWEL SIGN E..TIBETAN SIGN RJES SU NGA RO
+    (0x0F7A, 0x0F7E, Top),
+    // Mc       TIBETAN SIGN RNAM BCAD
+    (0x0F7F, 0x0F7F, Right),
+    // Mn       TIBETAN VOWEL SIGN REVERSED I
+    (0x0F80, 0x0F80, Top),
+    // Mn       TIBETAN VOWEL SIGN REVERSED II
+    (0x0F81, 0x0F81, Top_And_Bottom),
+    // Mn   [2] TIBETAN SIGN NYI ZLA NAA DA..TIBETAN SIGN SNA LDAN
+    (0x0F82, 0x0F83, Top),
+    // Mn       TIBETAN MARK HALANTA
+    (0x0F84, 0x0F84, Bottom),
+    // Mn   [2] TIBETAN SIGN LCI RTAGS..TIBETAN SIGN YANG RTAGS
+    (0x0F86, 0x0F87, Top),
+    // Mn  [11] TIBETAN SUBJOINED SIGN LCE TSA CAN..TIBETAN SUBJOINED LETTER JA
+    (0x0F8D, 0x0F97, Bottom),
+    // Mn  [36] TIBETAN SUBJOINED LETTER NYA..TIBETAN SUBJOINED LETTER FIXED-FORM RA
+    (0x0F99, 0x0FBC, Bottom),
+    // Mn       TIBETAN SYMBOL PADMA GDAN
+    (0x0FC6, 0x0FC6, Bottom),
+    // Mc   [2] MYANMAR VOWEL SIGN TALL AA..MYANMAR VOWEL SIGN AA
+    (0x102B, 0x102C, Right),
+    // Mn   [2] MYANMAR VOWEL SIGN I..MYANMAR VOWEL SIGN II
+    (0x102D, 0x102E, Top),
+    // Mn   [2] MYANMAR VOWEL SIGN U..MYANMAR VOWEL SIGN UU
+    (0x102F, 0x1030, Bottom),
+    // Mc       MYANMAR VOWEL SIGN E
+    (0x1031, 0x1031, Left),
+    // Mn   [5] MYANMAR VOWEL SIGN AI..MYANMAR SIGN ANUSVARA
+    (0x1032, 0x1036, Top),
+    // Mn       MYANMAR SIGN DOT BELOW
+    (0x1037, 0x1037, Bottom),
+    // Mc       MYANMAR SIGN VISARGA
+    (0x1038, 0x1038, Right),
+    // Mn       MYANMAR SIGN ASAT
+    (0x103A, 0x103A, Top),
+    // Mc       MYANMAR CONSONANT SIGN MEDIAL YA
+    (0x103B, 0x103B, Right),
+    // Mn   [2] MYANMAR CONSONANT SIGN MEDIAL WA..MYANMAR CONSONANT SIGN MEDIAL HA
+    (0x103D, 0x103E, Bottom),
+    // Mc   [2] MYANMAR VOWEL SIGN VOCALIC R..MYANMAR VOWEL SIGN VOCALIC RR
+    (0x1056, 0x1057, Right),
+    // Mn   [2] MYANMAR VOWEL SIGN VOCALIC L..MYANMAR VOWEL SIGN VOCALIC LL
+    (0x1058, 0x1059, Bottom),
+    // Mn   [3] MYANMAR CONSONANT SIGN MON MEDIAL NA..MYANMAR CONSONANT SIGN MON MEDIAL LA
+    (0x105E, 0x1060, Bottom),
+    // Mc   [3] MYANMAR VOWEL SIGN SGAW KAREN EU..MYANMAR TONE MARK SGAW KAREN KE PHO
+    (0x1062, 0x1064, Right),
+    // Mc   [7] MYANMAR VOWEL SIGN WESTERN PWO KAREN EU..MYANMAR SIGN WESTERN PWO KAREN TONE-5
+    (0x1067, 0x106D, Right),
+    // Mn   [4] MYANMAR VOWEL SIGN GEBA KAREN I..MYANMAR VOWEL SIGN KAYAH EE
+    (0x1071, 0x1074, Top),
+    // Mn       MYANMAR CONSONANT SIGN SHAN MEDIAL WA
+    (0x1082, 0x1082, Bottom),
+    // Mc       MYANMAR VOWEL SIGN SHAN AA
+    (0x1083, 0x1083, Right),
+    // Mc       MYANMAR VOWEL SIGN SHAN E
+    (0x1084, 0x1084, Left),
+    // Mn   [2] MYANMAR VOWEL SIGN SHAN E ABOVE..MYANMAR VOWEL SIGN SHAN FINAL Y
+    (0x1085, 0x1086, Top),
+    // Mc   [6] MYANMAR SIGN SHAN TONE-2..MYANMAR SIGN SHAN COUNCIL TONE-3
+    (0x1087, 0x108C, Right),
+    // Mn       MYANMAR SIGN SHAN COUNCIL EMPHATIC TONE
+    (0x108D, 0x108D, Bottom),
+    // Mc       MYANMAR SIGN RUMAI PALAUNG TONE-5
+    (0x108F, 0x108F, Right),
+    // Mc   [3] MYANMAR SIGN KHAMTI TONE-1..MYANMAR VOWEL SIGN AITON A
+    (0x109A, 0x109C, Right),
+    // Mn       MYANMAR VOWEL SIGN AITON AI
+    (0x109D, 0x109D, Top),
+    // Mn       TAGALOG VOWEL SIGN I
+    (0x1712, 0x1712, Top),
+    // Mn   [2] TAGALOG VOWEL SIGN U..TAGALOG SIGN VIRAMA
+    (0x1713, 0x1714, Bottom),
+    // Mn       HANUNOO VOWEL SIGN I
+    (0x1732, 0x1732, Top),
+    // Mn   [2] HANUNOO VOWEL SIGN U..HANUNOO SIGN PAMUDPOD
+    (0x1733, 0x1734, Bottom),
+    // Mn       BUHID VOWEL SIGN I
+    (0x1752, 0x1752, Top),
+    // Mn       BUHID VOWEL SIGN U
+    (0x1753, 0x1753, Bottom),
+    // Mn       TAGBANWA VOWEL SIGN I
+    (0x1772, 0x1772, Top),
+    // Mn       TAGBANWA VOWEL SIGN U
+    (0x1773, 0x1773, Bottom),
+    // Mc       KHMER VOWEL SIGN AA
+    (0x17B6, 0x17B6, Right),
+    // Mn   [4] KHMER VOWEL SIGN I..KHMER VOWEL SIGN YY
+    (0x17B7, 0x17BA, Top),
+    // Mn   [3] KHMER VOWEL SIGN U..KHMER VOWEL SIGN UA
+    (0x17BB, 0x17BD, Bottom),
+    // Mc       KHMER VOWEL SIGN OE
+    (0x17BE, 0x17BE, Top_And_Left),
+    // Mc       KHMER VOWEL SIGN YA
+    (0x17BF, 0x17BF, Top_And_Left_And_Right),
+    // Mc       KHMER VOWEL SIGN IE
+    (0x17C0, 0x17C0, Left_And_Right),
+    // Mc   [3] KHMER VOWEL SIGN E..KHMER VOWEL SIGN AI
+    (0x17C1, 0x17C3, Left),
+    // Mc   [2] KHMER VOWEL SIGN OO..KHMER VOWEL SIGN AU
+    (0x17C4, 0x17C5, Left_And_Right),
+    // Mn       KHMER SIGN NIKAHIT
+    (0x17C6, 0x17C6, Top),
+    // Mc   [2] KHMER SIGN REAHMUK..KHMER SIGN YUUKALEAPINTU
+    (0x17C7, 0x17C8, Right),
+    // Mn   [9] KHMER SIGN MUUSIKATOAN..KHMER SIGN VIRIAM
+    (0x17C9, 0x17D1, Top),
+    // Mn       KHMER SIGN BATHAMASAT
+    (0x17D3, 0x17D3, Top),
+    // Mn       KHMER SIGN ATTHACAN
+    (0x17DD, 0x17DD, Top),
+    // Mn   [2] LIMBU VOWEL SIGN A..LIMBU VOWEL SIGN I
+    (0x1920, 0x1921, Top),
+    // Mn       LIMBU VOWEL SIGN U
+    (0x1922, 0x1922, Bottom),
+    // Mc   [2] LIMBU VOWEL SIGN EE..LIMBU VOWEL SIGN AI
+    (0x1923, 0x1924, Right),
+    // Mc   [2] LIMBU VOWEL SIGN OO..LIMBU VOWEL SIGN AU
+    (0x1925, 0x1926, Top_And_Right),
+    // Mn   [2] LIMBU VOWEL SIGN E..LIMBU VOWEL SIGN O
+    (0x1927, 0x1928, Top),
+    // Mc   [3] LIMBU SUBJOINED LETTER YA..LIMBU SUBJOINED LETTER WA
+    (0x1929, 0x192B, Right),
+    // Mc   [2] LIMBU SMALL LETTER KA..LIMBU SMALL LETTER NGA
+    (0x1930, 0x1931, Right),
+    // Mn       LIMBU SMALL LETTER ANUSVARA
+    (0x1932, 0x1932, Bottom),
+    // Mc   [6] LIMBU SMALL LETTER TA..LIMBU SMALL LETTER LA
+    (0x1933, 0x1938, Right),
+    // Mn       LIMBU SIGN MUKPHRENG
+    (0x1939, 0x1939, Bottom),
+    // Mn       LIMBU SIGN KEMPHRENG
+    (0x193A, 0x193A, Top),
+    // Mn       LIMBU SIGN SA-I
+    (0x193B, 0x193B, Bottom),
+    // Lo   [5] NEW TAI LUE VOWEL SIGN VOWEL SHORTENER..NEW TAI LUE VOWEL SIGN UU
+    (0x19B0, 0x19B4, Right),
+    // Lo   [3] NEW TAI LUE VOWEL SIGN E..NEW TAI LUE VOWEL SIGN O
+    (0x19B5, 0x19B7, Visual_Order_Left),
+    // Lo   [2] NEW TAI LUE VOWEL SIGN OA..NEW TAI LUE VOWEL SIGN UE
+    (0x19B8, 0x19B9, Right),
+    // Lo       NEW TAI LUE VOWEL SIGN AY
+    (0x19BA, 0x19BA, Visual_Order_Left),
+    // Lo   [6] NEW TAI LUE VOWEL SIGN AAY..NEW TAI LUE VOWEL SIGN IY
+    (0x19BB, 0x19C0, Right),
+    // Lo   [2] NEW TAI LUE TONE MARK-1..NEW TAI LUE TONE MARK-2
+    (0x19C8, 0x19C9, Right),
+    // Mn       BUGINESE VOWEL SIGN I
+    (0x1A17, 0x1A17, Top),
+    // Mn       BUGINESE VOWEL SIGN U
+    (0x1A18, 0x1A18, Bottom),
+    // Mc       BUGINESE VOWEL SIGN E
+    (0x1A19, 0x1A19, Left),
+    // Mc       BUGINESE VOWEL SIGN O
+    (0x1A1A, 0x1A1A, Right),
+    // Mn       BUGINESE VOWEL SIGN AE
+    (0x1A1B, 0x1A1B, Top),
+    // Mc       TAI THAM CONSONANT SIGN MEDIAL RA
+    (0x1A55, 0x1A55, Left),
+    // Mn       TAI THAM CONSONANT SIGN MEDIAL LA
+    (0x1A56, 0x1A56, Bottom),
+    // Mc       TAI THAM CONSONANT SIGN LA TANG LAI
+    (0x1A57, 0x1A57, Right),
+    // Mn   [3] TAI THAM SIGN MAI KANG LAI..TAI THAM CONSONANT SIGN LOW PA
+    (0x1A58, 0x1A5A, Top),
+    // Mn   [4] TAI THAM CONSONANT SIGN HIGH RATHA OR LOW PA..TAI THAM CONSONANT SIGN SA
+    (0x1A5B, 0x1A5E, Bottom),
+    // Mc       TAI THAM VOWEL SIGN A
+    (0x1A61, 0x1A61, Right),
+    // Mn       TAI THAM VOWEL SIGN MAI SAT
+    (0x1A62, 0x1A62, Top),
+    // Mc   [2] TAI THAM VOWEL SIGN AA..TAI THAM VOWEL SIGN TALL AA
+    (0x1A63, 0x1A64, Right),
+    // Mn   [4] TAI THAM VOWEL SIGN I..TAI THAM VOWEL SIGN UUE
+    (0x1A65, 0x1A68, Top),
+    // Mn   [2] TAI THAM VOWEL SIGN U..TAI THAM VOWEL SIGN UU
+    (0x1A69, 0x1A6A, Bottom),
+    // Mn       TAI THAM VOWEL SIGN O
+    (0x1A6B, 0x1A6B, Top),
+    // Mn       TAI THAM VOWEL SIGN OA BELOW
+    (0x1A6C, 0x1A6C, Bottom),
+    // Mc       TAI THAM VOWEL SIGN OY
+    (0x1A6D, 0x1A6D, Right),
+    // Mc   [5] TAI THAM VOWEL SIGN E..TAI THAM VOWEL SIGN THAM AI
+    (0x1A6E, 0x1A72, Left),
+    // Mn  [10] TAI THAM VOWEL SIGN OA ABOVE..TAI THAM SIGN KHUEN-LUE KARAN
+    (0x1A73, 0x1A7C, Top),
+    // Mn       TAI THAM COMBINING CRYPTOGRAMMIC DOT
+    (0x1A7F, 0x1A7F, Bottom),
+    // Mn   [4] BALINESE SIGN ULU RICEM..BALINESE SIGN SURANG
+    (0x1B00, 0x1B03, Top),
+    // Mc       BALINESE SIGN BISAH
+    (0x1B04, 0x1B04, Right),
+    // Mn       BALINESE SIGN REREKAN
+    (0x1B34, 0x1B34, Top),
+    // Mc       BALINESE VOWEL SIGN TEDUNG
+    (0x1B35, 0x1B35, Right),
+    // Mn   [2] BALINESE VOWEL SIGN ULU..BALINESE VOWEL SIGN ULU SARI
+    (0x1B36, 0x1B37, Top),
+    // Mn   [3] BALINESE VOWEL SIGN SUKU..BALINESE VOWEL SIGN RA REPA
+    (0x1B38, 0x1B3A, Bottom),
+    // Mc       BALINESE VOWEL SIGN RA REPA TEDUNG
+    (0x1B3B, 0x1B3B, Bottom_And_Right),
+    // Mn       BALINESE VOWEL SIGN LA LENGA
+    (0x1B3C, 0x1B3C, Top_And_Bottom),
+    // Mc       BALINESE VOWEL SIGN LA LENGA TEDUNG
+    (0x1B3D, 0x1B3D, Top_And_Bottom_And_Right),
+    // Mc   [2] BALINESE VOWEL SIGN TALING..BALINESE VOWEL SIGN TALING REPA
+    (0x1B3E, 0x1B3F, Left),
+    // Mc   [2] BALINESE VOWEL SIGN TALING TEDUNG..BALINESE VOWEL SIGN TALING REPA TEDUNG
+    (0x1B40, 0x1B41, Left_And_Right),
+    // Mn       BALINESE VOWEL SIGN PEPET
+    (0x1B42, 0x1B42, Top),
+    // Mc       BALINESE VOWEL SIGN PEPET TEDUNG
+    (0x1B43, 0x1B43, Top_And_Right),
+    // Mc       BALINESE ADEG ADEG
+    (0x1B44, 0x1B44, Right),
+    // Mn       BALINESE MUSICAL SYMBOL COMBINING TEGEH
+    (0x1B6B, 0x1B6B, Top),
+    // Mn       BALINESE MUSICAL SYMBOL COMBINING ENDEP
+    (0x1B6C, 0x1B6C, Bottom),
+    // Mn   [7] BALINESE MUSICAL SYMBOL COMBINING KEMPUL..BALINESE MUSICAL SYMBOL COMBINING GONG
+    (0x1B6D, 0x1B73, Top),
+    // Mn   [2] SUNDANESE SIGN PANYECEK..SUNDANESE SIGN PANGLAYAR
+    (0x1B80, 0x1B81, Top),
+    // Mc       SUNDANESE SIGN PANGWISAD
+    (0x1B82, 0x1B82, Right),
+    // Mc       SUNDANESE CONSONANT SIGN PAMINGKAL
+    (0x1BA1, 0x1BA1, Right),
+    // Mn   [2] SUNDANESE CONSONANT SIGN PANYAKRA..SUNDANESE CONSONANT SIGN PANYIKU
+    (0x1BA2, 0x1BA3, Bottom),
+    // Mn       SUNDANESE VOWEL SIGN PANGHULU
+    (0x1BA4, 0x1BA4, Top),
+    // Mn       SUNDANESE VOWEL SIGN PANYUKU
+    (0x1BA5, 0x1BA5, Bottom),
+    // Mc       SUNDANESE VOWEL SIGN PANAELAENG
+    (0x1BA6, 0x1BA6, Left),
+    // Mc       SUNDANESE VOWEL SIGN PANOLONG
+    (0x1BA7, 0x1BA7, Right),
+    // Mn   [2] SUNDANESE VOWEL SIGN PAMEPET..SUNDANESE VOWEL SIGN PANEULEUNG
+    (0x1BA8, 0x1BA9, Top),
+    // Mc       SUNDANESE SIGN PAMAAEH
+    (0x1BAA, 0x1BAA, Right),
+    // Mn   [2] SUNDANESE CONSONANT SIGN PASANGAN MA..SUNDANESE CONSONANT SIGN PASANGAN WA
+    (0x1BAC, 0x1BAD, Bottom),
+    // Mn       BATAK SIGN TOMPI
+    (0x1BE6, 0x1BE6, Top),
+    // Mc       BATAK VOWEL SIGN E
+    (0x1BE7, 0x1BE7, Right),
+    // Mn   [2] BATAK VOWEL SIGN PAKPAK E..BATAK VOWEL SIGN EE
+    (0x1BE8, 0x1BE9, Top),
+    // Mc   [3] BATAK VOWEL SIGN I..BATAK VOWEL SIGN O
+    (0x1BEA, 0x1BEC, Right),
+    // Mn       BATAK VOWEL SIGN KARO O
+    (0x1BED, 0x1BED, Top),
+    // Mc       BATAK VOWEL SIGN U
+    (0x1BEE, 0x1BEE, Right),
+    // Mn   [3] BATAK VOWEL SIGN U FOR SIMALUNGUN SA..BATAK CONSONANT SIGN H
+    (0x1BEF, 0x1BF1, Top),
+    // Mc   [2] BATAK PANGOLAT..BATAK PANONGONAN
+    (0x1BF2, 0x1BF3, Right),
+    // Mc   [3] LEPCHA SUBJOINED LETTER YA..LEPCHA VOWEL SIGN AA
+    (0x1C24, 0x1C26, Right),
+    // Mc   [2] LEPCHA VOWEL SIGN I..LEPCHA VOWEL SIGN O
+    (0x1C27, 0x1C28, Left),
+    // Mc       LEPCHA VOWEL SIGN OO
+    (0x1C29, 0x1C29, Top_And_Left),
+    // Mc   [2] LEPCHA VOWEL SIGN U..LEPCHA VOWEL SIGN UU
+    (0x1C2A, 0x1C2B, Right),
+    // Mn       LEPCHA VOWEL SIGN E
+    (0x1C2C, 0x1C2C, Bottom),
+    // Mn   [7] LEPCHA CONSONANT SIGN K..LEPCHA CONSONANT SIGN T
+    (0x1C2D, 0x1C33, Top),
+    // Mc   [2] LEPCHA CONSONANT SIGN NYIN-DO..LEPCHA CONSONANT SIGN KANG
+    (0x1C34, 0x1C35, Left),
+    // Mn       LEPCHA SIGN RAN
+    (0x1C36, 0x1C36, Top),
+    // Mn       LEPCHA SIGN NUKTA
+    (0x1C37, 0x1C37, Bottom),
+    // Mn   [3] VEDIC TONE KARSHANA..VEDIC TONE PRENKHA
+    (0x1CD0, 0x1CD2, Top),
+    // Mn       VEDIC SIGN YAJURVEDIC MIDLINE SVARITA
+    (0x1CD4, 0x1CD4, Overstruck),
+    // Mn   [5] VEDIC TONE YAJURVEDIC AGGRAVATED INDEPENDENT SVARITA..VEDIC TONE YAJURVEDIC KATHAKA INDEPENDENT SVARITA SCHROEDER
+    (0x1CD5, 0x1CD9, Bottom),
+    // Mn   [2] VEDIC TONE DOUBLE SVARITA..VEDIC TONE TRIPLE SVARITA
+    (0x1CDA, 0x1CDB, Top),
+    // Mn   [4] VEDIC TONE KATHAKA ANUDATTA..VEDIC TONE THREE DOTS BELOW
+    (0x1CDC, 0x1CDF, Bottom),
+    // Mn       VEDIC TONE RIGVEDIC KASHMIRI INDEPENDENT SVARITA
+    (0x1CE0, 0x1CE0, Top),
+    // Mc       VEDIC TONE ATHARVAVEDIC INDEPENDENT SVARITA
+    (0x1CE1, 0x1CE1, Right),
+    // Mn   [7] VEDIC SIGN VISARGA SVARITA..VEDIC SIGN VISARGA ANUDATTA WITH TAIL
+    (0x1CE2, 0x1CE8, Overstruck),
+    // Mn       VEDIC SIGN TIRYAK
+    (0x1CED, 0x1CED, Bottom),
+    // Mn       VEDIC TONE CANDRA ABOVE
+    (0x1CF4, 0x1CF4, Top),
+    // Mc       VEDIC SIGN ATIKRAMA
+    (0x1CF7, 0x1CF7, Right),
+    // Mn       COMBINING DELETION MARK
+    (0x1DFB, 0x1DFB, Top),
+    // Mn       COMBINING ASTERISK ABOVE
+    (0x20F0, 0x20F0, Top),
+    // Mn       SYLOTI NAGRI SIGN DVISVARA
+    (0xA802, 0xA802, Top),
+    // Mn       SYLOTI NAGRI SIGN HASANTA
+    (0xA806, 0xA806, Top),
+    // Mn       SYLOTI NAGRI SIGN ANUSVARA
+    (0xA80B, 0xA80B, Top),
+    // Mc   [2] SYLOTI NAGRI VOWEL SIGN A..SYLOTI NAGRI VOWEL SIGN I
+    (0xA823, 0xA824, Right),
+    // Mn       SYLOTI NAGRI VOWEL SIGN U
+    (0xA825, 0xA825, Bottom),
+    // Mn       SYLOTI NAGRI VOWEL SIGN E
+    (0xA826, 0xA826, Top),
+    // Mc       SYLOTI NAGRI VOWEL SIGN OO
+    (0xA827, 0xA827, Right),
+    // Mc   [2] SAURASHTRA SIGN ANUSVARA..SAURASHTRA SIGN VISARGA
+    (0xA880, 0xA881, Right),
+    // Mc  [16] SAURASHTRA CONSONANT SIGN HAARU..SAURASHTRA VOWEL SIGN AU
+    (0xA8B4, 0xA8C3, Right),
+    // Mn       SAURASHTRA SIGN VIRAMA
+    (0xA8C4, 0xA8C4, Bottom),
+    // Mn       SAURASHTRA SIGN CANDRABINDU
+    (0xA8C5, 0xA8C5, Top),
+    // Mn  [18] COMBINING DEVANAGARI DIGIT ZERO..COMBINING DEVANAGARI SIGN AVAGRAHA
+    (0xA8E0, 0xA8F1, Top),
+    // Mn       DEVANAGARI VOWEL SIGN AY
+    (0xA8FF, 0xA8FF, Top),
+    // Mn   [3] KAYAH LI TONE PLOPHU..KAYAH LI TONE CALYA PLOPHU
+    (0xA92B, 0xA92D, Bottom),
+    // Mn   [3] REJANG VOWEL SIGN I..REJANG VOWEL SIGN E
+    (0xA947, 0xA949, Bottom),
+    // Mn       REJANG VOWEL SIGN AI
+    (0xA94A, 0xA94A, Top),
+    // Mn   [4] REJANG VOWEL SIGN O..REJANG VOWEL SIGN EA
+    (0xA94B, 0xA94E, Bottom),
+    // Mn   [3] REJANG CONSONANT SIGN NG..REJANG CONSONANT SIGN R
+    (0xA94F, 0xA951, Top),
+    // Mc   [2] REJANG CONSONANT SIGN H..REJANG VIRAMA
+    (0xA952, 0xA953, Right),
+    // Mn   [3] JAVANESE SIGN PANYANGGA..JAVANESE SIGN LAYAR
+    (0xA980, 0xA982, Top),
+    // Mc       JAVANESE SIGN WIGNYAN
+    (0xA983, 0xA983, Right),
+    // Mn       JAVANESE SIGN CECAK TELU
+    (0xA9B3, 0xA9B3, Top),
+    // Mc   [2] JAVANESE VOWEL SIGN TARUNG..JAVANESE VOWEL SIGN TOLONG
+    (0xA9B4, 0xA9B5, Right),
+    // Mn   [2] JAVANESE VOWEL SIGN WULU..JAVANESE VOWEL SIGN WULU MELIK
+    (0xA9B6, 0xA9B7, Top),
+    // Mn   [2] JAVANESE VOWEL SIGN SUKU..JAVANESE VOWEL SIGN SUKU MENDUT
+    (0xA9B8, 0xA9B9, Bottom),
+    // Mc   [2] JAVANESE VOWEL SIGN TALING..JAVANESE VOWEL SIGN DIRGA MURE
+    (0xA9BA, 0xA9BB, Left),
+    // Mn       JAVANESE VOWEL SIGN PEPET
+    (0xA9BC, 0xA9BC, Top),
+    // Mn       JAVANESE CONSONANT SIGN KERET
+    (0xA9BD, 0xA9BD, Bottom),
+    // Mc       JAVANESE CONSONANT SIGN PENGKAL
+    (0xA9BE, 0xA9BE, Right),
+    // Mc       JAVANESE CONSONANT SIGN CAKRA
+    (0xA9BF, 0xA9BF, Bottom_And_Left),
+    // Mc       JAVANESE PANGKON
+    (0xA9C0, 0xA9C0, Bottom_And_Right),
+    // Mn       MYANMAR SIGN SHAN SAW
+    (0xA9E5, 0xA9E5, Top),
+    // Mn   [4] CHAM VOWEL SIGN AA..CHAM VOWEL SIGN EI
+    (0xAA29, 0xAA2C, Top),
+    // Mn       CHAM VOWEL SIGN U
+    (0xAA2D, 0xAA2D, Bottom),
+    // Mn       CHAM VOWEL SIGN OE
+    (0xAA2E, 0xAA2E, Top),
+    // Mc   [2] CHAM VOWEL SIGN O..CHAM VOWEL SIGN AI
+    (0xAA2F, 0xAA30, Left),
+    // Mn       CHAM VOWEL SIGN AU
+    (0xAA31, 0xAA31, Top),
+    // Mn       CHAM VOWEL SIGN UE
+    (0xAA32, 0xAA32, Bottom),
+    // Mc       CHAM CONSONANT SIGN YA
+    (0xAA33, 0xAA33, Right),
+    // Mc       CHAM CONSONANT SIGN RA
+    (0xAA34, 0xAA34, Left),
+    // Mn   [2] CHAM CONSONANT SIGN LA..CHAM CONSONANT SIGN WA
+    (0xAA35, 0xAA36, Bottom),
+    // Mn       CHAM CONSONANT SIGN FINAL NG
+    (0xAA43, 0xAA43, Top),
+    // Mn       CHAM CONSONANT SIGN FINAL M
+    (0xAA4C, 0xAA4C, Top),
+    // Mc       CHAM CONSONANT SIGN FINAL H
+    (0xAA4D, 0xAA4D, Right),
+    // Mc       MYANMAR SIGN PAO KAREN TONE
+    (0xAA7B, 0xAA7B, Right),
+    // Mn       MYANMAR SIGN TAI LAING TONE-2
+    (0xAA7C, 0xAA7C, Top),
+    // Mc       MYANMAR SIGN TAI LAING TONE-5
+    (0xAA7D, 0xAA7D, Right),
+    // Mn       TAI VIET MAI KANG
+    (0xAAB0, 0xAAB0, Top),
+    // Lo       TAI VIET VOWEL AA
+    (0xAAB1, 0xAAB1, Right),
+    // Mn   [2] TAI VIET VOWEL I..TAI VIET VOWEL UE
+    (0xAAB2, 0xAAB3, Top),
+    // Mn       TAI VIET VOWEL U
+    (0xAAB4, 0xAAB4, Bottom),
+    // Lo   [2] TAI VIET VOWEL E..TAI VIET VOWEL O
+    (0xAAB5, 0xAAB6, Visual_Order_Left),
+    // Mn   [2] TAI VIET MAI KHIT..TAI VIET VOWEL IA
+    (0xAAB7, 0xAAB8, Top),
+    // Lo       TAI VIET VOWEL UEA
+    (0xAAB9, 0xAAB9, Visual_Order_Left),
+    // Lo       TAI VIET VOWEL UA
+    (0xAABA, 0xAABA, Right),
+    // Lo   [2] TAI VIET VOWEL AUE..TAI VIET VOWEL AY
+    (0xAABB, 0xAABC, Visual_Order_Left),
+    // Lo       TAI VIET VOWEL AN
+    (0xAABD, 0xAABD, Right),
+    // Mn   [2] TAI VIET VOWEL AM..TAI VIET TONE MAI EK
+    (0xAABE, 0xAABF, Top),
+    // Mn       TAI VIET TONE MAI THO
+    (0xAAC1, 0xAAC1, Top),
+    // Mc       MEETEI MAYEK VOWEL SIGN II
+    (0xAAEB, 0xAAEB, Left),
+    // Mn       MEETEI MAYEK VOWEL SIGN UU
+    (0xAAEC, 0xAAEC, Bottom),
+    // Mn       MEETEI MAYEK VOWEL SIGN AAI
+    (0xAAED, 0xAAED, Top),
+    // Mc       MEETEI MAYEK VOWEL SIGN AU
+    (0xAAEE, 0xAAEE, Left),
+    // Mc       MEETEI MAYEK VOWEL SIGN AAU
+    (0xAAEF, 0xAAEF, Right),
+    // Mc       MEETEI MAYEK VOWEL SIGN VISARGA
+    (0xAAF5, 0xAAF5, Right),
+    // Mc   [2] MEETEI MAYEK VOWEL SIGN ONAP..MEETEI MAYEK VOWEL SIGN INAP
+    (0xABE3, 0xABE4, Right),
+    // Mn       MEETEI MAYEK VOWEL SIGN ANAP
+    (0xABE5, 0xABE5, Top),
+    // Mc   [2] MEETEI MAYEK VOWEL SIGN YENAP..MEETEI MAYEK VOWEL SIGN SOUNAP
+    (0xABE6, 0xABE7, Right),
+    // Mn       MEETEI MAYEK VOWEL SIGN UNAP
+    (0xABE8, 0xABE8, Bottom),
+    // Mc   [2] MEETEI MAYEK VOWEL SIGN CHEINAP..MEETEI MAYEK VOWEL SIGN NUNG
+    (0xABE9, 0xABEA, Right),
+    // Mc       MEETEI MAYEK LUM IYEK
+    (0xABEC, 0xABEC, Right),
+    // Mn       MEETEI MAYEK APUN IYEK
+    (0xABED, 0xABED, Bottom),
+];
+const PLANE0_LIMIT: char = '\u{10000}';
+const SUPPLEMENTARY_TABLE: LookupTable<u32, Indic_Positional_Category> = lookup_table![
+    // So every possible input is always found in the table
+    (0x010000, 0x010A00, NA),
+    // Mn       KHAROSHTHI VOWEL SIGN I
+    (0x010A01, 0x010A01, Overstruck),
+    // Mn   [2] KHAROSHTHI VOWEL SIGN U..KHAROSHTHI VOWEL SIGN VOCALIC R
+    (0x010A02, 0x010A03, Bottom),
+    // Mn       KHAROSHTHI VOWEL SIGN E
+    (0x010A05, 0x010A05, Top),
+    // Mn       KHAROSHTHI VOWEL SIGN O
+    (0x010A06, 0x010A06, Overstruck),
+    // Mn   [3] KHAROSHTHI VOWEL LENGTH MARK..KHAROSHTHI SIGN ANUSVARA
+    (0x010A0C, 0x010A0E, Bottom),
+    // Mn       KHAROSHTHI SIGN VISARGA
+    (0x010A0F, 0x010A0F, Top),
+    // Mn       KHAROSHTHI SIGN BAR ABOVE
+    (0x010A38, 0x010A38, Top),
+    // Mn   [2] KHAROSHTHI SIGN CAUDA..KHAROSHTHI SIGN DOT BELOW
+    (0x010A39, 0x010A3A, Bottom),
+    // Mc       BRAHMI SIGN CANDRABINDU
+    (0x011000, 0x011000, Right),
+    // Mn       BRAHMI SIGN ANUSVARA
+    (0x011001, 0x011001, Top),
+    // Mc       BRAHMI SIGN VISARGA
+    (0x011002, 0x011002, Right),
+    // Mn   [4] BRAHMI VOWEL SIGN AA..BRAHMI VOWEL SIGN II
+    (0x011038, 0x01103B, Top),
+    // Mn   [6] BRAHMI VOWEL SIGN U..BRAHMI VOWEL SIGN VOCALIC LL
+    (0x01103C, 0x011041, Bottom),
+    // Mn   [5] BRAHMI VOWEL SIGN E..BRAHMI VIRAMA
+    (0x011042, 0x011046, Top),
+    // Mn   [2] KAITHI SIGN CANDRABINDU..KAITHI SIGN ANUSVARA
+    (0x011080, 0x011081, Top),
+    // Mc       KAITHI SIGN VISARGA
+    (0x011082, 0x011082, Right),
+    // Mc       KAITHI VOWEL SIGN AA
+    (0x0110B0, 0x0110B0, Right),
+    // Mc       KAITHI VOWEL SIGN I
+    (0x0110B1, 0x0110B1, Left),
+    // Mc       KAITHI VOWEL SIGN II
+    (0x0110B2, 0x0110B2, Right),
+    // Mn   [2] KAITHI VOWEL SIGN U..KAITHI VOWEL SIGN UU
+    (0x0110B3, 0x0110B4, Bottom),
+    // Mn   [2] KAITHI VOWEL SIGN E..KAITHI VOWEL SIGN AI
+    (0x0110B5, 0x0110B6, Top),
+    // Mc   [2] KAITHI VOWEL SIGN O..KAITHI VOWEL SIGN AU
+    (0x0110B7, 0x0110B8, Right),
+    // Mn   [2] KAITHI SIGN VIRAMA..KAITHI SIGN NUKTA
+    (0x0110B9, 0x0110BA, Bottom),
+    // Mn   [3] CHAKMA SIGN CANDRABINDU..CHAKMA SIGN VISARGA
+    (0x011100, 0x011102, Top),
+    // Mn   [3] CHAKMA VOWEL SIGN A..CHAKMA VOWEL SIGN II
+    (0x011127, 0x011129, Top),
+    // Mn   [2] CHAKMA VOWEL SIGN U..CHAKMA VOWEL SIGN UU
+    (0x01112A, 0x01112B, Bottom),
+    // Mc       CHAKMA VOWEL SIGN E
+    (0x01112C, 0x01112C, Left),
+    // Mn       CHAKMA VOWEL SIGN AI
+    (0x01112D, 0x01112D, Top),
+    // Mn   [2] CHAKMA VOWEL SIGN O..CHAKMA VOWEL SIGN AU
+    (0x01112E, 0x01112F, Top_And_Bottom),
+    // Mn       CHAKMA VOWEL SIGN OI
+    (0x011130, 0x011130, Top),
+    // Mn   [2] CHAKMA O MARK..CHAKMA AU MARK
+    (0x011131, 0x011132, Bottom),
+    // Mn       CHAKMA MAAYYAA
+    (0x011134, 0x011134, Top),
+    // Mc   [2] CHAKMA VOWEL SIGN AA..CHAKMA VOWEL SIGN EI
+    (0x011145, 0x011146, Right),
+    // Mn       MAHAJANI SIGN NUKTA
+    (0x011173, 0x011173, Bottom),
+    // Mn   [2] SHARADA SIGN CANDRABINDU..SHARADA SIGN ANUSVARA
+    (0x011180, 0x011181, Top),
+    // Mc       SHARADA SIGN VISARGA
+    (0x011182, 0x011182, Right),
+    // Mc       SHARADA VOWEL SIGN AA
+    (0x0111B3, 0x0111B3, Right),
+    // Mc       SHARADA VOWEL SIGN I
+    (0x0111B4, 0x0111B4, Left),
+    // Mc       SHARADA VOWEL SIGN II
+    (0x0111B5, 0x0111B5, Right),
+    // Mn   [6] SHARADA VOWEL SIGN U..SHARADA VOWEL SIGN VOCALIC LL
+    (0x0111B6, 0x0111BB, Bottom),
+    // Mn   [3] SHARADA VOWEL SIGN E..SHARADA VOWEL SIGN O
+    (0x0111BC, 0x0111BE, Top),
+    // Mc       SHARADA VOWEL SIGN AU
+    (0x0111BF, 0x0111BF, Top_And_Right),
+    // Mc       SHARADA SIGN VIRAMA
+    (0x0111C0, 0x0111C0, Right),
+    // Mn   [2] SHARADA SANDHI MARK..SHARADA SIGN NUKTA
+    (0x0111C9, 0x0111CA, Bottom),
+    // Mn       SHARADA VOWEL MODIFIER MARK
+    (0x0111CB, 0x0111CB, Top),
+    // Mn       SHARADA EXTRA SHORT VOWEL MARK
+    (0x0111CC, 0x0111CC, Bottom),
+    // Mc   [3] KHOJKI VOWEL SIGN AA..KHOJKI VOWEL SIGN II
+    (0x01122C, 0x01122E, Right),
+    // Mn       KHOJKI VOWEL SIGN U
+    (0x01122F, 0x01122F, Bottom),
+    // Mn   [2] KHOJKI VOWEL SIGN E..KHOJKI VOWEL SIGN AI
+    (0x011230, 0x011231, Top),
+    // Mc   [2] KHOJKI VOWEL SIGN O..KHOJKI VOWEL SIGN AU
+    (0x011232, 0x011233, Top_And_Right),
+    // Mn       KHOJKI SIGN ANUSVARA
+    (0x011234, 0x011234, Top),
+    // Mc       KHOJKI SIGN VIRAMA
+    (0x011235, 0x011235, Right),
+    // Mn   [2] KHOJKI SIGN NUKTA..KHOJKI SIGN SHADDA
+    (0x011236, 0x011237, Top),
+    // Mn       KHOJKI SIGN SUKUN
+    (0x01123E, 0x01123E, Top),
+    // Mn       KHUDAWADI SIGN ANUSVARA
+    (0x0112DF, 0x0112DF, Top),
+    // Mc       KHUDAWADI VOWEL SIGN AA
+    (0x0112E0, 0x0112E0, Right),
+    // Mc       KHUDAWADI VOWEL SIGN I
+    (0x0112E1, 0x0112E1, Left),
+    // Mc       KHUDAWADI VOWEL SIGN II
+    (0x0112E2, 0x0112E2, Right),
+    // Mn   [2] KHUDAWADI VOWEL SIGN U..KHUDAWADI VOWEL SIGN UU
+    (0x0112E3, 0x0112E4, Bottom),
+    // Mn   [4] KHUDAWADI VOWEL SIGN E..KHUDAWADI VOWEL SIGN AU
+    (0x0112E5, 0x0112E8, Top),
+    // Mn   [2] KHUDAWADI SIGN NUKTA..KHUDAWADI SIGN VIRAMA
+    (0x0112E9, 0x0112EA, Bottom),
+    // Mn   [2] GRANTHA SIGN COMBINING ANUSVARA ABOVE..GRANTHA SIGN CANDRABINDU
+    (0x011300, 0x011301, Top),
+    // Mc   [2] GRANTHA SIGN ANUSVARA..GRANTHA SIGN VISARGA
+    (0x011302, 0x011303, Right),
+    // Mn   [2] COMBINING BINDU BELOW..GRANTHA SIGN NUKTA
+    (0x01133B, 0x01133C, Bottom),
+    // Mc   [2] GRANTHA VOWEL SIGN AA..GRANTHA VOWEL SIGN I
+    (0x01133E, 0x01133F, Right),
+    // Mn       GRANTHA VOWEL SIGN II
+    (0x011340, 0x011340, Top),
+    // Mc   [4] GRANTHA VOWEL SIGN U..GRANTHA VOWEL SIGN VOCALIC RR
+    (0x011341, 0x011344, Right),
+    // Mc   [2] GRANTHA VOWEL SIGN EE..GRANTHA VOWEL SIGN AI
+    (0x011347, 0x011348, Left),
+    // Mc   [2] GRANTHA VOWEL SIGN OO..GRANTHA VOWEL SIGN AU
+    (0x01134B, 0x01134C, Left_And_Right),
+    // Mc       GRANTHA SIGN VIRAMA
+    (0x01134D, 0x01134D, Right),
+    // Mc       GRANTHA AU LENGTH MARK
+    (0x011357, 0x011357, Right),
+    // Mc   [2] GRANTHA VOWEL SIGN VOCALIC L..GRANTHA VOWEL SIGN VOCALIC LL
+    (0x011362, 0x011363, Right),
+    // Mn   [7] COMBINING GRANTHA DIGIT ZERO..COMBINING GRANTHA DIGIT SIX
+    (0x011366, 0x01136C, Top),
+    // Mn   [5] COMBINING GRANTHA LETTER A..COMBINING GRANTHA LETTER PA
+    (0x011370, 0x011374, Top),
+    // Mc       NEWA VOWEL SIGN AA
+    (0x011435, 0x011435, Right),
+    // Mc       NEWA VOWEL SIGN I
+    (0x011436, 0x011436, Left),
+    // Mc       NEWA VOWEL SIGN II
+    (0x011437, 0x011437, Right),
+    // Mn   [6] NEWA VOWEL SIGN U..NEWA VOWEL SIGN VOCALIC LL
+    (0x011438, 0x01143D, Bottom),
+    // Mn   [2] NEWA VOWEL SIGN E..NEWA VOWEL SIGN AI
+    (0x01143E, 0x01143F, Top),
+    // Mc   [2] NEWA VOWEL SIGN O..NEWA VOWEL SIGN AU
+    (0x011440, 0x011441, Right),
+    // Mn       NEWA SIGN VIRAMA
+    (0x011442, 0x011442, Bottom),
+    // Mn   [2] NEWA SIGN CANDRABINDU..NEWA SIGN ANUSVARA
+    (0x011443, 0x011444, Top),
+    // Mc       NEWA SIGN VISARGA
+    (0x011445, 0x011445, Right),
+    // Mn       NEWA SIGN NUKTA
+    (0x011446, 0x011446, Bottom),
+    // Mn       NEWA SANDHI MARK
+    (0x01145E, 0x01145E, Top),
+    // Mc       TIRHUTA VOWEL SIGN AA
+    (0x0114B0, 0x0114B0, Right),
+    // Mc       TIRHUTA VOWEL SIGN I
+    (0x0114B1, 0x0114B1, Left),
+    // Mc       TIRHUTA VOWEL SIGN II
+    (0x0114B2, 0x0114B2, Right),
+    // Mn   [6] TIRHUTA VOWEL SIGN U..TIRHUTA VOWEL SIGN VOCALIC LL
+    (0x0114B3, 0x0114B8, Bottom),
+    // Mc       TIRHUTA VOWEL SIGN E
+    (0x0114B9, 0x0114B9, Left),
+    // Mn       TIRHUTA VOWEL SIGN SHORT E
+    (0x0114BA, 0x0114BA, Top),
+    // Mc       TIRHUTA VOWEL SIGN AI
+    (0x0114BB, 0x0114BB, Top_And_Left),
+    // Mc       TIRHUTA VOWEL SIGN O
+    (0x0114BC, 0x0114BC, Left_And_Right),
+    // Mc       TIRHUTA VOWEL SIGN SHORT O
+    (0x0114BD, 0x0114BD, Right),
+    // Mc       TIRHUTA VOWEL SIGN AU
+    (0x0114BE, 0x0114BE, Left_And_Right),
+    // Mn   [2] TIRHUTA SIGN CANDRABINDU..TIRHUTA SIGN ANUSVARA
+    (0x0114BF, 0x0114C0, Top),
+    // Mc       TIRHUTA SIGN VISARGA
+    (0x0114C1, 0x0114C1, Right),
+    // Mn   [2] TIRHUTA SIGN VIRAMA..TIRHUTA SIGN NUKTA
+    (0x0114C2, 0x0114C3, Bottom),
+    // Mc       SIDDHAM VOWEL SIGN AA
+    (0x0115AF, 0x0115AF, Right),
+    // Mc       SIDDHAM VOWEL SIGN I
+    (0x0115B0, 0x0115B0, Left),
+    // Mc       SIDDHAM VOWEL SIGN II
+    (0x0115B1, 0x0115B1, Right),
+    // Mn   [4] SIDDHAM VOWEL SIGN U..SIDDHAM VOWEL SIGN VOCALIC RR
+    (0x0115B2, 0x0115B5, Bottom),
+    // Mc       SIDDHAM VOWEL SIGN E
+    (0x0115B8, 0x0115B8, Left),
+    // Mc       SIDDHAM VOWEL SIGN AI
+    (0x0115B9, 0x0115B9, Top_And_Left),
+    // Mc       SIDDHAM VOWEL SIGN O
+    (0x0115BA, 0x0115BA, Left_And_Right),
+    // Mc       SIDDHAM VOWEL SIGN AU
+    (0x0115BB, 0x0115BB, Top_And_Left_And_Right),
+    // Mn   [2] SIDDHAM SIGN CANDRABINDU..SIDDHAM SIGN ANUSVARA
+    (0x0115BC, 0x0115BD, Top),
+    // Mc       SIDDHAM SIGN VISARGA
+    (0x0115BE, 0x0115BE, Right),
+    // Mn   [2] SIDDHAM SIGN VIRAMA..SIDDHAM SIGN NUKTA
+    (0x0115BF, 0x0115C0, Bottom),
+    // Mn   [2] SIDDHAM VOWEL SIGN ALTERNATE U..SIDDHAM VOWEL SIGN ALTERNATE UU
+    (0x0115DC, 0x0115DD, Bottom),
+    // Mc   [3] MODI VOWEL SIGN AA..MODI VOWEL SIGN II
+    (0x011630, 0x011632, Right),
+    // Mn   [6] MODI VOWEL SIGN U..MODI VOWEL SIGN VOCALIC LL
+    (0x011633, 0x011638, Bottom),
+    // Mn   [2] MODI VOWEL SIGN E..MODI VOWEL SIGN AI
+    (0x011639, 0x01163A, Top),
+    // Mc   [2] MODI VOWEL SIGN O..MODI VOWEL SIGN AU
+    (0x01163B, 0x01163C, Right),
+    // Mn       MODI SIGN ANUSVARA
+    (0x01163D, 0x01163D, Top),
+    // Mc       MODI SIGN VISARGA
+    (0x01163E, 0x01163E, Right),
+    // Mn       MODI SIGN VIRAMA
+    (0x01163F, 0x01163F, Bottom),
+    // Mn       MODI SIGN ARDHACANDRA
+    (0x011640, 0x011640, Top),
+    // Mn       TAKRI SIGN ANUSVARA
+    (0x0116AB, 0x0116AB, Top),
+    // Mc       TAKRI SIGN VISARGA
+    (0x0116AC, 0x0116AC, Right),
+    // Mn       TAKRI VOWEL SIGN AA
+    (0x0116AD, 0x0116AD, Top),
+    // Mc       TAKRI VOWEL SIGN I
+    (0x0116AE, 0x0116AE, Left),
+    // Mc       TAKRI VOWEL SIGN II
+    (0x0116AF, 0x0116AF, Right),
+    // Mn   [2] TAKRI VOWEL SIGN U..TAKRI VOWEL SIGN UU
+    (0x0116B0, 0x0116B1, Bottom),
+    // Mn   [4] TAKRI VOWEL SIGN E..TAKRI VOWEL SIGN AU
+    (0x0116B2, 0x0116B5, Top),
+    // Mc       TAKRI SIGN VIRAMA
+    (0x0116B6, 0x0116B6, Right),
+    // Mn       TAKRI SIGN NUKTA
+    (0x0116B7, 0x0116B7, Bottom),
+    // Mn       AHOM CONSONANT SIGN MEDIAL LA
+    (0x01171D, 0x01171D, Bottom),
+    // Mn       AHOM CONSONANT SIGN MEDIAL LIGATING RA
+    (0x01171F, 0x01171F, Top),
+    // Mc   [2] AHOM VOWEL SIGN A..AHOM VOWEL SIGN AA
+    (0x011720, 0x011721, Right),
+    // Mn   [2] AHOM VOWEL SIGN I..AHOM VOWEL SIGN II
+    (0x011722, 0x011723, Top),
+    // Mn   [2] AHOM VOWEL SIGN U..AHOM VOWEL SIGN UU
+    (0x011724, 0x011725, Bottom),
+    // Mc       AHOM VOWEL SIGN E
+    (0x011726, 0x011726, Left),
+    // Mn       AHOM VOWEL SIGN AW
+    (0x011727, 0x011727, Top),
+    // Mn       AHOM VOWEL SIGN O
+    (0x011728, 0x011728, Bottom),
+    // Mn   [3] AHOM VOWEL SIGN AI..AHOM SIGN KILLER
+    (0x011729, 0x01172B, Top),
+    // Mc       DOGRA VOWEL SIGN AA
+    (0x01182C, 0x01182C, Right),
+    // Mc       DOGRA VOWEL SIGN I
+    (0x01182D, 0x01182D, Left),
+    // Mc       DOGRA VOWEL SIGN II
+    (0x01182E, 0x01182E, Right),
+    // Mn   [4] DOGRA VOWEL SIGN U..DOGRA VOWEL SIGN VOCALIC RR
+    (0x01182F, 0x011832, Bottom),
+    // Mn   [5] DOGRA VOWEL SIGN E..DOGRA SIGN ANUSVARA
+    (0x011833, 0x011837, Top),
+    // Mc       DOGRA SIGN VISARGA
+    (0x011838, 0x011838, Right),
+    // Mn   [2] DOGRA SIGN VIRAMA..DOGRA SIGN NUKTA
+    (0x011839, 0x01183A, Bottom),
+    // Mc       NANDINAGARI VOWEL SIGN AA
+    (0x0119D1, 0x0119D1, Right),
+    // Mc       NANDINAGARI VOWEL SIGN I
+    (0x0119D2, 0x0119D2, Left),
+    // Mc       NANDINAGARI VOWEL SIGN II
+    (0x0119D3, 0x0119D3, Right),
+    // Mn   [4] NANDINAGARI VOWEL SIGN U..NANDINAGARI VOWEL SIGN VOCALIC RR
+    (0x0119D4, 0x0119D7, Bottom),
+    // Mn   [2] NANDINAGARI VOWEL SIGN E..NANDINAGARI VOWEL SIGN AI
+    (0x0119DA, 0x0119DB, Top),
+    // Mc   [4] NANDINAGARI VOWEL SIGN O..NANDINAGARI SIGN VISARGA
+    (0x0119DC, 0x0119DF, Right),
+    // Mn       NANDINAGARI SIGN VIRAMA
+    (0x0119E0, 0x0119E0, Bottom),
+    // Mc       NANDINAGARI VOWEL SIGN PRISHTHAMATRA E
+    (0x0119E4, 0x0119E4, Left),
+    // Mn       ZANABAZAR SQUARE VOWEL SIGN I
+    (0x011A01, 0x011A01, Top),
+    // Mn   [2] ZANABAZAR SQUARE VOWEL SIGN UE..ZANABAZAR SQUARE VOWEL SIGN U
+    (0x011A02, 0x011A03, Bottom),
+    // Mn   [6] ZANABAZAR SQUARE VOWEL SIGN E..ZANABAZAR SQUARE VOWEL SIGN REVERSED I
+    (0x011A04, 0x011A09, Top),
+    // Mn       ZANABAZAR SQUARE VOWEL LENGTH MARK
+    (0x011A0A, 0x011A0A, Bottom),
+    // Mn   [2] ZANABAZAR SQUARE FINAL CONSONANT MARK..ZANABAZAR SQUARE SIGN VIRAMA
+    (0x011A33, 0x011A34, Bottom),
+    // Mn   [4] ZANABAZAR SQUARE SIGN CANDRABINDU..ZANABAZAR SQUARE SIGN ANUSVARA
+    (0x011A35, 0x011A38, Top),
+    // Mc       ZANABAZAR SQUARE SIGN VISARGA
+    (0x011A39, 0x011A39, Right),
+    // Mn   [4] ZANABAZAR SQUARE CLUSTER-FINAL LETTER YA..ZANABAZAR SQUARE CLUSTER-FINAL LETTER VA
+    (0x011A3B, 0x011A3E, Bottom),
+    // Mn       SOYOMBO VOWEL SIGN I
+    (0x011A51, 0x011A51, Top),
+    // Mn   [2] SOYOMBO VOWEL SIGN UE..SOYOMBO VOWEL SIGN U
+    (0x011A52, 0x011A53, Bottom),
+    // Mn   [3] SOYOMBO VOWEL SIGN E..SOYOMBO VOWEL SIGN OE
+    (0x011A54, 0x011A56, Top),
+    // Mc   [2] SOYOMBO VOWEL SIGN AI..SOYOMBO VOWEL SIGN AU
+    (0x011A57, 0x011A58, Right),
+    // Mn   [3] SOYOMBO VOWEL SIGN VOCALIC R..SOYOMBO VOWEL LENGTH MARK
+    (0x011A59, 0x011A5B, Bottom),
+    // Mn  [12] SOYOMBO FINAL CONSONANT SIGN G..SOYOMBO FINAL CONSONANT SIGN -A
+    (0x011A8A, 0x011A95, Bottom),
+    // Mn       SOYOMBO SIGN ANUSVARA
+    (0x011A96, 0x011A96, Top),
+    // Mc       SOYOMBO SIGN VISARGA
+    (0x011A97, 0x011A97, Right),
+    // Mn       SOYOMBO GEMINATION MARK
+    (0x011A98, 0x011A98, Top),
+    // Mc       BHAIKSUKI VOWEL SIGN AA
+    (0x011C2F, 0x011C2F, Right),
+    // Mn   [2] BHAIKSUKI VOWEL SIGN I..BHAIKSUKI VOWEL SIGN II
+    (0x011C30, 0x011C31, Top),
+    // Mn   [5] BHAIKSUKI VOWEL SIGN U..BHAIKSUKI VOWEL SIGN VOCALIC L
+    (0x011C32, 0x011C36, Bottom),
+    // Mn   [6] BHAIKSUKI VOWEL SIGN E..BHAIKSUKI SIGN ANUSVARA
+    (0x011C38, 0x011C3D, Top),
+    // Mc       BHAIKSUKI SIGN VISARGA
+    (0x011C3E, 0x011C3E, Right),
+    // Mn       BHAIKSUKI SIGN VIRAMA
+    (0x011C3F, 0x011C3F, Bottom),
+    // Mn  [22] MARCHEN SUBJOINED LETTER KA..MARCHEN SUBJOINED LETTER ZA
+    (0x011C92, 0x011CA7, Bottom),
+    // Mc       MARCHEN SUBJOINED LETTER YA
+    (0x011CA9, 0x011CA9, Right),
+    // Mn   [7] MARCHEN SUBJOINED LETTER RA..MARCHEN VOWEL SIGN AA
+    (0x011CAA, 0x011CB0, Bottom),
+    // Mc       MARCHEN VOWEL SIGN I
+    (0x011CB1, 0x011CB1, Left),
+    // Mn       MARCHEN VOWEL SIGN U
+    (0x011CB2, 0x011CB2, Bottom),
+    // Mn       MARCHEN VOWEL SIGN E
+    (0x011CB3, 0x011CB3, Top),
+    // Mc       MARCHEN VOWEL SIGN O
+    (0x011CB4, 0x011CB4, Right),
+    // Mn   [2] MARCHEN SIGN ANUSVARA..MARCHEN SIGN CANDRABINDU
+    (0x011CB5, 0x011CB6, Top),
+    // Mn   [5] MASARAM GONDI VOWEL SIGN AA..MASARAM GONDI VOWEL SIGN UU
+    (0x011D31, 0x011D35, Top),
+    // Mn       MASARAM GONDI VOWEL SIGN VOCALIC R
+    (0x011D36, 0x011D36, Bottom),
+    // Mn       MASARAM GONDI VOWEL SIGN E
+    (0x011D3A, 0x011D3A, Top),
+    // Mn   [2] MASARAM GONDI VOWEL SIGN AI..MASARAM GONDI VOWEL SIGN O
+    (0x011D3C, 0x011D3D, Top),
+    // Mn   [3] MASARAM GONDI VOWEL SIGN AU..MASARAM GONDI SIGN VISARGA
+    (0x011D3F, 0x011D41, Top),
+    // Mn       MASARAM GONDI SIGN NUKTA
+    (0x011D42, 0x011D42, Bottom),
+    // Mn       MASARAM GONDI SIGN CANDRA
+    (0x011D43, 0x011D43, Top),
+    // Mn       MASARAM GONDI SIGN HALANTA
+    (0x011D44, 0x011D44, Bottom),
+    // Mn       MASARAM GONDI RA-KARA
+    (0x011D47, 0x011D47, Bottom),
+    // Mc   [5] GUNJALA GONDI VOWEL SIGN AA..GUNJALA GONDI VOWEL SIGN UU
+    (0x011D8A, 0x011D8E, Right),
+    // Mn   [2] GUNJALA GONDI VOWEL SIGN EE..GUNJALA GONDI VOWEL SIGN AI
+    (0x011D90, 0x011D91, Top),
+    // Mc   [2] GUNJALA GONDI VOWEL SIGN OO..GUNJALA GONDI VOWEL SIGN AU
+    (0x011D93, 0x011D94, Right),
+    // Mn       GUNJALA GONDI SIGN ANUSVARA
+    (0x011D95, 0x011D95, Top),
+    // Mc       GUNJALA GONDI SIGN VISARGA
+    (0x011D96, 0x011D96, Right),
+    // Mn       MAKASAR VOWEL SIGN I
+    (0x011EF3, 0x011EF3, Top),
+    // Mn       MAKASAR VOWEL SIGN U
+    (0x011EF4, 0x011EF4, Bottom),
+    // Mc       MAKASAR VOWEL SIGN E
+    (0x011EF5, 0x011EF5, Left),
+    // Mc       MAKASAR VOWEL SIGN O
+    (0x011EF6, 0x011EF6, Right),
+];
